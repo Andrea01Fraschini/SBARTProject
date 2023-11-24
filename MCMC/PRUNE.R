@@ -7,7 +7,12 @@ PRUNE <- function(
     obs, # indexes of observations 
     x.list, # list of all covariates 
     xcut, # partition of the predictor space 
-    n.available # number of available observations 
+    n.available, # number of available observations ,
+    prob.grow, 
+    prob.change,
+    prob.prune,
+    alpha, # depth regularization params
+    beta 
 ) {
     n <- n.available
     p <- length(x.list) # number of covariates
@@ -39,13 +44,12 @@ PRUNE <- function(
 
     # transition 
     transition_forward <- prob.prune * 1 / length(singly.position)
-    transition_back <- prob.prune * 1 / (length((terminal_nodes)) - 1) * pro.prob * (1 / unique.len)
+    transition_back <- prob.prune * 1 / (length((terminal_nodes)) - 1) * prop.prob * (1 / unique.len)
 
     # Transition ratio
     trans_ratio <- log(prob.prune) - log(length(terminal_nodes) - 1) + log(max(prop.prob, 0)) - log(unique.len) - log(prob.grow) + log(length(singly.position)) # unsure on prob.grow and prob.prune, in case replace with 0.28
 
     # Likelihood ratio 
-    source("CommonFunctions.R")
     likelihood_ratio <- log_likelihood_ratio(sigma2 = sigma2, sigma_mu = sigma_mu, residuals = residuals, obs.left = obs.left, obs.right = obs.right)
 
     # Structure ratio 
@@ -55,7 +59,7 @@ PRUNE <- function(
     }
     d <- d - 1
 
-    struct_ratio <- log(alpha) - 2 * log((1 - alpha / (2 + d)^beta)) + log((1 + d)^beta - alpha) - log(max(pro.prob, 0)) + log(unique.len)
+    struct_ratio <- log(alpha) - 2 * log((1 - alpha / (2 + d)^beta)) + log((1 + d)^beta - alpha) - log(max(prop.prob, 0)) + log(unique.len)
 
     accept.logprob <- trans_ratio + likelihood_ratio + struct_ratio
     if (accept.logprob > log(runif(1))) {

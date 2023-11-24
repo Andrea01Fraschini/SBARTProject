@@ -7,14 +7,19 @@ GROW.root <- function(
     obs, # indexes of observations 
     x.list, # list of all covariates 
     xcut, # partition of the predictor space 
-    n.available # number of available observations 
+    n.available, # number of available observations 
+    prob.grow, 
+    prob.change,
+    prob.prune,
+    alpha, # depth regularization params
+    beta 
 ) {
     n <- n.available
     p <- length(x.list) # number of covariates
 
-    prop.split_var <- sample(1:p, 1, replace = FALSE, prob = pro.prob) # pick a predictor (splitting variable)
-    prop.split_rule <- sample(2:length(xcut[[pro.split_var]]), 1) # pick a splitting value for the rule  
-    value <- xcut[[prop.split_var]][pro.split_rule]
+    prop.split_var <- sample(1:p, 1, replace = FALSE, prob = prop.prob) # pick a predictor (splitting variable)
+    prop.split_rule <- sample(2:length(xcut[[prop.split_var]]), 1) # pick a splitting value for the rule  
+    value <- xcut[[prop.split_var]][prop.split_rule]
     
     obs.left <- which(x.list[[prop.split_var]] < value) # observations < prop.split_rule
     obs.right <- setdiff(1:n, obs.left) # observations >= prop.split_rule 
@@ -23,7 +28,6 @@ GROW.root <- function(
     trans_ratio <- log(prob.prune) - log(max(prop.prob[prop.split_var], 0)) + log(length(xcut[[prop.split_var]]) - 1) - log(prob.grow) 
 
     # Likelihood ratio (log scale)
-    source("CommonFunctions.R")
     likelihood_ratio <- log_likelihood_ratio(sigma2 = sigma2, sigma_mu = sigma_mu, residuals = residuals, obs.left = obs.left, obs.right = obs.right)
 
     # Structure ratio (log scale)
@@ -70,7 +74,12 @@ GROW <- function(
     obs, # indexes of observations 
     x.list, # list of all covariates 
     xcut, # partition of the predictor space 
-    n.available # number of available observations 
+    n.available, # number of available observations 
+    prob.grow, 
+    prob.change,
+    prob.prune,
+    alpha, # depth regularization params
+    beta 
 ) {
     n <- n.available
     p <- length(x.list) # number of covariates 

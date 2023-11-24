@@ -7,7 +7,12 @@ CHANGE <- function(
     obs, # indexes of observations 
     x.list, # list of all covariates 
     xcut, # partition of the predictor space 
-    n.available # number of available observations 
+    n.available, # number of available observations 
+    prob.grow, 
+    prob.change,
+    prob.prune,
+    alpha, # depth regularization params
+    beta 
 ) {
     n <- n.available
     p <- length(x.list) # number of covariates
@@ -25,7 +30,7 @@ CHANGE <- function(
     prop.split_var <- sample(enough.unique, 1, replace = FALSE, prob = prop.prob[enough.unique])
 
     unique.len <- length(unique(x.list[[prop.split_var]][obs[begin:end]])) # number of unique values 
-    prop.split_rule <- value <- sort(unique(x.list[[pro.split_var]][obs.ind]))[sample(1:(unique.len - 1), 1) + 1]
+    prop.split_rule <- value <- sort(unique(x.list[[prop.split_var]][obs.ind]))[sample(1:(unique.len - 1), 1) + 1]
 
     obs.left.star <- obs.ind[which(x.list[[prop.split_var]][obs.ind] < value)]
     obs.right.star <- setdiff(obs.ind, obs.left)

@@ -13,15 +13,17 @@ The code uses various vectors of indexes to point to data and predictors(/covari
 - `ind` in the main simulation files should refer to the selected covariates like we have seen with $\underline{\gamma}$ ($\gamma_i \in \{0, 1\}$) for GLMMs. **Watch out!** This `ind` is different from `ind` used in functions such as GROW, PRUNE and CHANGE. I've not been able to find a use for the `ind` parameter in those cases, it seems like it could be used for some kind of debug, but it's always set to 2, therefore I've removed it. 
 - `Obs_list` is a list of vectors of indexes pointing to observations ($y_i$'s) for each one of the trees. At each MCMC iteration, the indexes are ordered based on the partitions induced by the splitting rules for each tree.   
 - `dt_list` is a list containing the _current_ (?) decision tree structures.  
-- `Tree` is a matrix containing the results of each iteration of the MCMC on the trees.
+- `Tree` is a matrix containing the results of each iteration of the MCMC on the trees (values from the association $g(x; T_t, M_t)$).
 - `Tree11` ????? It some kind of matrix, but I'm not sure what it is used for, perhaps it has something to do with predictions. 
-- `Xcut` should be the partition of the parameter space. 
+- `Xcut` is a vector containing unique values for the covariates. 
 - `Xpred.list` is a list form of the vector of covariates. 
 - `Xpred.mult` ???. 
 - `*.prob` or `prob.*` refers to some probaility (_kinda obvious tbf_).
 - `prop.*` refers to some sort of proposal/proposed value. (i.e. `prop.prob` is the proposal probability for predictors). 
 - `post.*` or `*.post` refers to some kind of posterior. 
-
+- `Y.da` Data Augmentation, matrix of observations including the predictions for the missing data. 
+- `wind_mat` is a symmetric matrix $n _{obs}\times n_{obs}$ that, for each row/col $i$, has a 1 in correspondance to all locations that are correlated to $i$. 
+- `phi` mixture used to generate synthetic wind data.  
 
 ### Other relevant infos 
 #### Decision trees representation 
@@ -39,5 +41,6 @@ Elements in `dt_list` are associated with the following properties:
 Kim seems to denote with all CAPS some matrices: i.e. `tau2` is a vector of values, `TAU2` is a matrix which, at each iteration, stores the new values of `tau2` (same with `rho` and `RHO`). 
 **BEWARE**: this notation is not at all consistent... Sometimes there are parameters like `sigma2` which are scalars, in this case `sigma2` is stored in a vector called `Sigma2`. 
 
-
+#### Matrix representation for sparse matrices 
+https://coin-or.github.io/Ipopt/IMPL.html
 

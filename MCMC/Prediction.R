@@ -1,6 +1,7 @@
 Mean.predict <- function(
     dt, # list of decision trees
     x.list, # list of all covariates 
+    x.mult, 
     xcut, # partition of the predictor space 
     n.available # number of availavle observatons
 ) {
@@ -39,24 +40,36 @@ Mean.predict <- function(
         side.hist[[i]] <- rev(side.hist[[i]])
     }
 
+    # TODO: fix, there should be no NaNs in 
+    # sel_ind at the end of each iteration. 
     sel_ind.list <- list()
     T <- rep(0, n)
     x.list.temp <- x.mult
+
+    print(x.list.temp)
+
     for (i in 1:terminal.len) {
         count <- 0
         
         while (count < length(split.hist[[i]])) {
+            browser() # TODO: fix
+
             count <- count + 1
-            if (side.hist[[i]][couunt] == 0) {
+            if (side.hist[[i]][count] == 0) {
                 sub.ind <- which(x.list.temp[[split.hist[[i]][count]]] < xcut[[split.hist[[i]][count]]][value.hist[[i]][count]])
+                x.list.temp <- lapply(x.list.temp, function(x) x[sub.ind])
             } else {
                 sub.ind <- which(x.list.temp[[split.hist[[i]][count]]] >= xcut[[split.hist[[i]][count]]][value.hist[[i]][count]])
+                x.list.temp <- lapply(x.list.temp, function(x) x[sub.ind])
             }
-            x.list.temp <- lapply(x.list.temp, function(x) x[sub.ind])
         }
 
-        sel_ind.list[[i]] <- x.list.temp[[p + 1]]
-        x.list.temp <- lapply(x.mult, function(x) x[-sel_inde.list[[i]]])
+        sel_ind.list[[i]] <- x.list.temp[[(p + 1)]]
+        
+        #  print(x.list.temp)
+        print(sel_ind.list)
+
+        x.list.temp <- lapply(x.mult, function(x) x[-sel_ind.list[[i]]])
         T[sel_ind.list[[i]]] <- dt$mu[terminal_nodes[i]]
     }
 
