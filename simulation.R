@@ -1,9 +1,12 @@
 rm(list = ls())
 
-Sys.setenv("PKG_CXXFLAGS"="-std=c++11")
+Sys.setenv("PKG_CXXFLAGS" = "-std=c++11")
+setwd("C:/Users/camil/OneDrive - Universidad del Norte/Universidad POLIMI/Bayesian stats/CODE Bart/SBARTProject") # nolint: line_length_linter.
 
-setwd("/home/paolo/Bayesian_Statistics/Project23-24/SBARTProject")
 #------ Load required libraries
+
+#----- END Load required libraries
+
 source("MCMC/sbart.R")
 
 # Square lattice region

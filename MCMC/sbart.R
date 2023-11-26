@@ -1,14 +1,14 @@
 sbart <- function(
     X, # matrix of covariates
     y.train, # vector of observations 
-    W, # array of weighted adjacency matrices
+    W, # array of weighted adjacency matrices # CS: Why this weighted adjacency matrix?
     SIAM, # Structurally Informed Adjacency Matrix specification
     missing_indexes, # indexes of missing observations in matrices 
-    n.trees = 50L, # number of trees (integer)
+    n.trees = 50L, # number of trees (integer) 
     n.iterations = 10000L, # number of MCMC iteriations  
     n.burnin = 5000L, # number of iterations to discard as burn-in 
     thin = 10L, # thin factor 
-    warmup = n.iterations / 10 # iterations warmup period 
+    warmup = n.iterations / 10 # iterations warmup period # CS: What is this?
 ) {
     library(MASS)
     library(mnormt)
@@ -30,78 +30,114 @@ sbart <- function(
     n <- length(y.train) # number of observations 
     n.locations.all <- dim(SIAM)[1]
 
-    # initialize model parameters
-    # perturbation probabilities
+    # =============================================================================================
+    # Initialize model parameters
+    # =============================================================================================
+    
+    # Perturbation probabilities 
+    #
+    # ρ_grow = Probability to induce a grow perturbation in tree structure.
+    # ρ_prune = Probability to induce a prune perturbation in tree structure.
+    # ρ_change = Probability to induce a change perturbation in tree structure.
+    # --------------------------
     prob.grow <- 0.28
     prob.prune <- 0.28 
     prob.change <- 0.44
 
-    # depth regulating prior hyperparameters 
+    # Depth regulating prior hyperparameters 
+    #
+    # P(depth(N) = d) = α / (1 + d)^β 
+    # α, β: Hyperparameters for regularization prior over tree depth.
+    # --------------------------
     alpha <- 0.95
     beta <- 2
     
-    # selection probabilities for covariates 
+    # Selection probabilities for covariates 
+    #
+    # (s_1, ... ,s_P) ∼ Dirichlet( α/P, ... ,α/P ) 
+    # --------------------------
     dirichlet.alpha <- 1
     posterior.dirichlet.alpha <- rep(1, p) 
     cov.sel_prob <- rdirichlet(1, rep(dirichlet.alpha, p))
 
-    # hyperparameters for spatial random effect 
-    tau2.a <- 1
-    tau2.b <- 0.01 
-    tau2.posterior.shape <- tau2.a + n / 2
-    tau2 <- 0.5 
-    proposal.sd.rho <- 0.2 
-    rho <- 0.5
-    a0 <- 0.5 
-    b0 <- 1
+    # Hyperparameters for spatial random effect 
+    #
+    # θ_i ∣ θ_(-i), ρ, τ^2 ∼  N(ρ (∑^n_(k=1) w_ikθ_k) / ρ (∑^n_{k=1} w_{ik})+1-ρ, τ^2 / ρ (∑^n_{k=1} w_{ik}) +1-ρ )
+    # τ^2 ∼ IG(α_τ, β_τ)
+    # --------------------------
+    tau2.a <- 1 # α_τ
+    tau2.b <- 0.01 # β_τ
+    tau2.posterior.shape <- tau2.a + n / 2 # CS: ?
+    tau2 <- 0.5  # initial value for τ^2
+    proposal.sd.rho <- 0.2 # CS: wasnt rho the dirichlet?
+    rho <- 0.5 # initial value for ρ
+    a0 <- 0.5 # CS: ?
+    b0 <- 1 # CS: ?
     
-    # shift the mean of Y 
+    # Shift the mean of Y 
+    #
+    # y_i = y_i - μ
+    # explanation: Center the response variable to have mean zero.
+    # --------------------------
     shift.amount <- mean(y.train)
     y <- y.train - shift.amount 
+
     residuals <- y # initial value for residuals 
 
-    # sigma prior hyperparameters 
+    # Sigma prior hyperparameters 
+    #
+    # σ^2 ∼ IG(ν/2, νλ/2) = IG(a_σ , b_σ)
+    # '''(Chipman, 2010) We then pick a value of ν between 3 and 10 to get an appropriate shape, and a value of λ so that the qth quantile of the prior on σ is located at ˆσ, that is, P(σ < σˆ) = q. We consider values of q such as 0.75, 0.90 or 0.99 to center the distribution below ˆσ.'''
+    # --------------------------
     sigma2 <- var(y) # initial value for sigma2
     nu <- 3 
     q <- 0.90 
-    sigma.quantile <- function(lambda) invgamma::qinvgamma(q, nu / 2, rate = lambda * nu / 2, lower.tail = TRUE, log.p = FALSE) - sqrt(sigma2)
-    lambda <- uniroot.all(sigma.quantile, c(0.1 ^ 5, 10))
+    sigma.quantile <- function(lambda) invgamma::qinvgamma(q, nu / 2, rate = lambda * nu / 2, lower.tail = TRUE, log.p = FALSE) - sqrt(sigma2) 
+    lambda <- uniroot.all(sigma.quantile, c(0.1 ^ 5, 10)) 
     sigma2.a <- nu / 2
     sigma2.b <- nu * lambda / 2
+    
+    # CS: ?
     k <- 2 
     sigma_mu <- max(
         (min(y) / (-k * sqrt(n.trees))) ^ 2, 
         (max(y) / (+k * sqrt(n.trees))) ^ 2
     )
 
-    sigma2.samples <- rep(0.1, 1)
+    # Initialize MCMC chains
+    #
+    # --------------------------
+    sigma2.samples <- rep(0.1, 1) # CS: Why rep(0.1, 1), why not, just <- 0.1?        
     rho.samples <- rep(0, n.iterations) 
     tau2.samples <- rep(0, n.iterations)
 
     spatial_theta <- rep(0, n.locations.all)
     cov_sel <- rep(0, p) # selected covariates (1 if selected, 0 otherwise)
 
-    obs_list.ind <- list() # list of observations indexes
+    obs_list.ind <- list() # list of observations indexes # What observations index is it going to safe?
     dt_list <- list() # list of current decision trees structures
     for (ii in 1:n.trees) {
-        obs_list.ind[[ii]] <- 1:n
+        obs_list.ind[[ii]] <- 1:n # CS: You put first in each tree all the observations? So obs_list.ind is a list of list of obersevations, one list for each tree?
         # initialize all structures with root nodes 
         dt_list[[ii]] <- list(
             position = 1, 
             parent = NA, 
-            terminal = FALSE, 
-            split = NA,
-            value = NA, 
-            mu = NA,
-            begin = 1,
+            terminal = FALSE, # CS: In this moment it is, or no?
+            split = NA, # split_var(N): covariate associated with node N. # CS: This is the split variable?
+            value = NA, # split_const(N): constant associated with N. # CS: This is the split constant?
+            mu = NA, # CS: This is the mean of the observations in the node?
+            begin = 1, # CS: this is from where to where this node's observations are?
             end = n
         )
     }
 
-    trees <- matrix(0, nrow = n, ncol = n.trees) # g(x; Tt, Mt) values associated to covariates through trees 
-    trees.pred <- matrix(0, nrow = n, ncol = n.trees) # predictions made by trees
+    trees <- matrix(0, nrow = n, ncol = n.trees) # g(x; Tt, Mt) values associated to covariates through trees # CS: Values associated to covariates through trees?
+    trees.pred <- matrix(0, nrow = n, ncol = n.trees) # predictions made by trees # CS: Why the predictions needs a matrix? How does it work?
 
-    Xlist <- Xmult <- list() # list of covariates indexes
+    # What is this?
+    #
+    # --------------------------
+    Xlist <- Xmult <- list() # list of covariates indexes # CS: What information does it store?
     for (i in 1:p) {
         Xlist[[i]] <- X[-missing_indexes, i]
         Xmult[[i]] <- X[, i] # TODO: are these the predictors for making predictions on missing data?
@@ -109,7 +145,10 @@ sbart <- function(
     Xmult[[p + 1]] <- 1:(n)
     X.unique <- lapply(1:p, function(t) sort(unique(X[, t]))) # unique predictor values 
 
-    W_sel <- 1 # slected index for proposed W matrix 
+    # I don't get why there is W, shouldn't it just be SIAM
+    #
+    # --------------------------
+    W_sel <- 1 # selected index for proposed W matrix 
     W_sel.samples <- NULL # track which functions in Fd have been proposed 
     W.count <- length(W)
     lapply(W, function(x) diag(x) <- 0)
@@ -131,16 +170,24 @@ sbart <- function(
 
     # =============================================================================================
     # Run MCMC
-    for (j in 2:n.iterations) {
+    # ============================================================================================= 
+    for (j in 2:n.iterations) { 
         for (t in 1:n.trees) {
+
+            # Update residuals
+            #
+            # R_{i,(-t)} = y_i - ∑^T_{r ≠ t} g(x_i; T_t, M_t) - θ_i
+            # --------------------------
             residuals <- y - rowSums(trees[, -t]) - spatial_theta[-missing_indexes]
             
-            print(t) # TODO: remove 
-            
             # Find depth of the tree 
-            tree.depth <- length(dt_list[[t]]$position)
-            
-            step <- ifelse(tree.depth == 1, # check if root node
+            tree.depth <- length(dt_list[[t]]$position) # CS: I thougth it was a list per node, but now I see it's one per tree, I don't get the representation now.
+
+            # Metropolis Hastings step to sample T_t
+            #
+            # T_t ∼ [T_t | R_{i,(-t)},...,R_{n,(-t)}, σ^2]
+            # -------------------------- 
+            step <- ifelse(tree.depth == 1, # check if root node, if so, only grow perturbation is possible
                 1, # GROW.root 
                 sample(2:4, 1, prob = c(prob.grow, prob.prune, prob.change)) # Pick a perturbation 
             )
@@ -153,7 +200,7 @@ sbart <- function(
                 CHANGE,
             )
             
-            # apply perturbation to trees 
+            # Apply perturbation to trees 
             result <- perturbation(
                 sigma2 = sigma2.samples[j - 1],
                 sigma_mu = sigma_mu,
@@ -171,9 +218,13 @@ sbart <- function(
                 beta = beta
             )  
 
-            dt_list[[t]] <- result$dt
-            obs_list.ind[[t]] <- result$obs
+            dt_list[[t]] <- result$dt # update tree structure
+            obs_list.ind[[t]] <- result$obs # update observations indexes
 
+            # Utep to sample M_t
+            #
+            # M_t ∼ [M_t | T_t, R_{i,(-t)},...,R_{n,(-t)}, σ^2]
+            # --------------------------
             mean.samples <- Mean.sample(
                 sigma2 = sigma2.samples[j - 1], 
                 sigma_mu = sigma_mu, 
@@ -182,18 +233,29 @@ sbart <- function(
                 residuals = residuals, 
                 n.available = n
             )
-            trees[,t] <- mean.samples$T
-            teeemp <- mean.samples$dt
+            trees[,t] <- mean.samples$T # CS: How does it work? what are you modifying in these 3 lines? I guess the M_t, but how?
+            teeemp <- mean.samples$dt 
             dt_list[[t]] <- teeemp
         }
 
         # Sample variance parameter
+        #
+        # R_{final,i} = y_i - ∑^T_{t=1} g(x_i; T_t, M_t) - θ_i
+        # σ^2 ∼ IG(a_σ + n/2, b_σ + 1/2(∑_{i=1}^n R_{final,i}))
+        # --------------------------
         Rfinal <- y - rowSums(trees) - spatial_theta[-missing_indexes]
         sigma2.samples[j] <- rinvgamma(1, sigma2.a + n / 2, scale = sigma2.b + sum((Rfinal)^2) / 2)
     
-        # update of spatial effect 
+        # Update of spatial effect 
+        #
+        # Short version:
+        # θ_i ∼ N(...,...)
+        #
+        # Long version (Possibly with mistakes):
+        # θ_i ∼  N( ((ρ (∑^n_(k=1) w_ikθ_k) / τ^2) + e_i/ σ^2) / (( 1 / τ^2 ( ρ (∑_^n{k=1} w_ik) + 1 - ρ )^-1) + 1/σ^2),  1/(( 1 / τ^2 ( ρ (∑_^n{k=1} w_ik) + 1 - ρ )^-1) + 1/σ^2))
+        # --------------------------
         offset <- (y - rowSums(trees.pred))
-        spatial_theta <- gaussiancarupdate(
+        spatial_theta <- gaussiancarupdate( # CS: I'd put some snake case or, dot case idk how is it call here but yeah, in the function name
             Wtriplet = W.post.full$W.triplet,
             Wbegfin = W.post.full$W.begfin, 
             W.post.full$W.triplet.sum, 
@@ -206,9 +268,17 @@ sbart <- function(
         )
         spatial_theta <- spatial_theta - mean(spatial_theta)
 
-        # browser() # TODO: remove
+        # CS: HERE I FINISHED READING CAREFULLY... TO BE CONTINUE...
 
-        temp <- quadform(
+        # Update tau2 
+        #
+        # Short version:
+        # τ^2 ∼ IG(...,...)
+        #
+        # Long version (Possibly with mistakes):
+        # τ^2 ∼ IG( α_τ + n/2, β_τ + 1/2((∑^n_{i=1} θ^2_i ( ρ ∑_{k=1}^n w_ik + 1 - ρ)) ρ ( (∑^n_{i=1} (∑^n_{k=1} θ_i θ_k w_ik )))))
+        # --------------------------
+        temp <- quadform( # CS: What does this?, ig something for the inverse gamma?
             as.matrix(W.post.full$W.triplet),
             W.post.full$W.triplet.sum, 
             W.post.full$n.triplet, 
@@ -221,7 +291,7 @@ sbart <- function(
         tau2 <- 1 / rgamma(1, tau2.posterior.shape, scale = (1 / tau2.posterior.scale)) 
         tau2.samples[j] <- tau2 
 
-        # update rho based on Metropolis Hastings step 
+        # update rho based on Metropolis Hastings step # CS: Why is it a metropolis step?
         proposal.rho <- rtruncnorm(n = 1, a = 0, b = 1, mean = rho, sd = proposal.sd.rho)
         temp2 <- quadform(
             as.matrix(W.post.full$W.triplet),
@@ -247,7 +317,7 @@ sbart <- function(
         }
         rho.samples <- rho
         
-        # update f based on Metropolis Hastings step 
+        # update f based on Metropolis Hastings step # CS: Here I decide if I accept the new structure or not?
         proposal.W_sel <- sample(1:W.count, 1)
         W.siam.proposal <- SIAM 
         for (i in 1:W.count) {
@@ -287,8 +357,6 @@ sbart <- function(
             Wstar.eigen_vals <- Wstar.eigen_vals.proposal
         }
         W_sel.samples[j] <- W_sel
-
-        # browser() # TODO: fix
 
         # update dirichlet alpha 
         dt.split_vars <- unlist(lapply(dt_list, function(x) x$split))
@@ -350,6 +418,7 @@ sbart <- function(
 }
 
 # Paolo: IDK if it makes sense to have the prections be seperate... 
+# CS: Based on othe model things in python for example, it makes sense to have it separate, you always build first the model and then the object have the predictions method, here since objects are idk what they are, I guess this is the way to go.
 sbart.predict <- function(sbart.output, X.test, missing_indexes) {
     mean <- rowSums(sbart.output$trees_chain) + spatial
     sigma2 <-sbart.output$sigma2_chain
@@ -368,3 +437,4 @@ sbart.predict <- function(sbart.output, X.test, missing_indexes) {
     }
 }
 
+# CS: If you make it work I think we should make it more declarative, I mean 400 lines is quite a lot, but I very biased since I come from WEB where I make everything a component and more than 100 lines per script is a lot. dunno what you think.
