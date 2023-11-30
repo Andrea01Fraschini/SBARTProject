@@ -17,6 +17,8 @@
 #' 
 initialize_mcmc_chains <- function(n.iterations, n.locations.all, p, n.trees, n, X, missing_indexes, SIAM, W) {
 
+  # TODO: Document better, with the references and etc.
+
   # Initialize samples for sigma2, rho, and tau2
   sigma2.samples <- rep(0.1, 1)        
   rho.samples <- rep(0, n.iterations)

@@ -33,13 +33,7 @@ sbart.fit <- function(
     thin = 10L,
     warmup = n.iterations / 10
 ) {
-  sourceCpp("src/CARBayes.cpp") # this C++ code from CARBayes
-  source("MCMC/GROW.R")
-  source("MCMC/CHANGE.R")
-  source("MCMC/PRUNE.R")
-  source("MCMC/CommonFunctions.R") # TODO: fix 
-  source("MCMC/Prediction.R") # TODO: fix    
-  source("MCMC/SampleMean.R") # TODO: fix    
+  sourceCpp("src/CARBayes.cpp") # this C++ code from CARBayes   
   source("R/SBART/initialize_model_parameters.R")
   source("R/SBART/MCMC/init_MCMC.R")
 
@@ -103,62 +97,26 @@ sbart.fit <- function(
   # Run MCMC
   #
   # --------------------------
- 
   for (j in 2:n.iterations) {
     for (t in 1:n.trees) {
 
       # Update residuals
       #
-      # R_{i,(-t)} = y_i - ∑^T_{r ≠ t} g(x_i; T_t, M_t) - θ_i
       # --------------------------
-      residuals <- y - rowSums(trees[, - t]) - spatial_theta[-missing_indexes]
+      residuals <- update_residuals(y, trees, t, spatial_theta, missing_indexes)
 
-      # Find depth of the tree 
-      tree.depth <- length(dt_list[[t]]$position) # CS: I thougth it was a list per node, but now I see it's one per tree, I don't get the representation now.
 
       # Metropolis Hastings step to sample T_t
       #
-      # T_t ∼ [T_t | R_{i,(-t)},...,R_{n,(-t)}, σ^2]
       # -------------------------- 
-      step <- ifelse(tree.depth == 1, # check if root node, if so, only grow perturbation is possible
-                1, # GROW.root 
-                sample(2:4, 1, prob = c(prob.grow, prob.prune, prob.change)) # Pick a perturbation 
-            )
-
-      perturbation <- switch(
-                step, # selection var 
-                GROW.root,
-                GROW,
-                PRUNE,
-                CHANGE,
-            )
-
-      # Apply perturbation to trees 
-      result <- perturbation(
-                sigma2 = sigma2.samples[j - 1],
-                sigma_mu = sigma_mu,
-                dt = dt_list[[t]],
-                residuals = residuals,
-                prop.prob = cov.sel_prob,
-                obs = obs_list.ind[[t]],
-                x.list = Xlist,
-                xcut = X.unique,
-                n.available = n,
-                prob.grow = prob.grow,
-                prob.change = prob.change,
-                prob.prune = prob.prune,
-                alpha = alpha,
-                beta = beta
-            )
-
-      dt_list[[t]] <- result$dt # update tree structure
-      obs_list.ind[[t]] <- result$obs # update observations indexes
+      result <- sample_trees(sigma2, sigma_mu, dt, residuals, prop.prob, obs, x.list, xcut, n.available, prob.grow, prob.change, prob.prune, alpha, beta)
+      dt <- result$dt # update tree structure
+      obs <- result$obs # update observations indexes
 
       # Step to sample M_t
       #
-      # M_t ∼ [M_t | T_t, R_{i,(-t)},...,R_{n,(-t)}, σ^2]
       # --------------------------
-      mean.samples <- Mean.sample(
+      mean.samples <- sample_mean(
                 sigma2 = sigma2.samples[j - 1],
                 sigma_mu = sigma_mu,
                 dt = dt_list[[t]],
@@ -166,171 +124,100 @@ sbart.fit <- function(
                 residuals = residuals,
                 n.available = n
             )
-      trees[, t] <- mean.samples$T # CS: How does it work? what are you modifying in these 3 lines? I guess the M_t, but how?
+      trees[, t] <- mean.samples$T 
       teeemp <- mean.samples$dt
       dt_list[[t]] <- teeemp
     }
 
     # Sample variance parameter
     #
-    # R_{final,i} = y_i - ∑^T_{t=1} g(x_i; T_t, M_t) - θ_i
-    # σ^2 ∼ IG(a_σ + n/2, b_σ + 1/2(∑_{i=1}^n R_{final,i}))
     # --------------------------
-    Rfinal <- y - rowSums(trees) - spatial_theta[-missing_indexes]
-    sigma2.samples[j] <- rinvgamma(1, sigma2.a + n / 2, scale = sigma2.b + sum((Rfinal) ^ 2) / 2)
-
+    sigma2.samples[j] <- sample_variance(y, trees, spatial_theta, missing_indexes, sigma2.a, sigma2.b, n)
+  
     # Update of spatial effect 
     #
-    # Short version:
-    # θ_i ∼ N(...,...)
-    #
-    # Long version (Possibly with mistakes):
-    # θ_i ∼  N( ((ρ (∑^n_(k=1) w_ikθ_k) / τ^2) + e_i/ σ^2) / (( 1 / τ^2 ( ρ (∑_^n{k=1} w_ik) + 1 - ρ )^-1) + 1/σ^2),  1/(( 1 / τ^2 ( ρ (∑_^n{k=1} w_ik) + 1 - ρ )^-1) + 1/σ^2))
     # --------------------------
-    offset <- (y - rowSums(trees.pred))
-    spatial_theta <- gaussiancarupdate(# CS: I'd put some snake case or, dot case idk how is it call here but yeah, in the function name
-            Wtriplet = W.post.full$W.triplet,
-            Wbegfin = W.post.full$W.begfin,
-            W.post.full$W.triplet.sum,
-            nsites = n.locations.all,
-            phi = spatial_theta,
-            tau2 = tau2,
-            rho = rho,
-            nu2 = sigma2.samples[j],
-            offset = offset
-        )
-    spatial_theta <- spatial_theta - mean(spatial_theta)
-
-    # CS: HERE I FINISHED READING CAREFULLY... TO BE CONTINUE...
+    spatial_theta <- update_spatial_effect(
+                y = y,
+                trees_pred = trees.pred,
+                W_post_full = W.post.full,
+                n_locations_all = n.locations.all,
+                spatial_theta = spatial_theta,
+                tau2 = tau2,
+                rho = rho,
+                sigma2_samples = sigma2.samples[j]
+            )
 
     # Update tau2 
     #
-    # Short version:
-    # τ^2 ∼ IG(...,...)
-    #
-    # Long version (Possibly with mistakes):
-    # τ^2 ∼ IG( α_τ + n/2, β_τ + 1/2((∑^n_{i=1} θ^2_i ( ρ ∑_{k=1}^n w_ik + 1 - ρ)) ρ ( (∑^n_{i=1} (∑^n_{k=1} θ_i θ_k w_ik )))))
     # --------------------------
-    temp <- quadform(# CS: What does this?, ig something for the inverse gamma?
-            as.matrix(W.post.full$W.triplet),
-            W.post.full$W.triplet.sum,
-            W.post.full$n.triplet,
-            n.locations.all,
-            spatial_theta,
-            spatial_theta,
-            rho
-        )
-    tau2.posterior.scale <- tau2.b + temp
-    tau2 <- 1 / rgamma(1, tau2.posterior.shape, scale = (1 / tau2.posterior.scale))
-    tau2.samples[j] <- tau2
-
-    # update rho based on Metropolis Hastings step # CS: Why is it a metropolis step?
-    proposal.rho <- rtruncnorm(n = 1, a = 0, b = 1, mean = rho, sd = proposal.sd.rho)
-    temp2 <- quadform(
-            as.matrix(W.post.full$W.triplet),
-            W.post.full$W.triplet.sum,
-            W.post.full$n.triplet,
-            n.locations.all,
-            spatial_theta,
-            spatial_theta,
-            proposal.rho
-        )
-    det.Q.proposal <- 0.5 * sum(log(proposal.rho * Wstar.eigen_vals + (1 - proposal.rho)))
-    logprob.current <- det.Q - temp / tau2
-    logprob.proposal <- det.Q.proposal - temp2 / tau2
-    logprob.hastings <- log(dtruncnorm(x = rho, a = 0, b = 1, mean = proposal.rho, sd = proposal.sd.rho)) -
-                            log(dtruncnorm(x = proposal.rho, a = 0, b = 1, mean = rho, sd = proposal.sd.rho))
-
-    accept.prob <- exp(logprob.proposal - logprob.current + logprob.hastings)
-
-    if (accept.prob > runif(1)) {
-      rho <- proposal.rho
-      det.Q <- det.Q.proposal
-      temp <- temp2
-    }
-    rho.samples <- rho
-
-    # update f based on Metropolis Hastings step # CS: Here I decide if I accept the new structure or not?
-    proposal.W_sel <- sample(1:W.count, 1)
-    W.siam.proposal <- SIAM
-    for (i in 1:W.count) {
-      W.siam.proposal <- W.siam.proposal * W[[i]] ^ I(proposal.W_sel == i)
-    }
-    rownames(W.siam.proposal) <- 1:(n.locations.all)
-    colnames(W.siam.proposal) <- 1:(n.locations.all)
-    W.post.proposal <- formatWMatrix(W.siam.proposal)
-
-    temp3 <- quadform(
-            as.matrix(W.post.proposal$W.triplet),
-            W.post.proposal$W.triplet.sum,
-            W.post.proposal$n.triplet,
-            n.locations.all,
-            spatial_theta,
-            spatial_theta,
-            rho
+    tau2.samples[j] <- update_tau2(
+            W_triplet = W.post.full$W.triplet,
+            W_triplet_sum = W.post.full$W.triplet.sum,
+            n_triplet = W.post.full$n.triplet,
+            n_locations_all = n.locations.all,
+            spatial_theta = spatial_theta,
+            rho = rho,
+            tau2_b = tau2.b,
+            tau2_posterior_shape = tau2.posterior.shape
         )
 
-    Wstar.proposal <- diag(apply(W.siam.proposal, 1, sum)) - W.siam.proposal
-    Wstar.eigen.proposal <- eigen(Wstar.proposal)
-    Wstar.eigen_vals.proposal <- Wstar.eigen.proposal$values
+    # Update rho based on Metropolis Hastings step
+    #
+    # --------------------------
+    result_rho <- update_rho(
+            W_triplet = W.post.full$W.triplet,
+            W_triplet_sum = W.post.full$W.triplet.sum,
+            n_triplet = W.post.full$n.triplet,
+            n_locations_all = n.locations.all,
+            spatial_theta = spatial_theta,
+            rho = rho,
+            tau2 = tau2,
+            proposal.sd.rho = proposal.sd.rho,
+            W = W,
+            W.count = W.count,
+            W_sel = W_sel,
+            SIAM = SIAM,
+            W.siam.full = W.siam.full,
+            W.post.full = W.post.full,
+            Wstar = Wstar,
+            Wstar.eigen = Wstar.eigen,
+            Wstar.eigen_vals = Wstar.eigen_vals,
+            warmup = warmup
+        )
 
-    det.Q.proposal <- 0.5 * sum(log((rho * Wstar.eigen_vals.proposal + (1 - rho))))
-    logprob.current <- det.Q - temp / tau2
-    logprob.proposal <- det.Q.proposal - temp3 / tau2
+    with(result_rho, {
+      rho.samples <- rho
+      det.Q <- det.Q
+      temp <- temp
+    })
 
-    accept.prob <- exp(logprob.proposal - logprob.current)
+    # update f based on Metropolis Hastings step
+    #
+    # --------------------------
+    result_f <- update_f(W, W_count, SIAM, n_locations_all, spatial_theta, rho, tau2, det_Q, temp, W_sel, W_siam_full, W_post_full, Wstar, Wstar_eigen, Wstar_eigen_vals)
 
-    if (accept.prob > runif(1)) {
-      W_sel <- proposal.W_sel
-      det.Q <- det.Q.proposal
-      W.siam.full <- W.siam.proposal
-      W.post.full <- W.post.proposal
-      Wstar <- Wstar.proposal
-      Wstar.eigen <- Wstar.eigen.proposal
-      Wstar.eigen_vals <- Wstar.eigen_vals.proposal
-    }
-    W_sel.samples[j] <- W_sel
+    with(result_f,{
+      W_sel <- W_sel
+      det.Q <- det.Q
+      W_siam.full <- W_siam.full
+      W.post.full <- W.post.full
+      Wstar <- Wstar
+      Wstar.eigen <- Wstar.eigen
+      Wstar.eigen_vals <- Wstar.eigen_vals
+    })
 
-    # update dirichlet alpha 
-    dt.split_vars <- unlist(lapply(dt_list, function(x) x$split))
-    # foreach predictor, count how many times it appears in splitting rules 
-    rules.count <- as.numeric(table(factor(dt.split_vars[!is.na(dt.split_vars)], levels = 1:p)))
-    if (j < warmup) {
-      posterior.dirichlet.alpha <- rep(1, p) + rules.count
-    } else {
-      # alpha / (alpha + p) ~ Beta(a0, b0)
-      proposal.dirichlet.alpha <- max(rnorm(1, dirichlet.alpha, 0.1), 0.1 ^ 10)
-      sum_s <- log(ifelse(cov.sel_prob < 0.1 ^ 300, 0.1 ^ 300, cov.sel_prob))
 
-      dirichlet_likelihood <- function(x) {
-        lik <- sum(sum_s * (rep(x, p) - 1)) +
-                       lgamma(sum(rep(x, p))) -
-                       sum(lgamma(rep(x, p)))
-        return(lik)
-      }
+    # Update dirichlet alpha 
+    #
+    # --------------------------
+    result_dirichlet_alpha <- update_dirichlet_alpha(dt_list, p, j, warmup, dirichlet_alpha, a0, b0, cov_sel_prob)
 
-      dirichlet_lik.proposal <- dirichlet_likelihood(proposal.dirichlet.alpha / p)
-      dirichlet_lik <- dirichlet_likelihood(dirichlet.alpha / p)
-      log_ratio <- dirichlet_lik.proposal +
-                log(
-                    (proposal.dirichlet.alpha / (proposal.dirichlet.alpha + p)) ^ (a0 - b0) *
-                    (p / (proposal.dirichlet.alpha + p)) ^ (b - 1) *
-                    abs(1 / (proposal.dirichlet.alpha + p) - proposal.dirichlet.alpha / (proposal.dirichlet.alpha + p) ^ 2)
-                ) + dnorm(dirichlet.alpha, proposal.dirichlet.alpha, 0.1, log = TRUE) -
-                dirichlet_lik -
-                log(
-                    (dirichlet.alpha / (dirichlet.alpha + p)) ^ (a0 - b0) *
-                    (p / (dirichlet.alpha + p)) ^ (b - 1) *
-                    abs(1 / (dirichlet.alpha + p) - dirichlet.alpha / (dirichlet.alpha + p) ^ 2)
-                ) - dnorm(proposal.dirichlet.alpha, dirichlet.alpha, 0.1, log = TRUE)
-
-      if (log_ratio > log(runif(1))) {
-        dirichlet.alpha <- proposal.dirichlet.alpha
-      }
-      posterior.dirichlet.alpha <- rep(dirichlet.alpha / p, p) + rules.count
-    }
-
-    cov.sel_prob <- rdirichlet(1, posterior.dirichlet.alpha)
+    with(result_dirichlet_alpha, {
+      dirichlet_alpha <- dirichlet_alpha
+      posterior_dirichlet_alpha <- posterior_dirichlet_alpha
+      cov_sel_prob <- cov_sel_prob
+    })
 
     trees.pred <- matrix(unlist(sapply(1:n.trees, function(x) Mean.predict(dt_list[[x]], Xlist, Xmult, X.unique, n))), nrow = n, ncol = n.trees)
 
