@@ -1,23 +1,39 @@
-sbart <- function(
-    X, # matrix of covariates
-    y.train, # vector of observations 
-    W, # array of weighted adjacency matrices # CS: Why this weighted adjacency matrix?
-    SIAM, # Structurally Informed Adjacency Matrix specification
-    missing_indexes, # indexes of missing observations in matrices 
-    n.trees = 50L, # number of trees (integer) 
-    n.iterations = 10000L, # number of MCMC iteriations  
-    n.burnin = 5000L, # number of iterations to discard as burn-in 
-    thin = 10L, # thin factor 
-    warmup = n.iterations / 10 # iterations warmup period # CS: What is this?
+#' Structurally Informed Bayesian Additive Regression Trees (SBART) function
+#'
+#' @param X A matrix of covariates.
+#' @param y.train A vector of observations.
+#' @param W An array of weighted adjacency matrices.
+#' @param SIAM A Structurally Informed Adjacency Matrix specification.
+#' @param missing_indexes Indexes of missing observations in matrices.
+#' @param n.trees Number of trees (integer). Default is 50.
+#' @param n.iterations Number of MCMC iterations. Default is 10000.
+#' @param n.burnin Number of iterations to discard as burn-in. Default is 5000.
+#' @param thin Thin factor. Default is 10.
+#' @param warmup Iterations warmup period. Default is n.iterations / 10.
+#' 
+#' @return A list with the following elements:
+#' @return \itemize{
+#'   \item \code{covariates_selection_chain}: Covariate selection chain.
+#'   \item \code{spatial_theta_chain}: Spatial theta chain.
+#'   \item \code{sigma2_chain}: Sigma2 samples chain.
+#'   \item \code{trees_chain}: Trees prediction chain.
+#'   \item \code{W_selection_chain}: W selection samples chain.
+#' }
+#' @export
+#' 
+
+sbart.fit <- function(
+    X, 
+    y.train,  
+    W, 
+    SIAM, 
+    missing_indexes,  
+    n.trees = 50L,  
+    n.iterations = 10000L,
+    n.burnin = 5000L,  
+    thin = 10L,
+    warmup = n.iterations / 10  
 ) {
-    library(MASS)
-    library(mnormt)
-    library(MCMCpack)
-    library(rootSolve)
-    library(R.matlab)
-    library(truncnorm)
-    library(data.table)
-    library(Rcpp)
     sourceCpp("MCMC/CARBayes.cpp") # this C++ code from CARBayes
     source("MCMC/GROW.R")
     source("MCMC/CHANGE.R")
@@ -28,7 +44,7 @@ sbart <- function(
    
     p <- dim(X)[2] # dimension of covariates
     n <- length(y.train) # number of observations 
-    n.locations.all <- dim(SIAM)[1]
+    n.locations.all <- dim(SIAM)[1] # number of locations
 
     # =============================================================================================
     # Initialize model parameters
@@ -67,12 +83,12 @@ sbart <- function(
     # --------------------------
     tau2.a <- 1 # α_τ
     tau2.b <- 0.01 # β_τ
-    tau2.posterior.shape <- tau2.a + n / 2 # CS: ?
+    tau2.posterior.shape <- tau2.a + n / 2 # CS: always the same for poserior?
     tau2 <- 0.5  # initial value for τ^2
     proposal.sd.rho <- 0.2 # CS: wasnt rho the dirichlet?
     rho <- 0.5 # initial value for ρ
-    a0 <- 0.5 # CS: ?
-    b0 <- 1 # CS: ?
+    a0 <- 0.5 # CS: beta thing?
+    b0 <- 1 # CS: beta thing?
     
     # Shift the mean of Y 
     #
@@ -98,7 +114,7 @@ sbart <- function(
     sigma2.b <- nu * lambda / 2
     
     # CS: ?
-    k <- 2 
+    k <- 2 # tunning parameters for shrinkage effect 
     sigma_mu <- max(
         (min(y) / (-k * sqrt(n.trees))) ^ 2, 
         (max(y) / (+k * sqrt(n.trees))) ^ 2
@@ -114,7 +130,7 @@ sbart <- function(
     spatial_theta <- rep(0, n.locations.all)
     cov_sel <- rep(0, p) # selected covariates (1 if selected, 0 otherwise)
 
-    obs_list.ind <- list() # list of observations indexes # What observations index is it going to safe?
+    obs_list.ind <- list() # list of observations indexes # cs: What observations index is it going to safe?
     dt_list <- list() # list of current decision trees structures
     for (ii in 1:n.trees) {
         obs_list.ind[[ii]] <- 1:n # CS: You put first in each tree all the observations? So obs_list.ind is a list of list of obersevations, one list for each tree?
@@ -122,10 +138,10 @@ sbart <- function(
         dt_list[[ii]] <- list(
             position = 1, 
             parent = NA, 
-            terminal = FALSE, # CS: In this moment it is, or no?
-            split = NA, # split_var(N): covariate associated with node N. # CS: This is the split variable?
-            value = NA, # split_const(N): constant associated with N. # CS: This is the split constant?
-            mu = NA, # CS: This is the mean of the observations in the node?
+            terminal = TRUE, # CS: In this moment it is, or no?
+            split = NA, # split_var(N): covariate associated with node N. 
+            value = NA, # split_const(N): constant associated with N. 
+            mu = NA, # mu(N): mean associated with N.
             begin = 1, # CS: this is from where to where this node's observations are?
             end = n
         )
@@ -221,7 +237,7 @@ sbart <- function(
             dt_list[[t]] <- result$dt # update tree structure
             obs_list.ind[[t]] <- result$obs # update observations indexes
 
-            # Utep to sample M_t
+            # Step to sample M_t
             #
             # M_t ∼ [M_t | T_t, R_{i,(-t)},...,R_{n,(-t)}, σ^2]
             # --------------------------
@@ -417,8 +433,18 @@ sbart <- function(
     return(results)
 }
 
-# Paolo: IDK if it makes sense to have the prections be seperate... 
-# CS: Based on othe model things in python for example, it makes sense to have it separate, you always build first the model and then the object have the predictions method, here since objects are idk what they are, I guess this is the way to go.
+#' SBART prediction function
+#'
+#' @param sbart.output The output from the SBART function.
+#' @param X.test A matrix of test covariates.
+#' @param missing_indexes Indexes of missing observations in matrices.
+#'
+#' @return A matrix of predicted values for the missing observations.
+#' @return \itemize{
+#'  \item \code{y.missing}: Predicted values for the missing observations.
+#' }
+#' @export
+#' 
 sbart.predict <- function(sbart.output, X.test, missing_indexes) {
     mean <- rowSums(sbart.output$trees_chain) + spatial
     sigma2 <-sbart.output$sigma2_chain
@@ -435,6 +461,6 @@ sbart.predict <- function(sbart.output, X.test, missing_indexes) {
             y.missing[, count] <- rnorm(n.missing, c(mean)[missing_indexes], sigma2[j])
         }
     }
-}
 
-# CS: If you make it work I think we should make it more declarative, I mean 400 lines is quite a lot, but I very biased since I come from WEB where I make everything a component and more than 100 lines per script is a lot. dunno what you think.
+    return(y.missing) # TODO: Dunno if this is correct.
+}

@@ -3,7 +3,7 @@ Mean.predict <- function(
     x.list, # list of all covariates 
     x.mult, 
     xcut, # partition of the predictor space 
-    n.available # number of availavle observatons
+    n.available # number of available observations
 ) {
     n <- n.available
     p <- length(x.list) # number of covariates
