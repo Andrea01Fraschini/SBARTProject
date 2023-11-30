@@ -83,6 +83,11 @@ initialize_model_parameters <- function(X, y.train, SIAM, n.trees) {
   sigma2.a <- nu / 2
   sigma2.b <- nu * lambda / 2
 
+  # Mean prior hyperparameters
+  #
+  # μ ∼ N(0, σ_μ^2) 
+  # '''(Chipman, 2010) The essence of our strategy is then to choose µ_µ and σ_µ so that N(mµ_µ,mσ2_µ) assigns substantial probability to the interval (y_min, y_max). This can be conveniently done by choosing µ_µ and σ_µ so that mµ_µ − k√σ_µ = ymin and mµ_µ + k√mσ_µ = ymax for some preselected value of k, we recommend k = 2.'''
+  # --------------------------
   k <- 2 # mean shrinkage
   sigma_mu <- max(
         (min(y) / (-k * sqrt(n.trees))) ^ 2,
