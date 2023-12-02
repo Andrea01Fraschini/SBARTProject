@@ -4,7 +4,7 @@ source("R/SBART/sbart.R") # import the SBART functions
 source("data/sample_data.R") # import the sample data
 
 # Load the data
-data <- get_data()
+data <- sample_data()
 
 with(data, {
   Xpred <- Xpred

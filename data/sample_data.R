@@ -1,5 +1,4 @@
-
-get_data <- function() {
+sample_data <- function(seed = 1) {
   # Square lattice region
   x.easting <- 1:15
   x.northing <- 1:15
@@ -28,7 +27,7 @@ get_data <- function() {
   mean.vector[wind_seed3] <- 0.5
 
   # Set the seed for reproducibility
-  set.seed(1)
+  set.seed(seed)
 
   x1 <- rnorm(K, 1 * (Grid[, 1] / 10 - 1) ^ 2, 1.5)
   x2 <- rnorm(K, mean.vector, 1)

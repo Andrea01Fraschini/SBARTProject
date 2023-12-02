@@ -1,4 +1,5 @@
 Sys.setenv("PKG_CXXFLAGS"="-std=c++11")
+setwd("C:/Users/camil/OneDrive - Universidad del Norte/Universidad POLIMI/Bayesian stats/CODE Bart/SBARTProject/__LEGACY__/KIM")
 
 #------ Load required libraries
 library(MASS)
@@ -102,6 +103,11 @@ Y <- Y - shift      # Shifting the mean of Y
 
 A.WEIGHT <- NULL    # uncertainty parameter
 n.full <- length(Y)  # Num. of the locations
+
+print(n.full)
+# stop execution
+quit(save="ask")
+
 n.complete <- length(which(!is.na(Y)))  # Num. of the locations with observation
 
 
