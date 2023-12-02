@@ -35,7 +35,15 @@ common.Wcheckformat <- function(W)
   }
   
   #### Return the critical quantities
-  results <- list(W=W, W.triplet=W.triplet, n.triplet=n.triplet, W.triplet.sum=W.triplet.sum, n.neighbours=n.neighbours, W.begfin=W.begfin, n=n)
+  results <- list(
+    W=W, 
+    W.triplet=W.triplet, 
+    n.triplet=n.triplet, 
+    W.triplet.sum=W.triplet.sum, 
+    n.neighbours=n.neighbours, 
+    W.begfin=W.begfin, 
+    n=n
+    )
   return(results)   
 }
 

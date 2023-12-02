@@ -34,13 +34,13 @@ sbart.fit <- function(
     warmup = n.iterations / 10
 ) {
   sourceCpp("src/CARBayes.cpp") # this C++ code from CARBayes   
-  source("R/SBART/initialize_model_parameters.R")
-  source("R/SBART/MCMC/init_MCMC.R")
+  source("R/SBART/init_model_parameters.R")
+  source("R/SBART/MCMC/init_chain.R")
 
   # Get model parameters
   #
   # --------------------------
-  model_params <- initialize_model_parameters(X, y.train, SIAM, n.trees)
+  model_params <- init_model_parameters(X, y.train, SIAM, n.trees)
 
   with(model_params, {
     p <- p
@@ -67,19 +67,16 @@ sbart.fit <- function(
     residuals <- residuals
     sigma2 <- sigma2
     nu <- nu
-    q <- q
-    sigma.quantile <- sigma.quantile
     lambda <- lambda
     sigma2.a <- sigma2.a
     sigma2.b <- sigma2.b
-    k <- k
     sigma_mu <- sigma_mu
   })
 
-  # Initialize MCMC variables
+  # Initialize MCMC chain
   #
   # --------------------------
-  initial_variables <- initialize_mcmc_chains(n.iterations, n.locations.all, p, n.trees, n, X, missing_indexes, SIAM, W)
+  initial_variables <- init_chain(n.iterations, n.locations.all, p, n.trees, n, X, missing_indexes, SIAM, W)
 
   with(initial_variables, {
     sigma2.samples <- sigma2.samples

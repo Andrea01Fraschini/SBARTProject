@@ -45,7 +45,7 @@ mean.vector[wind_seed3] <- 0.5
 
 for(process in 1:100){
 
-  set.seed(process)
+  set.seed(1)
   
 x1 <- rnorm(K, 1*(Grid[,1]/10-1)^2, 1.5)
 x2 <- rnorm(K, mean.vector, 1)
@@ -80,6 +80,11 @@ Xpred1 <- do.call(cbind, cov)
 # Vector of X predictors
 Xpred <- cbind(x1,x2,x3,x4,x5, Xpred1)
 
+# CODE FOR TESTS-------------
+output <- list(Y = Y, Xpred = Xpred, mis.ind = mis.ind, wind_mat = wind_mat)
+dput(output, file = "data/output_sample_data_1.R")
+# END CODE FOR TESTS---------
+
 ####################
 # Set the BART model
 ####################
@@ -101,12 +106,8 @@ P <- dim(Xpred)[2]  # Num. of predictors
 shift <- mean(Y, na.rm=TRUE)
 Y <- Y - shift      # Shifting the mean of Y
 
-A.WEIGHT <- NULL    # uncertainty parameter
+A.WEIGHT <- NULL    # uncertainty parameter 
 n.full <- length(Y)  # Num. of the locations
-
-print(n.full)
-# stop execution
-quit(save="ask")
 
 n.complete <- length(which(!is.na(Y)))  # Num. of the locations with observation
 
@@ -121,7 +122,10 @@ sigma2 <- var(Y, na.rm=T)  # Initial value of SD^2
 nu <- 3                   # default setting (nu, q) = (3, 0.90) from Chipman et al. 2010
 f <- function(lambda) invgamma::qinvgamma(0.90, nu/2, rate = lambda*nu/2, lower.tail = TRUE, log.p = FALSE) - sqrt(sigma2)
 lambda <- uniroot.all(f, c(0.1^5,10))
-sigma_mu <- max((min(Y, na.rm=T)/(-2*sqrt(m)))^2, (max(Y, na.rm=T)/(2*sqrt(m)))^2) # sigma_mu based on min/max of Y
+sigma_mu <- max(
+  (min(Y, na.rm=T)/(-2*sqrt(m)))^2, 
+  (max(Y, na.rm=T)/(2*sqrt(m)))^2
+  ) # sigma_mu based on min/max of Y
 dir.alpha <- 1         # Hyper-parameter on selection probabilities
 
 alpha <- 0.95             # alpha (1+depth)^{-beta} where depth=0,1,2,...
@@ -150,7 +154,14 @@ diag(W3) <- 0
 diag(W4) <- 0
 diag(W5) <- 0
 
+# CODE FOR TESTS-------------
+output <- list(Ws = list(W1, W2, W3, W4, W5))
+dput(output, file = "data/output_sample_data_2.R")
+# END CODE FOR TESTS---------
+
+
 W.wind <- wind_mat*(W1^(I(a.weight==1)))*(W2^(I(a.weight==2)))*(W3^(I(a.weight==3)))*(W4^(I(a.weight==4)))*(W5^(I(a.weight==5)))
+print(dim(W.wind))
 W.wind <- W.wind[-mis.ind, -mis.ind]
 rownames(W.wind) <- 1:(n.full-length(mis.ind))
 colnames(W.wind) <- 1:(n.full-length(mis.ind))
@@ -164,6 +175,48 @@ Wstar.eigen <- eigen(Wstar)
 Wstar.val <- Wstar.eigen$values
 det.Q <- 0.5 * sum(log((rho * Wstar.val + (1-rho))))
 
+set.seed(1)
+prop.prob <- rdirichlet(1, rep(dir.alpha,P))
+post.dir.alpha <- rep(1,P) # Posterior on selection probabilities
+mis.ind <- which(is.na(Y))
+R <- Y  # Initial values of R
+
+
+# CODE FOR TESTS-------------
+output <- list(
+    p = P,
+    n = length(Y[-mis.ind]),
+    n.locations.all = length(Y),
+    prob.grow = p.grow,
+    prob.prune = p.prune,
+    prob.change = p.change,
+    alpha = alpha,
+    beta = beta,
+    dirichlet.alpha = dir.alpha,
+    posterior.dirichlet.alpha = post.dir.alpha,
+    cov.sel_prob = prop.prob,
+    tau2.a = prior.tau2[1],
+    tau2.b = prior.tau2[2],
+    tau2.posterior.shape = tau2.posterior.shape,
+    tau2 = tau2,
+    proposal.sd.rho = proposal.sd.rho,
+    rho = rho,
+    a0 = 0.5,
+    b0 = 1,
+    Y = Y,
+    residuals = R,
+    sigma2 = sigma2,
+    nu = nu,
+    lambda = lambda,
+    sigma2.a = nu/2,
+    sigma2.b = nu*lambda/2,
+    sigma_mu = sigma_mu,
+    missing_indexes = mis.ind
+)
+dput(output, file = "data/output_init_model_parameters.R")
+# quit(save="ask")
+# END CODE FOR TESTS---------
+
 
 
 #####################################################################
@@ -174,16 +227,12 @@ n.iter <- 10000            # Num. of Iterations
 Tree <- matrix(0,nrow=n, ncol=m)
 Sigma2 <- NULL            # Variance parameter
 Sigma2[1] <- 0.1
-R <- Y  # Initial values of R
 
 # Missing index & Obj for imputed outcome
-mis.ind <- which(is.na(Y))
 Y.da <- matrix(nrow=length(mis.ind), ncol=n.iter)
 Y.da[,1] <- rnorm(length(mis.ind), mean(Y, na.rm=TRUE), 1)
 Y[mis.ind] <- Y.da[,1]
 count <- 0
-
-post.dir.alpha <- rep(1,P) # Posterior on selection probabilities
 
 seq <- seq(5001, 10000, by=10)
 ind <- rep(0,P)
@@ -200,7 +249,7 @@ for(i in 1:m){
   dt_list[[i]] <- list( position=rep(1,1), parent=rep(NA,1), Terminal=rep(1,1), Split=rep(NA,1), Value=rep(NA,1), MU=rep(NA,1), begin=rep(1,1), end=rep(n.complete,1))
 }
 
-prop.prob <- rdirichlet(1, rep(dir.alpha,P))
+
 
 Xpred.list <- xpred.mult <- list()
 for(i in 1:P){
@@ -209,6 +258,36 @@ for(i in 1:P){
 }
 xpred.mult[[P+1]] <- 1:(n)
 Xcut <- lapply(1:dim(Xpred)[2], function(t) sort(unique(Xpred[-mis.ind,t]))) # unique values of the predictors
+
+# CODE FOR TESTS-------------
+output <- list(
+    sigma2.samples = Sigma2,
+    rho.samples = rep(0, n.iter),
+    tau2.samples = rep(0, n.iter),
+    spatial_theta = spatial,
+    cov_sel = ind,
+    obs_list.ind = Obs_list,
+    dt_list = dt_list,
+    trees = Tree,
+    trees.pred = Tree11,
+    Xlist = Xpred.list,
+    Xmult = xpred.mult,
+    X.unique = Xcut,
+    W_sel = 1,
+    W_sel.samples = NULL,
+    W.count = 5,
+    W.siam = W.wind,
+    W.siam.full = W.wind.full,
+    W.post = W.post,
+    W.post.full = W.post.full,
+    Wstar = Wstar,
+    Wstar.eigen = Wstar.eigen,
+    Wstar.eigen_vals = Wstar.val,
+    det.Q = det.Q
+)
+dput(output, file = "data/output_init_chain.R")
+quit(save="ask")
+# END CODE FOR TESTS---------
 
 ### Run MCMC
 

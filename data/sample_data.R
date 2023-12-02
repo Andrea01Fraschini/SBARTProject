@@ -1,4 +1,4 @@
-sample_data <- function(seed = 1) {
+sample_data <- function() {
   # Square lattice region
   x.easting <- 1:15
   x.northing <- 1:15
@@ -26,9 +26,6 @@ sample_data <- function(seed = 1) {
   mean.vector[wind_seed2] <- -2.5
   mean.vector[wind_seed3] <- 0.5
 
-  # Set the seed for reproducibility
-  set.seed(seed)
-
   x1 <- rnorm(K, 1 * (Grid[, 1] / 10 - 1) ^ 2, 1.5)
   x2 <- rnorm(K, mean.vector, 1)
   x3 <- rnorm(K, 0.5, 1.5)
@@ -46,7 +43,7 @@ sample_data <- function(seed = 1) {
   Y.true <- Y <- 2.5 + 1.5 * x1 + 1.5 * x2 - 1 * x3 + 1.5 * x4 - 1.5 * x5 + 0.25 * x4 * x5 + theta + phi
 
   # Randomly selected missing locations
-  missing <- mis.ind <- sample(1:225, 195, replace = F)
+  missing <- mis.ind <- sample(1:225, 195, replace = FALSE)
   Y[missing] <- NA
 
   # Total 50 potential predictors
