@@ -18,4 +18,4 @@ jobs:
 
     - name: Run tests
       run: |
-        Rscript run_workflow.R
+        Rscript __tests__/run_workflow.R
