@@ -14,24 +14,24 @@ GROW.first <- function(sigma2, sigma_mu, dt,  R, prop.prob, Obs, ind=NULL){
   
   value <- xcut[[prop.pred]][prop.rule]
   R.L <- which(xpred[[prop.pred]] < value) # Observations < prop.rule
-  R.R <- setdiff(1:n, R.L)   # Observations >= prop.rule
-
+  R.R <- setdiff(1:n, R.L)   # Observations >= prop.rule+
 
   # Transition ratio (log scale)
   TRANS <- log(p.prune) - log(max(prop.prob[prop.pred],0)) + log(length(xcut[[prop.pred]])-1) - log(p.grow)
-  
+
   # Likelihood ratio (log scale)
   nlL <- length(R.L)
   nlR <- length(R.R)
   
   LH <- log(sqrt(sigma2*(sigma2+(nlL+nlR)*sigma_mu))/sqrt((sigma2+nlL*sigma_mu)*(sigma2+nlR*sigma_mu))) + (sigma_mu / (2*sigma2) * ( (sum(R[R.L]))^2/(sigma2+nlL*sigma_mu) +(sum(R[R.R]))^2/(sigma2+nlR*sigma_mu) - (sum(R))^2/(sigma2+(nlR+nlL)*sigma_mu) ) )
+
   
   # Structure ratio (log scale)
   d <- 0
   STR <- log(alpha) + 2*log((1- alpha / (2 + d)^beta )) - log((1 + d)^beta - alpha) + log(max(prop.prob[prop.pred],0)) - log(length(xcut[[prop.pred]])-1)
   
   r <- TRANS+LH+STR
-  
+
   if(r > log(runif(1))){
     # New tree structure
     dt.new <- dt

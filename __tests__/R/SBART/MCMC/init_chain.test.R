@@ -1,8 +1,9 @@
+rm(list = ls())
 setwd("C:/Users/camil/OneDrive - Universidad del Norte/Universidad POLIMI/Bayesian stats/CODE Bart/SBARTProject")
 library(testthat)
 source("R/library_imports.R")
 
-describe("Test sample data function",{
+describe("Test init_chain function",{
     source("data/sample_data.R")
     source("R/SBART/init_model_parameters.R")
     source("R/SBART/MCMC/init_chain.R")
@@ -24,20 +25,22 @@ describe("Test sample data function",{
         n.iterations = 10000L,
         n.locations.all = params$n.locations.all,
         p = params$p,
-        n = params$n,
         n.trees = 50L,
+        n = params$n,
         X = data$Xpred,
+        Y = params$Y,
         missing_indexes = data$mis.ind,
         SIAM = data$wind_mat,
-        W = data$Ws
+        W = data$Ws,
+        rho = params$rho
     )
 
     it("should return a list",{
         expect_is(vars, "list")
     })
 
-    it("should return a list with 23 elements",{
-        expect_equal(length(vars), 23)
+    it("should return a list with 26 elements",{
+        expect_equal(length(vars), 26)
     })
 
     it("should return a list with the correct names",{
@@ -64,7 +67,10 @@ describe("Test sample data function",{
             "Wstar",
             "Wstar.eigen",
             "Wstar.eigen_vals",
-            "det.Q"
+            "det.Q",
+            "Y",
+            "missing_indexes",
+            "Y.da"
         ))
     })
 
@@ -132,6 +138,9 @@ describe("Test sample data function",{
         expect_equal(vars$Wstar.eigen, output_init_chain$Wstar.eigen)
         expect_equal(vars$Wstar.eigen_vals, output_init_chain$Wstar.eigen_vals)
         expect_equal(vars$det.Q, output_init_chain$det.Q)
+        expect_equal(vars$Y, output_init_chain$Y)
+        expect_equal(vars$missing_indexes, output_init_chain$missing_indexes)
+        expect_equal(vars$Y.da, output_init_chain$Y.da)
     })
 
 })

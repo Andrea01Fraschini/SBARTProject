@@ -9,15 +9,16 @@
 #' @param missing_indexes Indexes of missing observations
 #' @param SIAM Spatial interaction adjacency matrix
 #' @param W List of weight matrices for spatial interaction
+#' @param Y Vector of observations
+#' @param rho Spatial smoothing parameter
 #'
 #' @return A list containing initialized MCMC chains and other parameters
-#'
-#' @examples
-#' init_chain(1000, 50, 3, 10, 500, X, missing_indexes, SIAM, W)
+#' @export
 #' 
-init_chain <- function(n.iterations, n.locations.all, p, n.trees, n, X, missing_indexes, mis.ind, SIAM, W) {
+init_chain <- function(n.iterations, n.locations.all, p, n.trees, n, X, Y, missing_indexes, SIAM, W, rho) {
   source('R/common/format_w_matrix.R')
   # TODO: Document better, with the references and etc.
+  missing_indexes <- which(is.na(Y))
 
   # Initialize samples for sigma2, rho, and tau2
   sigma2.samples <- rep(0.1, 1)        
@@ -80,6 +81,13 @@ init_chain <- function(n.iterations, n.locations.all, p, n.trees, n, X, missing_
   Wstar.eigen_vals <- Wstar.eigen$values
   det.Q <- 0.5 * sum(log((rho * Wstar.eigen_vals + (1 - rho))))
 
+  # TODO: Separate concerns, Y.da should be in predict
+  # Fill missing values in Y with normal random values
+  Y.da <- matrix(nrow=length(missing_indexes), ncol=n.iterations)
+  set.seed(1)
+  Y.da[,1] <- rnorm(length(missing_indexes), mean(Y, na.rm=TRUE), 1)
+  Y[missing_indexes] <- Y.da[,1]
+
   return(
     list(
         sigma2.samples = sigma2.samples,
@@ -104,7 +112,10 @@ init_chain <- function(n.iterations, n.locations.all, p, n.trees, n, X, missing_
         Wstar = Wstar,
         Wstar.eigen = Wstar.eigen,
         Wstar.eigen_vals = Wstar.eigen_vals,
-        det.Q = det.Q
+        det.Q = det.Q,
+        Y = Y,
+        missing_indexes = missing_indexes,
+        Y.da = Y.da
         )
     )
 }

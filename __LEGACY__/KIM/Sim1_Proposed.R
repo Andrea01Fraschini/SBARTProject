@@ -1,3 +1,4 @@
+rm(list = ls())
 Sys.setenv("PKG_CXXFLAGS"="-std=c++11")
 setwd("C:/Users/camil/OneDrive - Universidad del Norte/Universidad POLIMI/Bayesian stats/CODE Bart/SBARTProject/__LEGACY__/KIM")
 
@@ -161,7 +162,6 @@ dput(output, file = "data/output_sample_data_2.R")
 
 
 W.wind <- wind_mat*(W1^(I(a.weight==1)))*(W2^(I(a.weight==2)))*(W3^(I(a.weight==3)))*(W4^(I(a.weight==4)))*(W5^(I(a.weight==5)))
-print(dim(W.wind))
 W.wind <- W.wind[-mis.ind, -mis.ind]
 rownames(W.wind) <- 1:(n.full-length(mis.ind))
 colnames(W.wind) <- 1:(n.full-length(mis.ind))
@@ -180,7 +180,6 @@ prop.prob <- rdirichlet(1, rep(dir.alpha,P))
 post.dir.alpha <- rep(1,P) # Posterior on selection probabilities
 mis.ind <- which(is.na(Y))
 R <- Y  # Initial values of R
-
 
 # CODE FOR TESTS-------------
 output <- list(
@@ -230,6 +229,7 @@ Sigma2[1] <- 0.1
 
 # Missing index & Obj for imputed outcome
 Y.da <- matrix(nrow=length(mis.ind), ncol=n.iter)
+set.seed(1)
 Y.da[,1] <- rnorm(length(mis.ind), mean(Y, na.rm=TRUE), 1)
 Y[mis.ind] <- Y.da[,1]
 count <- 0
@@ -283,10 +283,13 @@ output <- list(
     Wstar = Wstar,
     Wstar.eigen = Wstar.eigen,
     Wstar.eigen_vals = Wstar.val,
-    det.Q = det.Q
+    det.Q = det.Q,
+    Y = Y,
+    missing_indexes = mis.ind,
+    Y.da = Y.da
 )
 dput(output, file = "data/output_init_chain.R")
-quit(save="ask")
+# quit(save="ask")
 # END CODE FOR TESTS---------
 
 ### Run MCMC
@@ -297,6 +300,15 @@ for(j in 2:n.iter){
         
         R <- Y[-mis.ind] - rowSums(Tree[,-t]) - spatial[-mis.ind]
 
+        # CODE FOR TESTS-------------
+        output <- list(
+            residuals = R
+        )
+        dput(output, file = "data/output_update_residuals.R")
+        # quit(save="ask")
+        # END CODE FOR TESTS---------
+
+        set.seed(1)
         ### Find the depth of the tree (0 or 1 or 2)
         tree.length <- length(dt_list[[t]]$position)
         if(tree.length == 1){  # tree has no node yet
@@ -322,10 +334,29 @@ for(j in 2:n.iter){
               Obs_list[[t]] <- grow.step$Obs
             }}}
         }
+
+        # CODE FOR TESTS-------------
+        output <- list(
+            dt_list = dt_list,
+            obs_list.ind = Obs_list
+        )
+        dput(output, file = "data/output_sample_trees.R")
+        # quit(save="ask")
+        # END CODE FOR TESTS---------
         
+        set.seed(1)
         Mean <- Mean.Parameter(Sigma2[j-1], sigma_mu, dt=dt_list[[t]],  Obs=Obs_list[[t]], R, ind=2)
         Tree[,t] <- Mean$T
         dt_list[[t]] <- Mean$dt
+
+        # CODE FOR TESTS-------------
+        output <- list(
+            trees = Tree,
+            dt_list = dt_list
+        )
+        dput(output, file = "data/output_sample_means.R")
+        quit(save="ask")
+        # END CODE FOR TESTS---------
     }
 
 

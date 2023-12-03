@@ -1,8 +1,9 @@
+rm(list = ls())
 setwd("C:/Users/camil/OneDrive - Universidad del Norte/Universidad POLIMI/Bayesian stats/CODE Bart/SBARTProject")
 library(testthat)
 source("R/library_imports.R")
 
-describe("Test sample data function",{
+describe("Test init_model_parameters function",{
     source("data/sample_data.R")
     source("R/SBART/init_model_parameters.R")
     source("__tests__/R/SBART/kim_output/output_init_model_parameters.R")

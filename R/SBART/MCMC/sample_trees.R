@@ -3,28 +3,14 @@
 #' This function performs a Metropolis Hastings step to sample T_t.
 #' The formula used is: T_t ∼ [T_t | R_{i,(-t)},...,R_{n,(-t)}, σ^2]
 #'
-#' @param sigma2 A numeric value representing the variance of the residuals.
-#' @param sigma_mu A numeric value representing the variance of the prior on the leaf parameters.
-#' @param dt A list representing the current tree.
-#' @param residuals A numeric vector of residuals.
-#' @param prop.prob A numeric value representing the proposal probability.
-#' @param obs A numeric vector of observations.
-#' @param x.list A list of predictor variables.
-#' @param xcut A numeric vector of cutpoints for the predictor variables.
-#' @param n.available A numeric value representing the number of available observations.
-#' @param prob.grow A numeric value representing the probability of a grow step.
-#' @param prob.change A numeric value representing the probability of a change step.
-#' @param prob.prune A numeric value representing the probability of a prune step.
-#' @param alpha A numeric value representing the alpha parameter of the prior on the tree depth.
-#' @param beta A numeric value representing the beta parameter of the prior on the tree depth.
-#'
-#' @return A list with two elements: 'dt' representing the updated tree structure, and 'obs' representing the updated observations indexes.
-#' @export
-#'
-sample_trees <- function(sigma2, sigma_mu, dt, residuals, prop.prob, obs, x.list, xcut, n.available, prob.grow, prob.change, prob.prune, alpha, beta) {
+
+sample_trees <- function(dt_list, prob.grow, prob.change, prob.prune, sigma2.samples, j, sigma_mu, t, residuals, cov.sel_prob, obs_list.ind, Xlist, X.unique, n, alpha, beta) {
+  source("R/SBART/MCMC/perturbations/GROW.R")
+  source("R/SBART/MCMC/perturbations/PRUNE.R")
+  source("R/SBART/MCMC/perturbations/CHANGE.R")
 
   # Find depth of the tree 
-  tree.depth <- length(dt$position)
+  tree.depth <- length(dt_list[[t]]$position)
   step <- ifelse(tree.depth == 1, # check if root node, if so, only grow perturbation is possible
             1, # GROW.root 
             sample(2:4, 1, prob = c(prob.grow, prob.prune, prob.change)) # Pick a perturbation 
@@ -40,15 +26,15 @@ sample_trees <- function(sigma2, sigma_mu, dt, residuals, prop.prob, obs, x.list
 
   # Apply perturbation to trees 
   result <- perturbation(
-            sigma2 = sigma2,
+            sigma2 = sigma2.samples[j-1],
             sigma_mu = sigma_mu,
-            dt = dt,
+            dt = dt_list[[t]],
             residuals = residuals,
-            prop.prob = prop.prob,
-            obs = obs,
-            x.list = x.list,
-            xcut = xcut,
-            n.available = n.available,
+            prop.prob = cov.sel_prob,
+            obs = obs_list.ind[[t]],
+            x.list = Xlist,
+            xcut = X.unique,
+            n.available = n,
             prob.grow = prob.grow,
             prob.change = prob.change,
             prob.prune = prob.prune,
@@ -56,8 +42,13 @@ sample_trees <- function(sigma2, sigma_mu, dt, residuals, prop.prob, obs, x.list
             beta = beta
         )
 
-  dt <- result$dt # update tree structure
-  obs <- result$obs # update observations indexes
+  dt_list[[t]] <- result$dt # update tree structure
+  obs_list.ind[[t]] <- result$obs # update observations indexes
   
-  return(list(dt = dt, obs = obs))
+  return(
+    list(
+      dt_list = dt_list, 
+      obs_list.ind = obs_list.ind
+    )
+  )
 }
