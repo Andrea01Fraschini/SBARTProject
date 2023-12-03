@@ -15,7 +15,7 @@
 #' @export
 #'
 sample_means <- function(sigma2.samples, sigma_mu, obs_list.ind, residuals, xcut, n.available, trees, dt_list, t, j) {
-    sigma2 <- sigma2.samples[[j-1]] # sigma2 is a list of length 1
+    sigma2 <- sigma2.samples[j-1] # sigma2 is a list of length 1
     obs <- obs_list.ind[[t]] # obs is a list of length 1
     n <- n.available
     T <- rep(0, n) # assignment of obs through trees  

@@ -14,10 +14,10 @@
 #' @return A numeric value representing a sample from the posterior distribution of σ^2.
 #' @export
 #'
-sample_variance <- function(y, trees, spatial_theta, missing_indexes, sigma2.a, sigma2.b, n) {
-
-  Rfinal <- y - rowSums(trees) - spatial_theta[-missing_indexes]
-  sigma2.sample <- rinvgamma(1, sigma2.a + n / 2, scale = sigma2.b + sum((Rfinal) ^ 2) / 2)
+sample_variance <- function(Y, trees, spatial_theta, missing_indexes, sigma2.a, sigma2.b, n, sigma2.samples, j) {
   
-  return(sigma2.sample)
+  Rfinal <- Y[-missing_indexes] - rowSums(trees) - spatial_theta[-missing_indexes]
+  sigma2.samples[j] <- rinvgamma(1, sigma2.a + n / 2, scale = sigma2.b + sum((Rfinal) ^ 2) / 2)
+
+  return(sigma2.samples)
 }

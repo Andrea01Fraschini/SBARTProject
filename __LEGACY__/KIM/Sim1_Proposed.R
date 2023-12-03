@@ -355,13 +355,21 @@ for(j in 2:n.iter){
             dt_list = dt_list
         )
         dput(output, file = "data/output_sample_means.R")
-        quit(save="ask")
+        # quit(save="ask")
         # END CODE FOR TESTS---------
     }
 
-
+    set.seed(1)
     # Sample variance parameter
     Sigma2[j] <- rinvgamma(1, nu/2+n.complete/2, scale = nu*lambda/2 + sum((Y[-mis.ind]-rowSums(Tree)-spatial[-mis.ind])^2)/2)
+
+    # CODE FOR TESTS-------------
+    output <- list(
+        sigma2.samples = Sigma2
+    )
+    dput(output, file = "data/output_sample_variance.R")
+    quit(save="ask")
+    # END CODE FOR TESTS---------
 
     #######################################
     # Start update the spatial random effect
