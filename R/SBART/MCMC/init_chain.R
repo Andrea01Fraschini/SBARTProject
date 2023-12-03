@@ -6,13 +6,39 @@
 #' @param n.trees Number of decision trees
 #' @param n Number of observations
 #' @param X Matrix of covariates
+#' @param Y Vector of observations
 #' @param missing_indexes Indexes of missing observations
 #' @param SIAM Spatial interaction adjacency matrix
 #' @param W List of weight matrices for spatial interaction
-#' @param Y Vector of observations
 #' @param rho Spatial smoothing parameter
 #'
-#' @return A list containing initialized MCMC chains and other parameters
+#' @return A list containing the following elements:
+#'   - sigma2.samples: A vector of samples for the error variance.
+#'   - rho.samples: A vector of samples for the spatial autocorrelation parameter.
+#'   - tau2.samples: A vector of samples for the variance of the random effects.
+#'   - spatial_theta: A vector of spatial random effects.
+#'   - cov_sel: A vector indicating the selected covariates.
+#'   - obs_list.ind: A list of vectors, each containing the indices of observations for each tree.
+#'   - dt_list: A list of decision trees.
+#'   - trees: A matrix of tree values.
+#'   - trees.pred: A matrix of tree predictions.
+#'   - Xlist: A list of vectors, each containing the values of a covariate for non-missing observations.
+#'   - Xmult: A list of vectors, each containing the values of a covariate for all observations.
+#'   - X.unique: A list of vectors, each containing the unique values of a covariate for non-missing observations.
+#'   - W_sel: The index of the selected spatial weights matrix.
+#'   - W_sel.samples: A vector of samples for the index of the selected spatial weights matrix.
+#'   - W.count: The number of spatial weights matrices.
+#'   - W.siam: The spatial interaction adjacency matrix for non-missing observations.
+#'   - W.siam.full: The full spatial interaction adjacency matrix.
+#'   - W.post: The row-normalized spatial interaction adjacency matrix for non-missing observations.
+#'   - W.post.full: The full row-normalized spatial interaction adjacency matrix.
+#'   - Wstar: The spatial weights matrix for the Moran's I statistic.
+#'   - Wstar.eigen: The eigenvalues and eigenvectors of the Wstar matrix.
+#'   - Wstar.eigen_vals: The eigenvalues of the Wstar matrix.
+#'   - det.Q: The determinant of the precision matrix Q.
+#'   - Y: The response vector with missing values filled.
+#'   - missing_indexes: The indices of missing values in the response vector.
+#'   - Y.da: A matrix of imputed values for the missing responses.
 #' @export
 #' 
 init_chain <- function(n.iterations, n.locations.all, p, n.trees, n, X, Y, missing_indexes, SIAM, W, rho) {

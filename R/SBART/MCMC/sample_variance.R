@@ -10,6 +10,8 @@
 #' @param sigma2.a A numeric value representing the shape parameter of the inverse gamma prior on σ^2.
 #' @param sigma2.b A numeric value representing the scale parameter of the inverse gamma prior on σ^2.
 #' @param n A numeric value representing the number of observations.
+#' @param sigma2.samples A numeric vector of samples for σ^2.
+#' @param j The current iteration of the Markov chain.
 #'
 #' @return A numeric value representing a sample from the posterior distribution of σ^2.
 #' @export

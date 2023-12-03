@@ -1,3 +1,19 @@
+#' Generate Sample Data
+#'
+#' This function generates a sample dataset for spatial analysis. It creates a square lattice region, 
+#' defines spatial connections, generates covariates and response data, and creates a weight matrix.
+#'
+#' @return A list containing the following elements:
+#'   - Xpred: A matrix of predictors.
+#'   - Y: The response variable with some missing values.
+#'   - mis.ind: Indices of the missing values in Y.
+#'   - Ws: A list of weight matrices.
+#'   - wind_mat: A matrix defining spatial connections.
+#'
+#' @examples
+#' data = sample_data()
+#' @export
+#'
 sample_data <- function() {
   # Square lattice region
   x.easting <- 1:15

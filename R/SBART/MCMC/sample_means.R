@@ -1,17 +1,26 @@
-#' Sample means
+#' Sample Means for Leaf Nodes
 #'
-#' This function performs a Gibbs step to sample M_t.
-#' The formula used is: M_t ∼ [M_t | T_t, R_{i,(-t)},...,R_{n,(-t)}, σ^2]
+#' This function samples the means for the leaf nodes of a decision tree. 
+#' It uses the residuals and the current tree structure to sample a new mean for each leaf node.
 #'
-#' @param sigma2 A numeric value representing the variance of the residuals.
-#' @param sigma_mu A numeric value representing the variance of the prior on the leaf parameters.
-#' @param dt A list representing the current tree.
-#' @param obs A numeric vector of observations.
-#' @param residuals A numeric vector of residuals.
-#' @param xcut A numeric vector of cutpoints for the predictor variables.
-#' @param n.available A numeric value representing the number of available observations.
+#' @param sigma2.samples A vector of samples for the error variance.
+#' @param sigma_mu The variance of the leaf parameters (mu_ij).
+#' @param obs_list.ind A list of vectors, each containing the indices of observations for each tree.
+#' @param residuals A vector of residuals (R).
+#' @param xcut A partition of the predictor space.
+#' @param n.available The number of available observations.
+#' @param trees A matrix of tree values.
+#' @param dt_list A list of decision trees.
+#' @param t The index of the current tree.
+#' @param j The current iteration of the Markov chain.
 #'
-#' @return A list with two elements: 'T' representing the updated tree structure, and 'dt' representing the updated observations indexes.
+#' @return A list containing the following elements:
+#'   - trees: The updated matrix of tree values.
+#'   - dt_list: The updated list of decision trees.
+#'
+#' @examples
+#' # Assuming all the required parameters are defined...
+#' result = sample_means(sigma2.samples, sigma_mu, obs_list.ind, residuals, xcut, n.available, trees, dt_list, t, j)
 #' @export
 #'
 sample_means <- function(sigma2.samples, sigma_mu, obs_list.ind, residuals, xcut, n.available, trees, dt_list, t, j) {

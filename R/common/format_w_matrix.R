@@ -1,3 +1,24 @@
+#' Format Weight Matrix
+#'
+#' This function checks the validity of the input weight matrix W and formats it into a triplet form. 
+#' It also calculates the sum and the number of neighbours for each row of W, and the start and finish points for W updating.
+#'
+#' @param W A square numeric matrix representing the weight matrix. It should not contain any NA or negative values, and it should be symmetric.
+#'
+#' @return A list containing the following elements:
+#'   - W: The original weight matrix.
+#'   - W.triplet: The weight matrix in triplet form.
+#'   - n.triplet: The number of rows in W.triplet.
+#'   - W.triplet.sum: The sum of weights for each row of W.
+#'   - n.neighbours: The number of neighbours for each row of W.
+#'   - W.begfin: The start and finish points for W updating.
+#'   - n.rows: The number of rows in W.
+#'
+#' @examples
+#' W <- matrix(c(0, 1, 0, 1, 0, 1, 0, 1, 0), nrow = 3)
+#' result = format_w_matrix(W)
+#' @export
+#'
 format_w_matrix <- function(W) {
     # check matrix dimension
     if(!is.matrix(W)) stop("W is not a matrix.", call.=FALSE)

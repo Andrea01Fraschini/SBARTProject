@@ -1,3 +1,32 @@
+#' Grow Decision Tree at Root
+#'
+#' This function attempts to grow the decision tree at the root by proposing a new split rule. 
+#' The new tree structure is accepted or rejected based on a log-likelihood ratio test.
+#'
+#' @param sigma2 The error variance.
+#' @param sigma_mu The variance of the leaf parameters (mu_ij).
+#' @param dt A list representing the decision tree.
+#' @param residuals A vector of residuals (R).
+#' @param prop.prob A vector of proposal probabilities for covariates (from Dirichlet).
+#' @param obs A vector of indices of observations.
+#' @param x.list A list of all covariates.
+#' @param xcut A partition of the predictor space.
+#' @param n.available The number of available observations.
+#' @param prob.grow The probability of growing the tree.
+#' @param prob.change The probability of changing the tree.
+#' @param prob.prune The probability of pruning the tree.
+#' @param alpha The depth regularization parameter.
+#' @param beta The regularization parameter.
+#'
+#' @return A list containing the following elements:
+#'   - dt: The updated decision tree.
+#'   - obs: The updated vector of observation indices.
+#'
+#' @examples
+#' # Assuming all the required parameters are defined...
+#' result = GROW.root(sigma2, sigma_mu, dt, residuals, prop.prob, obs, x.list, xcut, n.available, prob.grow, prob.change, prob.prune, alpha, beta)
+#' @export
+#'
 GROW.root <- function(
     sigma2, # error variance 
     sigma_mu, # leaf parameters (mu_ij) variance
@@ -68,6 +97,32 @@ GROW.root <- function(
     return(list(dt = dt, obs = obs))
 }
 
+#' Grow Decision Tree
+#'
+#' This function attempts to grow the decision tree by proposing a new split rule for a randomly selected terminal node. 
+#' The new tree structure is accepted or rejected based on a log-likelihood ratio test.
+#'
+#' @param sigma2 The error variance.
+#' @param sigma_mu The variance of the leaf parameters (mu_ij).
+#' @param dt A list representing the decision tree.
+#' @param residuals A vector of residuals (R).
+#' @param prop.prob A vector of proposal probabilities for covariates (from Dirichlet).
+#' @param obs A vector of indices of observations.
+#' @param x.list A list of all covariates.
+#' @param xcut A partition of the predictor space.
+#' @param n.available The number of available observations.
+#' @param prob.grow The probability of growing the tree.
+#' @param prob.change The probability of changing the tree.
+#' @param prob.prune The probability of pruning the tree.
+#' @param alpha The depth regularization parameter.
+#' @param beta The regularization parameter.
+#'
+#' @return A list containing the following elements:
+#'   - dt: The updated decision tree.
+#'   - obs: The updated vector of observation indices.
+#'
+#' @export
+#' 
 GROW <- function(
     sigma2, # error variance 
     sigma_mu, # leaf parameters (mu_ij) variance

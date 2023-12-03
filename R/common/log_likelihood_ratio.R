@@ -1,3 +1,25 @@
+#' Compute Log-Likelihood Ratio
+#'
+#' This function computes the log-likelihood ratio for a given set of parameters and residuals. 
+#' It is used in the context of a spatial analysis model.
+#'
+#' @param sigma2 A numeric value representing the variance of the error term.
+#' @param sigma_mu A numeric value representing the variance of the spatial random effect.
+#' @param residuals A numeric vector representing the residuals of the model.
+#' @param obs.left A numeric vector representing the indices of the observations in the left partition.
+#' @param obs.right A numeric vector representing the indices of the observations in the right partition.
+#'
+#' @return A numeric value representing the log-likelihood ratio.
+#'
+#' @examples
+#' residuals <- rnorm(100)
+#' obs.left <- 1:50
+#' obs.right <- 51:100
+#' sigma2 <- 1
+#' sigma_mu <- 0.5
+#' log_lh_ratio = log_likelihood_ratio(sigma2, sigma_mu, residuals, obs.left, obs.right)
+#' @export
+#'
 log_likelihood_ratio <- function(sigma2, sigma_mu, residuals, obs.left, obs.right) {
     
     n.left <- length(obs.left)
