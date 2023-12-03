@@ -1,6 +1,6 @@
 rm(list = ls())
 Sys.setenv("PKG_CXXFLAGS"="-std=c++11")
-setwd("C:/Users/camil/OneDrive - Universidad del Norte/Universidad POLIMI/Bayesian stats/CODE Bart/SBARTProject/__LEGACY__/KIM")
+setwd("./__LEGACY__/KIM")
 
 #------ Load required libraries
 library(MASS)
