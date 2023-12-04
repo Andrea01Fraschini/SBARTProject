@@ -8,8 +8,7 @@ libraries <- c(
     "truncnorm", 
     "data.table", 
     "Rcpp", 
-    "reshape", 
-    "covr"
+    "reshape"
     )
 
 for(lib in libraries) {
