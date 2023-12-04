@@ -1,10 +1,20 @@
-library("lmf")
-library(MASS)
-library(mnormt)
-library(MCMCpack)
-library(rootSolve)
-library(R.matlab)
-library(truncnorm)
-library(data.table)
-library(Rcpp)
-library(reshape)
+libraries <- c(
+    "lmf", 
+    "MASS",
+    "mnormt", 
+    "MCMCpack", 
+    "rootSolve", 
+    "R.matlab", 
+    "truncnorm", 
+    "data.table", 
+    "Rcpp", 
+    "reshape", 
+    "covr"
+    )
+
+for(lib in libraries) {
+  if (!require(lib, character.only = TRUE)) {
+    install.packages(lib)
+    library(lib, character.only = TRUE)
+  }
+}
