@@ -1,5 +1,7 @@
 rm(list = ls())
-setwd(".") 
+
+# CHANGE THIS PATH TO YOUR LOCAL PATH
+setwd("C:/Users/camil/OneDrive - Universidad del Norte/Universidad POLIMI/Bayesian stats/CODE Bart/SBARTProject") 
 
 if(!require("devtools")) install.packages("devtools")
 if(!require("testthat")) install.packages("testthat")
