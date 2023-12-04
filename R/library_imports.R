@@ -1,19 +1,21 @@
-libraries <- c(
-    "lmf", 
-    "MASS",
-    "mnormt", 
-    "MCMCpack", 
-    "rootSolve", 
-    "R.matlab", 
-    "truncnorm", 
-    "data.table", 
-    "Rcpp", 
-    "reshape"
-    )
+install.packages("lmf", repos = "http://cran.us.r-project.org")
+install.packages("MASS", repos = "http://cran.us.r-project.org")
+install.packages("mnormt", repos = "http://cran.us.r-project.org")
+install.packages("MCMCpack", repos = "http://cran.us.r-project.org")
+install.packages("rootSolve", repos = "http://cran.us.r-project.org")
+install.packages("R.matlab", repos = "http://cran.us.r-project.org")
+install.packages("truncnorm", repos = "http://cran.us.r-project.org")
+install.packages("data.table", repos = "http://cran.us.r-project.org")
+install.packages("Rcpp", repos = "http://cran.us.r-project.org")
+install.packages("reshape", repos = "http://cran.us.r-project.org")
 
-for(lib in libraries) {
-  if (!require(lib, character.only = TRUE)) {
-    install.packages(lib)
-    library(lib, character.only = TRUE)
-  }
-}
+library(lmf)
+library(MASS)
+library(mnormt)
+library(MCMCpack)
+library(rootSolve)
+library(R.matlab)
+library(truncnorm)
+library(data.table)
+library(Rcpp)
+library(reshape)
