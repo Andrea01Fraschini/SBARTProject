@@ -363,6 +363,8 @@ for(j in 2:n.iter){
     # Sample variance parameter
     Sigma2[j] <- rinvgamma(1, nu/2+n.complete/2, scale = nu*lambda/2 + sum((Y[-mis.ind]-rowSums(Tree)-spatial[-mis.ind])^2)/2)
 
+    browser()
+
     # CODE FOR TESTS-------------
     output <- list(
         sigma2.samples = Sigma2
