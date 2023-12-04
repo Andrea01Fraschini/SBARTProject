@@ -1,5 +1,4 @@
 rm(list = ls())
-setwd("/") 
 
 if(!require("devtools")) install.packages("devtools")
 if(!require("testthat")) install.packages("testthat")
