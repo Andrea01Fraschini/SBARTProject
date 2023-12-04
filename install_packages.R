@@ -1,0 +1,12 @@
+
+  install.packages("lmf", repos = "http://cran.us.r-project.org", Dependencies = TRUE)
+  install.packages("MASS", repos = "http://cran.us.r-project.org", Dependencies = TRUE)
+  install.packages("mnormt", repos = "http://cran.us.r-project.org", Dependencies = TRUE)
+  install.packages("MCMCpack", repos = "http://cran.us.r-project.org", Dependencies = TRUE)
+  install.packages("rootSolve", repos = "http://cran.us.r-project.org", Dependencies = TRUE)
+  install.packages("R.matlab", repos = "http://cran.us.r-project.org", Dependencies = TRUE)
+  install.packages("truncnorm", repos = "http://cran.us.r-project.org", Dependencies = TRUE)
+  install.packages("data.table", repos = "http://cran.us.r-project.org", Dependencies = TRUE)
+  install.packages("Rcpp", repos = "http://cran.us.r-project.org", Dependencies = TRUE)
+  install.packages("reshape", repos = "http://cran.us.r-project.org", Dependencies = TRUE)
+  install.packages("invgamma", repos = "http://cran.us.r-project.org", Dependencies = TRUE)
