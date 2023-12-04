@@ -1,7 +1,6 @@
-rm(list = ls())
-setwd("C:/Users/camil/OneDrive - Universidad del Norte/Universidad POLIMI/Bayesian stats/CODE Bart/SBARTProject")
-library(testthat)
+source('../../env_setup_tests.R')
 source("R/library_imports.R")
+library(testthat)
 
 describe("Test init_model_parameters function",{
     source("data/sample_data.R")
