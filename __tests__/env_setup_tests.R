@@ -1,4 +1,10 @@
 rm(list = ls())
 
-# CHANGE THIS PATH TO YOUR LOCAL PATH
-setwd("C:/Users/camil/OneDrive - Universidad del Norte/Universidad POLIMI/Bayesian stats/CODE Bart/SBARTProject") 
+# Check if the code is running on GitHub Actions
+if (Sys.getenv("GITHUB_ACTIONS") == "true") {
+  # Set the working directory for GitHub Actions
+  setwd("/home/runner/work/SBARTProject/SBARTProject")
+} else {
+  # Set the working directory for your local machine
+  setwd("C:/Users/camil/OneDrive - Universidad del Norte/Universidad POLIMI/Bayesian stats/CODE Bart/SBARTProject") 
+}
