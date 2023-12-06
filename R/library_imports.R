@@ -1,5 +1,6 @@
 library(lmf)
 library(MASS)
+library(invgamma)
 library(mnormt)
 library(MCMCpack)
 library(rootSolve)

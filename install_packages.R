@@ -11,3 +11,4 @@
   install.packages("reshape", repos = "http://cran.us.r-project.org", Dependencies = TRUE)
   install.packages("RcppArmadillo", repos = "http://cran.us.r-project.org", Dependencies = TRUE)
   install.packages("Matrix", repos = "http://cran.us.r-project.org", Dependencies = TRUE)
+  install.packages("invgamma", repos = "http://cran.us.r-project.org", Dependencies = TRUE)
