@@ -19,7 +19,7 @@
 sample_variance <- function(Y, trees, spatial_theta, missing_indexes, sigma2.a, sigma2.b, n, sigma2.samples, j) {
   
   Rfinal <- Y[-missing_indexes] - rowSums(trees) - spatial_theta[-missing_indexes]
-  sigma2.samples[j] <- rinvgamma(1, sigma2.a + n / 2, scale = sigma2.b + sum((Rfinal) ^ 2) / 2)
+  sigma2.samples[j] <- MCMCpack::rinvgamma(1, sigma2.a + n / 2, scale = sigma2.b + sum((Rfinal) ^ 2) / 2)
 
   return(sigma2.samples)
 }
