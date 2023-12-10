@@ -4,8 +4,8 @@ library(testthat)
 
 describe("Test sample data function",{
     source("data/sample_data.R")
-    source("__tests__/data/kim_output/output_sample_data_1.R")
-    source("__tests__/data/kim_output/output_sample_data_2.R")
+    source("output/KIM/output_sample_data_1.R")
+    source("output/KIM/output_sample_data_2.R")
 
     set.seed(1)
 

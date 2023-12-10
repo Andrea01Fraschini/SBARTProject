@@ -5,7 +5,7 @@ library(testthat)
 describe("Test init_model_parameters function",{
     source("data/sample_data.R")
     source("R/SBART/init_model_parameters.R")
-    source("__tests__/R/SBART/kim_output/output_init_model_parameters.R")
+    source("output/KIM/output_init_model_parameters.R")
 
     set.seed(1)
     data <- sample_data()

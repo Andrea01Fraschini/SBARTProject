@@ -2,6 +2,25 @@ rm(list = ls())
 Sys.setenv("PKG_CXXFLAGS"="-std=c++11")
 setwd("C:/Users/camil/OneDrive - Universidad del Norte/Universidad POLIMI/Bayesian stats/CODE Bart/SBARTProject/__LEGACY__/KIM")
 
+### CODE FOR TESTS
+generate_output <- function(output, filename, quit = FALSE, write = TRUE){
+  if (write){
+    path <- paste0("../../output/KIM/", filename, ".R")
+    dput(output, file = path)
+
+    content <- readLines(path)
+
+    content <- c(paste(filename, "<-"), content)
+
+    writeLines(content, path)
+
+    if(quit){
+        quit(save="ask")
+    }
+  }
+}
+# END CODE FOR TESTS
+
 #------ Load required libraries
 library(MASS)
 library(mnormt)
@@ -81,10 +100,10 @@ Xpred1 <- do.call(cbind, cov)
 # Vector of X predictors
 Xpred <- cbind(x1,x2,x3,x4,x5, Xpred1)
 
-# CODE FOR TESTS-------------
+# CODE FOR TESTS
 output <- list(Y = Y, Xpred = Xpred, mis.ind = mis.ind, wind_mat = wind_mat)
-dput(output, file = "data/output_sample_data_1.R")
-# END CODE FOR TESTS---------
+generate_output(output, "output_sample_data_1")
+# END CODE FOR TESTS
 
 ####################
 # Set the BART model
@@ -115,7 +134,7 @@ n.complete <- length(which(!is.na(Y)))  # Num. of the locations with observation
 
 # Initial Setup (priors, initial values and hyper-parameters)
 p.grow <- 0.28            # Prob. of GROW
-p.prune <- 0.28           # Prob. of PRUNE
+p.prune <- 0.28           # Prob. of CODE
 p.change <- 0.44          # Prob. of CHANGE
 m <- 50                  # Num. of Trees: default setting 100
 
@@ -157,7 +176,7 @@ diag(W5) <- 0
 
 # CODE FOR TESTS-------------
 output <- list(Ws = list(W1, W2, W3, W4, W5))
-dput(output, file = "data/output_sample_data_2.R")
+generate_output(output, "output_sample_data_2")
 # END CODE FOR TESTS---------
 
 
@@ -212,8 +231,7 @@ output <- list(
     sigma_mu = sigma_mu,
     missing_indexes = mis.ind
 )
-dput(output, file = "data/output_init_model_parameters.R")
-# quit(save="ask")
+generate_output(output, "output_init_model_parameters")
 # END CODE FOR TESTS---------
 
 
@@ -288,8 +306,7 @@ output <- list(
     missing_indexes = mis.ind,
     Y.da = Y.da
 )
-dput(output, file = "data/output_init_chain.R")
-# quit(save="ask")
+generate_output(output, "output_init_chain")
 # END CODE FOR TESTS---------
 
 ### Run MCMC
@@ -304,8 +321,7 @@ for(j in 2:n.iter){
         output <- list(
             residuals = R
         )
-        dput(output, file = "data/output_update_residuals.R")
-        # quit(save="ask")
+        generate_output(output, "output_update_residuals", FALSE ,t == 1)
         # END CODE FOR TESTS---------
 
         set.seed(1)
@@ -340,8 +356,7 @@ for(j in 2:n.iter){
             dt_list = dt_list,
             obs_list.ind = Obs_list
         )
-        dput(output, file = "data/output_sample_trees.R")
-        # quit(save="ask")
+        generate_output(output, "output_sample_trees", FALSE, t==1)
         # END CODE FOR TESTS---------
         
         set.seed(1)
@@ -354,8 +369,7 @@ for(j in 2:n.iter){
             trees = Tree,
             dt_list = dt_list
         )
-        dput(output, file = "data/output_sample_means.R")
-        # quit(save="ask")
+        generate_output(output, "output_sample_means", FALSE, t==1)
         # END CODE FOR TESTS---------
     }
 
@@ -363,14 +377,11 @@ for(j in 2:n.iter){
     # Sample variance parameter
     Sigma2[j] <- rinvgamma(1, nu/2+n.complete/2, scale = nu*lambda/2 + sum((Y[-mis.ind]-rowSums(Tree)-spatial[-mis.ind])^2)/2)
 
-    browser()
-
     # CODE FOR TESTS-------------
     output <- list(
         sigma2.samples = Sigma2
     )
-    dput(output, file = "data/output_sample_variance.R")
-    quit(save="ask")
+    generate_output(output, "output_sample_variance", TRUE)
     # END CODE FOR TESTS---------
 
     #######################################

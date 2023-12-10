@@ -1,4 +1,5 @@
-source('../../../env_setup_tests.R')
+setwd("C:/Users/camil/OneDrive - Universidad del Norte/Universidad POLIMI/Bayesian stats/CODE Bart/SBARTProject") 
+# source('../../../env_setup_tests.R')
 source("R/library_imports.R")
 library(testthat)
 
@@ -9,7 +10,7 @@ describe("Test sample_means function",{
     source("R/SBART/MCMC/update_residuals.R")
     source("R/SBART/MCMC/sample_trees.R")
     source("R/SBART/MCMC/sample_means.R")
-    source("__tests__/R/SBART/MCMC/kim_output/output_sample_means.R")
+    source("output/KIM/output_sample_means.R")
 
     set.seed(1)
     data <- sample_data()

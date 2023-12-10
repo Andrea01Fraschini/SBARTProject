@@ -7,7 +7,7 @@ describe("Test sample data function",{
     source("R/SBART/init_model_parameters.R")
     source("R/SBART/MCMC/init_chain.R")
     source("R/SBART/MCMC/update_residuals.R")
-    source("__tests__/R/SBART/MCMC/kim_output/output_update_residuals.R")
+    source("output/KIM/output_update_residuals.R")
 
     set.seed(1)
     data <- sample_data()

@@ -6,7 +6,7 @@ describe("Test init_chain function",{
     source("data/sample_data.R")
     source("R/SBART/init_model_parameters.R")
     source("R/SBART/MCMC/init_chain.R")
-    source("__tests__/R/SBART/MCMC/kim_output/output_init_chain.R")
+    source("output/KIM/output_init_chain.R")
 
     set.seed(1)
     data <- sample_data()
@@ -134,8 +134,8 @@ describe("Test init_chain function",{
         expect_equal(W_post_full1, W_post_full2)
 
         expect_equal(vars$Wstar, output_init_chain$Wstar)
-        print(vars$Wstar.eigen)
-        print(output_init_chain$Wstar.eigen)
+        # print(vars$Wstar.eigen)
+        # print(output_init_chain$Wstar.eigen)
         expect_equal(vars$Wstar.eigen, output_init_chain$Wstar.eigen)
         expect_equal(vars$Wstar.eigen_vals, output_init_chain$Wstar.eigen_vals)
         expect_equal(vars$det.Q, output_init_chain$det.Q)

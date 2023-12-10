@@ -10,7 +10,7 @@ describe("Test sample_variance function",{
     source("R/SBART/MCMC/sample_trees.R")
     source("R/SBART/MCMC/sample_means.R")
     source("R/SBART/MCMC/sample_variance.R")
-    source("__tests__/R/SBART/MCMC/kim_output/output_sample_variance.R")
+    source("output/KIM/output_sample_variance.R")
 
     set.seed(1)
     data <- sample_data()

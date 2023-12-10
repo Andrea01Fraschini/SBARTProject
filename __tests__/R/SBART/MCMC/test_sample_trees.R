@@ -8,7 +8,7 @@ describe("Test sample_trees function",{
     source("R/SBART/MCMC/init_chain.R")
     source("R/SBART/MCMC/update_residuals.R")
     source("R/SBART/MCMC/sample_trees.R")
-    source("__tests__/R/SBART/MCMC/kim_output/output_sample_trees.R")
+    source("output/KIM/output_sample_trees.R")
 
     set.seed(1)
     data <- sample_data()
