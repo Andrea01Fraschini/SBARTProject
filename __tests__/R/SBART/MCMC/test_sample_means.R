@@ -1,5 +1,4 @@
-setwd("C:/Users/camil/OneDrive - Universidad del Norte/Universidad POLIMI/Bayesian stats/CODE Bart/SBARTProject") 
-# source('../../../env_setup_tests.R')
+source('../../../env_setup_tests.R')
 source("R/library_imports.R")
 library(testthat)
 
