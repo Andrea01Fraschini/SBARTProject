@@ -134,6 +134,8 @@ describe("Test init_chain function",{
         expect_equal(W_post_full1, W_post_full2)
 
         expect_equal(vars$Wstar, output_init_chain$Wstar)
+        print(vars$Wstar.eigen)
+        print(output_init_chain$Wstar.eigen)
         expect_equal(vars$Wstar.eigen, output_init_chain$Wstar.eigen)
         expect_equal(vars$Wstar.eigen_vals, output_init_chain$Wstar.eigen_vals)
         expect_equal(vars$det.Q, output_init_chain$det.Q)
