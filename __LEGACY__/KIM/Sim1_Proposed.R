@@ -1,6 +1,15 @@
 rm(list = ls())
 Sys.setenv("PKG_CXXFLAGS"="-std=c++11")
-setwd("C:/Users/camil/OneDrive - Universidad del Norte/Universidad POLIMI/Bayesian stats/CODE Bart/SBARTProject/__LEGACY__/KIM")
+
+# Check if the code is running on GitHub Actions
+if (Sys.getenv("GITHUB_ACTIONS") == "true") {
+  # Set the working directory for GitHub Actions
+  setwd("/home/runner/work/SBARTProject/SBARTProject/__LEGACY__/KIM")
+} else {
+  # Set the working directory for your local machine
+  setwd("C:/Users/camil/OneDrive - Universidad del Norte/Universidad POLIMI/Bayesian stats/CODE Bart/SBARTProject/__LEGACY__/KIM") 
+}
+
 
 ### CODE FOR TESTS
 generate_output <- function(output, filename, quit = FALSE, write = TRUE){
@@ -15,7 +24,7 @@ generate_output <- function(output, filename, quit = FALSE, write = TRUE){
     writeLines(content, path)
 
     if(quit){
-        quit(save="ask")
+        quit(save="no")
     }
   }
 }

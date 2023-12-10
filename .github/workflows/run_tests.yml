@@ -20,6 +20,10 @@ jobs:
       run: |
         Rscript install_packages.R
 
+    - name: Generate Kim data
+      run: |
+        Rscript __LEGACY__/KIM/Sim1_Proposed.R
+
     - name: Run tests
       run: |
         Rscript __tests__/run_workflow.R
