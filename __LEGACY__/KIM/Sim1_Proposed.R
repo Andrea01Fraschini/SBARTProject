@@ -24,7 +24,7 @@ generate_output <- function(output, filename, quit = FALSE, write = TRUE){
     writeLines(content, path)
 
     if(quit){
-        quit(save="no")
+        quit(save="ask")
     }
   }
 }
@@ -318,6 +318,11 @@ output <- list(
 generate_output(output, "output_init_chain")
 # END CODE FOR TESTS---------
 
+# CODE ADDED BY US NOT KIM ----
+RHO <- rep(0, n.iter) 
+TAU2 <- rep(0, n.iter)
+# END CODE ADDED BY US
+
 ### Run MCMC
 
 for(j in 2:n.iter){
@@ -390,7 +395,7 @@ for(j in 2:n.iter){
     output <- list(
         sigma2.samples = Sigma2
     )
-    generate_output(output, "output_sample_variance", TRUE)
+    generate_output(output, "output_sample_variance")
     # END CODE FOR TESTS---------
 
     #######################################
@@ -401,11 +406,35 @@ for(j in 2:n.iter){
     spatial <- gaussiancarupdate(Wtriplet=W.post.full$W.triplet, Wbegfin=W.post.full$W.begfin, W.post.full$W.triplet.sum, nsites=length(Y), phi=spatial, tau2=tau2, rho=rho, nu2=Sigma2[j], offset=offset)   
     spatial <- spatial - mean(spatial)
     
-    temp2 <- quadform(as.matrix(W.post.full$W.triplet), W.post.full$W.triplet.sum, W.post.full$n.triplet, length(Y), spatial, spatial, rho)
+    # CODE FOR TESTS-------------
+    output <- list(
+        spatial_theta = spatial
+    )
+    generate_output(output, "output_update_spatial_effect")
+    # END CODE FOR TESTS---------
+    
+    temp2 <- quadform(
+              as.matrix(W.post.full$W.triplet), 
+              W.post.full$W.triplet.sum, 
+              W.post.full$n.triplet, 
+              length(Y), 
+              spatial, 
+              spatial, 
+              rho
+            )
     tau2.posterior.scale <- temp2 + prior.tau2[2]
     tau2 <- 1 / rgamma(1, tau2.posterior.shape, scale=(1/tau2.posterior.scale))
     TAU2[j] <- tau2
+
+    # CODE FOR TESTS-------------
+    output <- list(
+        tau2.samples = TAU2,
+        temp = temp2
+    )
+    generate_output(output, "output_update_tau")
+    # END CODE FOR TESTS---------
     
+    set.seed(1)
     # update rho parameter
     proposal.rho <- rtruncnorm(n=1, a=0, b=1, mean=rho, sd=proposal.sd.rho)
     temp3 <- quadform(as.matrix(W.post.full$W.triplet), W.post.full$W.triplet.sum, W.post.full$n.triplet, length(Y), spatial, spatial, proposal.rho)
@@ -417,6 +446,8 @@ for(j in 2:n.iter){
     hastings <- log(dtruncnorm(x=rho, a=0, b=1, mean=proposal.rho, sd=proposal.sd.rho)) - log(dtruncnorm(x=proposal.rho, a=0, b=1, mean=rho, sd=proposal.sd.rho))
     prob <- exp(logprob.proposal - logprob.current + hastings)
     #### Accept or reject the proposal
+
+    
     if(prob > runif(1))
     {
       rho <- proposal.rho
@@ -424,6 +455,16 @@ for(j in 2:n.iter){
       temp2 <- temp3
     }
     RHO[j] <- rho
+
+    # CODE FOR TESTS-------------
+    output <- list(
+        rho.samples = RHO,
+        det.Q = det.Q,
+        temp = temp2
+    )
+    generate_output(output, "output_update_rho")
+    # END CODE FOR TESTS---------
+   
     proposal.a.weight <- sample(1:5, 1)
     
     W.wind.proposal <- wind_mat*(W1^(I(proposal.a.weight==1)))*(W2^(I(proposal.a.weight==2)))*(W3^(I(proposal.a.weight==3)))*(W4^(I(proposal.a.weight==4)))*(W5^(I(proposal.a.weight==5)))
@@ -454,6 +495,19 @@ for(j in 2:n.iter){
       Wstar.val <- Wstar.val.proposal
     }
     A.WEIGHT[j] <- a.weight
+
+    # CODE FOR TESTS-------------
+    output <- list(
+        W_sel.samples = A.WEIGHT,
+        det.Q = det.Q,
+        W.siam.full = W.wind.full,
+        W.post.full = W.post.full,
+        Wstar = Wstar,
+        Wstar.eigen = Wstar.eigen,
+        Wstar.eigen_vals = Wstar.val
+    )
+    generate_output(output, "output_update_f", TRUE)
+    # END CODE FOR TESTS---------
     
     DT <- unlist(lapply(dt_list, function(x) x$Split))
     add <- as.numeric(table(factor(DT[!is.na(DT)], levels=1:P)))
@@ -476,12 +530,12 @@ for(j in 2:n.iter){
  
     Tree11 <- matrix(unlist(sapply(1:m, function(x) Mean.Parameter_pred(dt_list[[x]], 1))), ncol=m, nrow=n)
 
-      # Data augmentation
-      count <- count + 1
-      Y.da[,count] <- rnorm(length(mis.ind), c(rowSums(Tree11)+spatial)[mis.ind], sqrt(Sigma2[j]))
-      Y[mis.ind] <- Y.da[,count]
-      ind.temp<-ifelse(add > 0, 1, 0)
-      ind <- rbind(ind, ind.temp)
+    # Data augmentation
+    count <- count + 1
+    Y.da[,count] <- rnorm(length(mis.ind), c(rowSums(Tree11)+spatial)[mis.ind], sqrt(Sigma2[j]))
+    Y[mis.ind] <- Y.da[,count]
+    ind.temp<-ifelse(add > 0, 1, 0)
+    ind <- rbind(ind, ind.temp)
 }
 
 save(Y.true, Y, shift,Y.da, mis.ind, A.WEIGHT, ind, Sigma2, file=paste0("Sim1_",process,".RData"))

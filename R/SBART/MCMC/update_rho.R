@@ -15,13 +15,13 @@
 #' @return A list with three elements: 'rho' representing the updated spatial correlation parameter, 'det_Q' representing the updated determinant of the precision matrix, and 'temp' representing the updated value used in the calculation of the log-probability.
 #' @export
 #'
-update_rho <- function(rho, proposal_sd_rho, W_post_full, n_locations_all, spatial_theta, tau2, Wstar_eigen_vals, det_Q, temp) {
+update_rho <- function(rho, proposal_sd_rho, W_post_full, n_locations_all, spatial_theta, tau2, Wstar_eigen_vals, det_Q, temp, rho_samples, j) {
 
   proposal_rho <- rtruncnorm(n = 1, a = 0, b = 1, mean = rho, sd = proposal_sd_rho)
   temp2 <- quadform(
-            as.matrix(W_post_full$W_triplet),
-            W_post_full$W_triplet_sum,
-            W_post_full$n_triplet,
+            as.matrix(W_post_full$W.triplet),
+            W_post_full$W.triplet.sum,
+            W_post_full$n.triplet,
             n_locations_all,
             spatial_theta,
             spatial_theta,
@@ -40,6 +40,8 @@ update_rho <- function(rho, proposal_sd_rho, W_post_full, n_locations_all, spati
     det_Q <- det_Q_proposal
     temp <- temp2
   }
+
+  rho_samples[j] <- rho
   
-  return(list(rho = rho, det_Q = det_Q, temp = temp))
+  return(list(rho.samples = rho_samples, det.Q = det_Q, temp = temp))
 }

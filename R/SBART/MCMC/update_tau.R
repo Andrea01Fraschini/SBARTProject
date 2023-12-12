@@ -1,4 +1,5 @@
-#' Update tau
+#'  TODO: Update documentation
+#'  Update tau
 #'
 #' This function performs a Gibbs step to update the variance of the spatial effect τ^2.
 #' The formula used is: τ^2 ∼ IG( α_τ + n/2, β_τ + 1/2((∑^n_{i=1} θ^2_i ( ρ ∑_{k=1}^n w_ik + 1 - ρ)) ρ ( (∑^n_{i=1} (∑^n_{k=1} θ_i θ_k w_ik )))))
@@ -15,19 +16,21 @@
 #' @return A numeric value representing a sample from the posterior distribution of τ^2.
 #' @export
 #'
-update_tau2 <- function(W_triplet, W_triplet_sum, n_triplet, n_locations_all, spatial_theta, rho, tau2_b, tau2_posterior_shape) {
+update_tau2 <- function(W.post.full, n_locations_all, spatial_theta, rho, tau2_b, tau2_posterior_shape, tau2.samples, j) {
 
   temp <- quadform(
-            as.matrix(W_triplet),
-            W_triplet_sum,
-            n_triplet,
+            as.matrix(W.post.full$W.triplet),
+            W.post.full$W.triplet.sum,
+            W.post.full$n.triplet,
             n_locations_all,
             spatial_theta,
             spatial_theta,
             rho
         )
-  tau2_posterior_scale <- tau2_b + temp
+  tau2_posterior_scale <- temp + tau2_b 
   tau2 <- 1 / rgamma(1, tau2_posterior_shape, scale = (1 / tau2_posterior_scale))
   
-  return(tau2)
+  tau2.samples[j] <- tau2
+
+  return(list(tau2.samples = tau2.samples, temp = temp))
 }
