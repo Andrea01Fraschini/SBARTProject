@@ -1,37 +1,28 @@
-source('../../../env_setup_tests.R')
+# source('../../../env_setup_tests.R')
+setwd("C:/Users/camil/OneDrive - Universidad del Norte/Universidad POLIMI/Bayesian stats/CODE Bart/SBARTProject") 
 source("R/library_imports.R")
 library(testthat)
 
 describe("Test init_chain function",{
-    source("data/sample_data.R")
-    source("R/SBART/init_model_parameters.R")
     source("R/SBART/MCMC/init_chain.R")
+    source("output/KIM/output_sample_data_1.R")
+    source("output/KIM/output_sample_data_2.R")
+    source("output/KIM/output_init_model_parameters.R")
     source("output/KIM/output_init_chain.R")
 
     set.seed(1)
-    data <- sample_data()
-    
-    set.seed(1)
-    params <- init_model_parameters(
-        X = data$Xpred,
-        Y = data$Y,
-        SIAM = data$wind_mat,
-        n.trees = 50L
-    )
-
-    set.seed(1)
     vars <- init_chain(
-        n.iterations = 10000L,
-        n.locations.all = params$n.locations.all,
-        p = params$p,
-        n.trees = 50L,
-        n = params$n,
-        X = data$Xpred,
-        Y = params$Y,
-        missing_indexes = data$mis.ind,
-        SIAM = data$wind_mat,
-        W = data$Ws,
-        rho = params$rho
+        n_iterations = 10000L,
+        n_locations_all = output_init_model_parameters$n_locations_all,
+        p = output_init_model_parameters$p,
+        n_trees = 50L,
+        n = output_init_model_parameters$n,
+        x = output_sample_data_1$x_pred,
+        y = output_init_model_parameters$y,
+        missing_indexes = output_sample_data_1$missing_indexes,
+        siam = output_sample_data_1$wind_matrix,
+        w = output_sample_data_2$ws,
+        rho = output_init_model_parameters$rho
     )
 
     it("should return a list",{
@@ -44,32 +35,32 @@ describe("Test init_chain function",{
 
     it("should return a list with the correct names",{
         expect_equal(names(vars), c(
-            "sigma2.samples",
-            "rho.samples",
-            "tau2.samples",
+            "sigma2_samples",
+            "rho_samples",
+            "tau2_samples",
             "spatial_theta",
             "cov_sel",
-            "obs_list.ind",
+            "obs_list_ind",
             "dt_list",
             "trees",
-            "trees.pred",
-            "Xlist",
-            "Xmult",
-            "X.unique",
-            "W_sel",
-            "W_sel.samples",
-            "W.count",
-            "W.siam",
-            "W.siam.full",
-            "W.post",
-            "W.post.full",
-            "Wstar",
-            "Wstar.eigen",
-            "Wstar.eigen_vals",
-            "det.Q",
-            "Y",
+            "trees_pred",
+            "x_list",
+            "x_mult",
+            "x_unique",
+            "w_sel",
+            "w_sel_samples",
+            "w_count",
+            "w_siam",
+            "w_siam_full",
+            "w_post",
+            "w_post_full",
+            "w_star",
+            "w_star_eigen",
+            "w_star_eigen_vals",
+            "det_q",
+            "y",
             "missing_indexes",
-            "Y.da"
+            "y_da"
         ))
     })
 
@@ -78,12 +69,12 @@ describe("Test init_chain function",{
     })
 
     it("should return kim's results",{
-        expect_equal(vars$sigma2.samples, output_init_chain$sigma2.samples)
-        expect_equal(vars$rho.samples, output_init_chain$rho.samples)
-        expect_equal(vars$tau2.samples, output_init_chain$tau2.samples)
+        expect_equal(vars$sigma2_samples, output_init_chain$sigma2_samples)
+        expect_equal(vars$rho_samples, output_init_chain$rho_samples)
+        expect_equal(vars$tau2_samples, output_init_chain$tau2_samples)
         expect_equal(vars$spatial_theta, output_init_chain$spatial_theta)
         expect_equal(vars$cov_sel, output_init_chain$cov_sel)
-        expect_equal(vars$obs_list.ind, output_init_chain$obs_list.ind)
+        expect_equal(vars$obs_list_ind, output_init_chain$obs_list_ind)
 
         for(i in seq_along(vars$dt_list)) {
             dt_list1 <- vars$dt_list[[i]]
@@ -105,43 +96,41 @@ describe("Test init_chain function",{
         }
         
         expect_equal(vars$trees, output_init_chain$trees)
-        expect_equal(vars$trees.pred, output_init_chain$trees.pred)
-        expect_equal(vars$Xlist, output_init_chain$Xlist)
-        expect_equal(vars$Xmult, output_init_chain$Xmult)
-        expect_equal(vars$X.unique, output_init_chain$X.unique)
-        expect_equal(vars$W_sel, output_init_chain$W_sel)
-        expect_equal(vars$W_sel.samples, output_init_chain$W_sel.samples)
-        expect_equal(vars$W.count, output_init_chain$W.count)
-        expect_equal(vars$W.siam, output_init_chain$W.siam)
-        expect_equal(vars$W.siam.full, output_init_chain$W.siam.full)
+        expect_equal(vars$trees_pred, output_init_chain$trees_pred)
+        expect_equal(vars$x_list, output_init_chain$x_list)
+        expect_equal(vars$x_mult, output_init_chain$x_mult)
+        expect_equal(vars$x_unique, output_init_chain$x_unique)
+        expect_equal(vars$w_sel, output_init_chain$w_sel)
+        expect_equal(vars$w_sel_samples, output_init_chain$w_sel_samples)
+        expect_equal(vars$w_count, output_init_chain$w_count)
+        expect_equal(vars$w_siam, output_init_chain$w_siam)
+        expect_equal(vars$w_siam_full, output_init_chain$w_siam_full)
 
-        expect_equal(vars$W.post$n.rows, output_init_chain$W.post$n)
-        W_post1 <- vars$W.post
-        W_post2 <- output_init_chain$W.post
+        expect_equal(vars$w_post$n.rows, output_init_chain$w_post$n)
+        W_post1 <- vars$w_post
+        W_post2 <- output_init_chain$w_post
         W_post1$n <- NULL
         W_post2$n <- NULL
         W_post1$n.rows <- NULL
         W_post2$n.rows <- NULL
         expect_equal(W_post1, W_post2)
 
-        expect_equal(vars$W.post.full$n.rows, output_init_chain$W.post.full$n)
-        W_post_full1 <- vars$W.post.full
-        W_post_full2 <- output_init_chain$W.post.full
+        expect_equal(vars$w_post_full$n.rows, output_init_chain$w_post_full$n)
+        W_post_full1 <- vars$w_post_full
+        W_post_full2 <- output_init_chain$w_post_full
         W_post_full1$n <- NULL
         W_post_full2$n <- NULL
         W_post_full1$n.rows <- NULL
         W_post_full2$n.rows <- NULL
         expect_equal(W_post_full1, W_post_full2)
 
-        expect_equal(vars$Wstar, output_init_chain$Wstar)
-        # print(vars$Wstar.eigen)
-        # print(output_init_chain$Wstar.eigen)
-        expect_equal(vars$Wstar.eigen, output_init_chain$Wstar.eigen)
-        expect_equal(vars$Wstar.eigen_vals, output_init_chain$Wstar.eigen_vals)
-        expect_equal(vars$det.Q, output_init_chain$det.Q)
-        expect_equal(vars$Y, output_init_chain$Y)
+        expect_equal(vars$w_star, output_init_chain$w_star)
+        expect_equal(vars$w_star_eigen, output_init_chain$w_star_eigen)
+        expect_equal(vars$w_star_eigen_vals, output_init_chain$w_star_eigen_vals)
+        expect_equal(vars$det_q, output_init_chain$det_q)
+        expect_equal(vars$y, output_init_chain$y)
         expect_equal(vars$missing_indexes, output_init_chain$missing_indexes)
-        expect_equal(vars$Y.da, output_init_chain$Y.da)
+        expect_equal(vars$y_da, output_init_chain$y_da)
     })
 
 })

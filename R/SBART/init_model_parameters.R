@@ -2,26 +2,26 @@
 #'
 #' This function initializes the parameters for a model.
 #'
-#' @param X A matrix of covariates.
-#' @param Y A vector of responses (Including missing ones).
-#' @param SIAM A matrix representing spatial information.
-#' @param n.trees The number of trees in the model.
+#' @param x A matrix of covariates.
+#' @param y A vector of responses (Including missing ones).
+#' @param siam A matrix representing spatial information.
+#' @param n_trees The number of trees in the model.
 #'
 #' @return A list of initialized parameters.
 #'
 #' @examples
 #' # To use this function:
 #' # source("init_model_parameters.R")
-#' # model_params <- init_model_parameters(X, y.train, SIAM, n.trees)
+#' # model_params <- init_model_parameters(x, y, siam, n_trees)
 #'
 #' @export
 #' 
-init_model_parameters <- function(X, Y, SIAM, n.trees) {
+init_model_parameters <- function(x, y, siam, n_trees) {
 
-  p <- dim(X)[2] # dimension of covariates
-  n <- length(which(!is.na(Y))) # num. of the locations with observation
-  n.locations.all <- length(Y) # num. of the locations
-  missing_indexes <- which(is.na(Y)) # indexes of missing observations
+  p <- dim(x)[2] # dimension of covariates
+  n <- length(which(!is.na(y))) # num. of the locations with observation
+  n_locations_all <- length(y) # num. of the locations
+  missing_indexes <- which(is.na(y)) # indexes of missing observations
 
   # Perturbation probabilities 
   #
@@ -29,9 +29,9 @@ init_model_parameters <- function(X, Y, SIAM, n.trees) {
   # ρ_prune = Probability to induce a prune perturbation in tree structure.
   # ρ_change = Probability to induce a change perturbation in tree structure.
   # -------------------------- 
-  prob.grow <- 0.28
-  prob.prune <- 0.28
-  prob.change <- 0.44
+  prob_grow <- 0.28
+  prob_prune <- 0.28
+  prob_change <- 0.44
 
   # Depth regulating prior hyperparameters 
   #
@@ -45,45 +45,45 @@ init_model_parameters <- function(X, Y, SIAM, n.trees) {
   #
   # (s_1, ... ,s_P) ∼ Dirichlet( α/P, ... ,α/P ) 
   # --------------------------
-  dirichlet.alpha <- 1
-  posterior.dirichlet.alpha <- rep(1, p)
-  cov.sel_prob <- rdirichlet(1, rep(dirichlet.alpha, p))
+  dirichlet_alpha <- 1
+  posterior_dirichlet_alpha <- rep(1, p)
+  cov_sel_prob <- rdirichlet(1, rep(dirichlet_alpha, p))
 
   # Hyperparameters for spatial random effect 
   #
   # θ_i ∣ θ_(-i), ρ, τ^2 ∼  N(ρ (∑^n_(k=1) w_ikθ_k) / ρ (∑^n_{k=1} w_{ik})+1-ρ, τ^2 / ρ (∑^n_{k=1} w_{ik}) +1-ρ )
   # τ^2 ∼ IG(α_τ, β_τ)
   # --------------------------
-  tau2.a <- 1 # α_τ
-  tau2.b <- 0.01 # β_τ
-  tau2.posterior.shape <- tau2.a + n.locations.all / 2
+  tau2_alpha <- 1 # α_τ
+  tau2_beta <- 0.01 # β_τ
+  tau2_posterior_shape <- tau2_alpha + n_locations_all / 2
   tau2 <- 0.1 # initial value for τ^2
-  proposal.sd.rho <- 0.2
+  proposal_sd_rho <- 0.2
   rho <- 0.5 # initial value for ρ
   a0 <- 0.5
   b0 <- 1
 
-  # Shift the mean of Y 
+  # Shift the mean of y 
   #
   # y_i = y_i - μ
   # explanation: Center the response variable to have mean zero.
   # --------------------------
-  shift.amount <- mean(Y, na.rm = TRUE)
-  Y <- Y - shift.amount
-  residuals <- Y # initial value for residuals
+  shift_amount <- mean(y, na.rm = TRUE)
+  y <- y - shift_amount
+  residuals <- y # initial value for residuals
 
   # Sigma prior hyperparameters 
   #
   # σ^2 ∼ IG(ν/2, νλ/2) = IG(a_σ , b_σ)
   # '''(Chipman, 2010) We then pick a value of ν between 3 and 10 to get an appropriate shape, and a value of λ so that the qth quantile of the prior on σ is located at ˆσ, that is, P(σ < σˆ) = q. We consider values of q such as 0.75, 0.90 or 0.99 to center the distribution below ˆσ.'''
   # --------------------------
-  sigma2 <- var(Y, na.rm=TRUE) # initial value for sigma2
+  sigma2 <- var(y, na.rm=TRUE) # initial value for sigma2
   nu <- 3
   q <- 0.90
-  sigma.quantile <- function(lambda) invgamma::qinvgamma(q, nu / 2, rate = lambda * nu / 2, lower.tail = TRUE, log.p = FALSE) - sqrt(sigma2)
-  lambda <- uniroot.all(sigma.quantile, c(0.1 ^ 5, 10))
-  sigma2.a <- nu / 2
-  sigma2.b <- nu * lambda / 2
+  sigma_quantile <- function(lambda) invgamma::qinvgamma(q, nu / 2, rate = lambda * nu / 2, lower.tail = TRUE, log.p = FALSE) - sqrt(sigma2)
+  lambda <- uniroot.all(sigma_quantile, c(0.1 ^ 5, 10))
+  sigma2_a <- nu / 2
+  sigma2_b <- nu * lambda / 2
 
   # Mean prior hyperparameters
   #
@@ -92,38 +92,38 @@ init_model_parameters <- function(X, Y, SIAM, n.trees) {
   # --------------------------
   k <- 2 # mean shrinkage
   sigma_mu <- max(
-        (min(Y, na.rm=TRUE) / (-k * sqrt(n.trees))) ^ 2,
-        (max(Y, na.rm=TRUE) / (+k * sqrt(n.trees))) ^ 2
+        (min(y, na.rm=TRUE) / (-k * sqrt(n_trees))) ^ 2,
+        (max(y, na.rm=TRUE) / (+k * sqrt(n_trees))) ^ 2
     )
 
   return(
         list(
             p = p,
             n = n,
-            n.locations.all = n.locations.all,
-            prob.grow = prob.grow,
-            prob.prune = prob.prune,
-            prob.change = prob.change,
+            n_locations_all = n_locations_all,
+            prob_grow = prob_grow,
+            prob_prune = prob_prune,
+            prob_change = prob_change,
             alpha = alpha,
             beta = beta,
-            dirichlet.alpha = dirichlet.alpha,
-            posterior.dirichlet.alpha = posterior.dirichlet.alpha,
-            cov.sel_prob = cov.sel_prob,
-            tau2.a = tau2.a,
-            tau2.b = tau2.b,
-            tau2.posterior.shape = tau2.posterior.shape,
+            dirichlet_alpha = dirichlet_alpha,
+            posterior_dirichlet_alpha = posterior_dirichlet_alpha,
+            cov_sel_prob = cov_sel_prob,
+            tau2_alpha = tau2_alpha,
+            tau2_beta = tau2_beta,
+            tau2_posterior_shape = tau2_posterior_shape,
             tau2 = tau2,
-            proposal.sd.rho = proposal.sd.rho,
+            proposal_sd_rho = proposal_sd_rho,
             rho = rho,
             a0 = a0,
             b0 = b0,
-            Y = Y,
+            y = y,
             residuals = residuals,
             sigma2 = sigma2,
             nu = nu,
             lambda = lambda,
-            sigma2.a = sigma2.a,
-            sigma2.b = sigma2.b,
+            sigma2_a = sigma2_a,
+            sigma2_b = sigma2_b,
             sigma_mu = sigma_mu,
             missing_indexes = missing_indexes
         )

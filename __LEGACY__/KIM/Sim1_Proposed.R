@@ -110,7 +110,7 @@ Xpred1 <- do.call(cbind, cov)
 Xpred <- cbind(x1,x2,x3,x4,x5, Xpred1)
 
 # CODE FOR TESTS
-output <- list(Y = Y, Xpred = Xpred, mis.ind = mis.ind, wind_mat = wind_mat)
+output <- list(y = Y, x_predictors = Xpred, missing_indexes = mis.ind, wind_matrix = wind_mat)
 generate_output(output, "output_sample_data_1")
 # END CODE FOR TESTS
 
@@ -184,7 +184,7 @@ diag(W4) <- 0
 diag(W5) <- 0
 
 # CODE FOR TESTS-------------
-output <- list(Ws = list(W1, W2, W3, W4, W5))
+output <- list(ws = list(W1, W2, W3, W4, W5))
 generate_output(output, "output_sample_data_2")
 # END CODE FOR TESTS---------
 
@@ -213,30 +213,30 @@ R <- Y  # Initial values of R
 output <- list(
     p = P,
     n = length(Y[-mis.ind]),
-    n.locations.all = length(Y),
-    prob.grow = p.grow,
-    prob.prune = p.prune,
-    prob.change = p.change,
+    n_locations_all = length(Y),
+    prob_grow = p.grow,
+    prob_prune = p.prune,
+    prob_change = p.change,
     alpha = alpha,
     beta = beta,
-    dirichlet.alpha = dir.alpha,
-    posterior.dirichlet.alpha = post.dir.alpha,
-    cov.sel_prob = prop.prob,
-    tau2.a = prior.tau2[1],
-    tau2.b = prior.tau2[2],
-    tau2.posterior.shape = tau2.posterior.shape,
+    dirichlet_alpha = dir.alpha,
+    posterior_dirichlet_alpha = post.dir.alpha,
+    cov_sel_prob = prop.prob,
+    tau2_alpha = prior.tau2[1],
+    tau2_beta = prior.tau2[2],
+    tau2_posterior_shape = tau2.posterior.shape,
     tau2 = tau2,
-    proposal.sd.rho = proposal.sd.rho,
+    proposal_sd_rho = proposal.sd.rho,
     rho = rho,
     a0 = 0.5,
     b0 = 1,
-    Y = Y,
+    y = Y,
     residuals = R,
     sigma2 = sigma2,
     nu = nu,
     lambda = lambda,
-    sigma2.a = nu/2,
-    sigma2.b = nu*lambda/2,
+    sigma2_alpha = nu/2,
+    sigma2_beta = nu*lambda/2,
     sigma_mu = sigma_mu,
     missing_indexes = mis.ind
 )
@@ -288,32 +288,32 @@ Xcut <- lapply(1:dim(Xpred)[2], function(t) sort(unique(Xpred[-mis.ind,t]))) # u
 
 # CODE FOR TESTS-------------
 output <- list(
-    sigma2.samples = Sigma2,
-    rho.samples = rep(0, n.iter),
-    tau2.samples = rep(0, n.iter),
+    sigma2_samples = Sigma2,
+    rho_samples = rep(0, n.iter),
+    tau2_samples = rep(0, n.iter),
     spatial_theta = spatial,
     cov_sel = ind,
-    obs_list.ind = Obs_list,
+    obs_list_ind = Obs_list,
     dt_list = dt_list,
     trees = Tree,
-    trees.pred = Tree11,
-    Xlist = Xpred.list,
-    Xmult = xpred.mult,
-    X.unique = Xcut,
-    W_sel = 1,
-    W_sel.samples = NULL,
-    W.count = 5,
-    W.siam = W.wind,
-    W.siam.full = W.wind.full,
-    W.post = W.post,
-    W.post.full = W.post.full,
-    Wstar = Wstar,
-    Wstar.eigen = Wstar.eigen,
-    Wstar.eigen_vals = Wstar.val,
-    det.Q = det.Q,
-    Y = Y,
+    trees_pred = Tree11,
+    x_list = Xpred.list,
+    x_mult = xpred.mult,
+    x_unique = Xcut,
+    w_sel = 1,
+    w_sel_samples = NULL,
+    w_count = 5,
+    w_siam = W.wind,
+    w_siam_full = W.wind.full,
+    w_post = W.post,
+    w_post_full = W.post.full,
+    w_star = Wstar,
+    w_star_eigen = Wstar.eigen,
+    w_star_eigen_vals = Wstar.val,
+    det_q = det.Q,
+    y = Y,
     missing_indexes = mis.ind,
-    Y.da = Y.da
+    y_da = Y.da
 )
 generate_output(output, "output_init_chain")
 # END CODE FOR TESTS---------

@@ -8,7 +8,6 @@ describe("Test sample data function",{
     source("output/KIM/output_sample_data_2.R")
 
     set.seed(1)
-
     results <- sample_data()
 
     it("should return a list",{
@@ -20,30 +19,22 @@ describe("Test sample data function",{
     })
 
     it("should return a list with the correct names",{
-        expect_equal(names(results), c("Xpred", "Y", "mis.ind", "Ws", "wind_mat"))
-    })
-
-    it("should return a list with the correct dimensions",{
-        expect_equal(dim(results$Xpred), c(225, 50))
-        expect_equal(length(results$Y), 225)
-        expect_equal(length(results$Ws), 5)
-        expect_equal(dim(results$wind_mat), c(225, 225))
-        expect_equal(length(results$mis.ind), 195)
+        expect_equal(names(results), c("y", "x_predictors", "missing_indexes", "ws", "wind_matrix"))
     })
 
     it("Should return a list with the correct class",{
-        expect_is(results$Xpred, "matrix")
-        expect_is(results$Y, "numeric")
-        expect_is(results$Ws, "list")
-        expect_is(results$wind_mat, "matrix")
-        expect_is(results$mis.ind, "integer")
+        expect_is(results$x_predictors, "matrix")
+        expect_is(results$y, "numeric")
+        expect_is(results$ws, "list")
+        expect_is(results$wind_matrix, "matrix")
+        expect_is(results$missing_indexes, "integer")
     })
 
     it("Should return Kim's results",{
-        expect_equal(results$Xpred, output_sample_data_1$Xpred)
-        expect_equal(results$Y, output_sample_data_1$Y)
-        expect_equal(results$Ws, output_sample_data_2$Ws)
-        expect_equal(results$wind_mat, output_sample_data_1$wind_mat)
-        expect_equal(results$mis.ind, output_sample_data_1$mis.ind)
+        expect_equal(results$x_predictors, output_sample_data_1$x_predictors)
+        expect_equal(results$y, output_sample_data_1$y)
+        expect_equal(results$ws, output_sample_data_2$ws)
+        expect_equal(results$wind_matrix, output_sample_data_1$wind_matrix)
+        expect_equal(results$missing_indexes, output_sample_data_1$missing_indexes)
     })
 })
