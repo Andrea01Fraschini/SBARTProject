@@ -16,7 +16,8 @@ describe("Test sample_variance function",{
     source("R/SBART/MCMC/update_tau.R")
     source("R/SBART/MCMC/update_rho.R")
     source("R/SBART/MCMC/update_f.R")
-    source("output/KIM/output_update_f.R")
+    source("R/SBART/MCMC/update_dirichlet_alpha.R")
+    source("output/KIM/output_update_dirichlet_alpha.R")
 
     set.seed(1)
     data <- sample_data() # Xpred, Y, mis.ind, Ws, wind_mat
@@ -170,38 +171,21 @@ describe("Test sample_variance function",{
         W_sel.samples = vars$W_sel.samples,
         j = 2
     ) # W_sel.samples, det.Q, W.siam.full, W.post.full, Wstar, Wstar.eigen, Wstar.eigen_vals
-    
-    it("Should return a list with the correct length",{
-        expect_equal(length(f_update_results), 7)
+
+    cov.sel_prob <- update_dirichlet_alpha(
+        dt_list = dt_list,
+        p = params$p,
+        j = 2,
+        warmup = 1000L,
+        dirichlet_alpha = params$dirichlet.alpha,
+        a0 = params$a0,
+        b0 = params$b0,
+        cov_sel_prob = params$cov.sel_prob
+    ) # cov.sel_prob
+
+    it("should get kim's result",{
+        expect_equal(cov.sel_prob, output_update_dirichlet_alpha$cov.sel_prob)
     })
 
-    it("Should return a list with the correct names",{
-        expect_equal(names(f_update_results), c("W_sel.samples", "det.Q", "W.siam.full", "W.post.full", "Wstar", "Wstar.eigen", "Wstar.eigen_vals"))
-    })
-
-    it("Should return a list with the correct classes",{
-        expect_is(f_update_results$W_sel.samples, "integer")
-        expect_is(f_update_results$det.Q, "numeric")
-        expect_is(f_update_results$W.siam.full, "matrix")
-        expect_is(f_update_results$W.post.full, "list")
-        expect_is(f_update_results$Wstar, "matrix")
-        expect_is(f_update_results$Wstar.eigen, "eigen")
-        expect_is(f_update_results$Wstar.eigen_vals, "numeric")
-    })
-
-    it("Should return kim's output",{
-        expect_equal(f_update_results$W_sel.samples, output_update_f$W_sel.samples)
-        expect_equal(f_update_results$det.Q, output_update_f$det.Q)
-        expect_equal(f_update_results$W.siam.full, output_update_f$W.siam.full)
-
-        W.post.full2 <- output_update_f$W.post.full
-        W.post.full2$n.rows <- output_update_f$W.post.full$n
-        W.post.full2$n <- NULL
-
-        expect_equal(f_update_results$W.post.full, W.post.full2)
-        expect_equal(f_update_results$Wstar, output_update_f$Wstar)
-        expect_equal(f_update_results$Wstar.eigen, output_update_f$Wstar.eigen)
-        expect_equal(f_update_results$Wstar.eigen_vals, output_update_f$Wstar.eigen_vals)
-    })
 
 })

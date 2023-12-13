@@ -11,9 +11,9 @@ update_f <- function(W, W_count, SIAM, n_locations_all, spatial_theta, rho, tau2
   W_post_proposal <- format_w_matrix(W_siam_proposal)
 
   temp3 <- quadform(
-          as.matrix(W_post_proposal$W_triplet),
-          W_post_proposal$W_triplet.sum,
-          W_post_proposal$n_triplet,
+          as.matrix(W_post_proposal$W.triplet),
+          W_post_proposal$W.triplet.sum,
+          W_post_proposal$n.triplet,
           n_locations_all,
           spatial_theta,
           spatial_theta,

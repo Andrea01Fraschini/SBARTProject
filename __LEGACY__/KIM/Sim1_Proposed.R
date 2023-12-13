@@ -24,7 +24,7 @@ generate_output <- function(output, filename, quit = FALSE, write = TRUE){
     writeLines(content, path)
 
     if(quit){
-        quit(save="ask")
+        quit(save="no")
     }
   }
 }
@@ -506,7 +506,7 @@ for(j in 2:n.iter){
         Wstar.eigen = Wstar.eigen,
         Wstar.eigen_vals = Wstar.val
     )
-    generate_output(output, "output_update_f", TRUE)
+    generate_output(output, "output_update_f")
     # END CODE FOR TESTS---------
     
     DT <- unlist(lapply(dt_list, function(x) x$Split))
@@ -527,6 +527,13 @@ for(j in 2:n.iter){
     }
     
     prop.prob <- rdirichlet(1, post.dir.alpha)
+
+    # CODE FOR TESTS-------------
+    output <- list(
+      cov.sel_prob = prop.prob
+    )
+    generate_output(output, "output_update_dirichlet_alpha", TRUE)
+    # END CODE FOR TESTS---------
  
     Tree11 <- matrix(unlist(sapply(1:m, function(x) Mean.Parameter_pred(dt_list[[x]], 1))), ncol=m, nrow=n)
 

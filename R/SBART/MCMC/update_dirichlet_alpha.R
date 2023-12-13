@@ -38,5 +38,5 @@ update_dirichlet_alpha <- function(dt_list, p, j, warmup, dirichlet_alpha, a0, b
 
   cov.sel_prob <- rdirichlet(1, posterior.dirichlet.alpha)
   
-  return(list(dirichlet_alpha = dirichlet.alpha, posterior_dirichlet_alpha = posterior.dirichlet.alpha, cov_sel_prob = cov.sel_prob))
+  return(cov.sel_prob)
 }
