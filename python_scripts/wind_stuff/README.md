@@ -1,6 +1,6 @@
 # Wind data scripts
 
-These python scripts allow to extract and do stuff with wind data from the AGC dataset. Since the original dataset is *way* too big the already extracted *AGC_wind_data.csv* dataset is uploaded to the repo for quick execution.
+These python scripts allow to extract and do stuff with wind data from the AGC dataset. Since the original dataset is *way* too big, the already extracted *AGC_wind_data.csv* dataset is uploaded to the repo for quick execution.
 
 The scripts and their functions are:
 
