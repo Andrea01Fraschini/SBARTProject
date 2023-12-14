@@ -1,6 +1,6 @@
 import pandas as pd
 
-wind_data = pd.read_csv("./AGC_Wind_Data.csv")
+wind_data = pd.read_csv("./python_scripts/wind_stuff/AGC_Wind_Data.csv")
 
 cols_to_convert = ['WE_mode_wind_direction_100m','WE_mode_wind_direction_10m']
 
@@ -18,6 +18,6 @@ mapping = {
 for c in cols_to_convert:
     wind_data[c] = wind_data[c].map(mapping)
 
-wind_data.to_csv("./Converted_AGC_Wind_Data.csv", index=False)
+wind_data.to_csv("./python_scripts/wind_stuff/Converted_AGC_Wind_Data.csv", index=False)
 
 print(wind_data.head())

@@ -3,11 +3,11 @@ import shapely as shp
 import pandas as pd
 import matplotlib.pyplot as plt
 
-map = gpd.read_file('./REGIONE_LOMBARDIA/Comuni_correnti_poligonali.shp')
+map = gpd.read_file('./python_scripts/REGIONE_LOMBARDIA/Comuni_correnti_poligonali.shp')
 map = map.to_crs({'init': 'epsg:4326'})
 municipality_polygons = gpd.GeoDataFrame(map[["NOME_COM", "geometry"]], crs = map.crs)
 
-wind_data = pd.read_csv("./wind_stuff/Aggregated_wind_data.csv")
+wind_data = pd.read_csv("./python_scripts/wind_stuff/Aggregated_wind_data.csv")
 
 grid_points=[]
 for t in wind_data[["Longitude", "Latitude"]].itertuples():

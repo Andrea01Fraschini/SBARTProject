@@ -2,3 +2,5 @@ private/*
 REGIONE_LOMBARDIA/*
 cache/*
 .vscode/*
+python_scripts/wind_stuff/Aggregated_wind_data.csv
+python_scripts/wind_stuff/Converted_AGC_Wind_Data.csv
