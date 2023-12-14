@@ -83,7 +83,7 @@ NA, NA), MU = c(NA, NA, NA), begin = c(1, 1, 5), end = c(30L,
     end = 30L), list(position = 1, parent = NA, Terminal = 1, 
     Split = NA, Value = NA, MU = NA, begin = 1, end = 30L), list(
     position = 1, parent = NA, Terminal = 1, Split = NA, Value = NA, 
-    MU = NA, begin = 1, end = 30L)), obs_list.ind = list(c(8L, 
+    MU = NA, begin = 1, end = 30L)), obs_list_ind = list(c(8L, 
 25L, 26L, 29L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 9L, 10L, 11L, 12L, 
 13L, 14L, 15L, 16L, 17L, 18L, 19L, 20L, 21L, 22L, 23L, 24L, 27L, 
 28L, 30L), 1:30, 1:30, 1:30, 1:30, 1:30, 1:30, 1:30, 1:30, 1:30, 

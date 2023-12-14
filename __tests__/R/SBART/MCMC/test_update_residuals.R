@@ -1,46 +1,20 @@
-source('../../../env_setup_tests.R')
+# source('../../../env_setup_tests.R')
+  setwd("C:/Users/camil/OneDrive - Universidad del Norte/Universidad POLIMI/Bayesian stats/CODE Bart/SBARTProject") 
+
 source("R/library_imports.R")
 library(testthat)
 
 describe("Test sample data function",{
-    source("data/sample_data.R")
-    source("R/SBART/init_model_parameters.R")
-    source("R/SBART/MCMC/init_chain.R")
     source("R/SBART/MCMC/update_residuals.R")
+    source("output/KIM/output_init_chain.R")
     source("output/KIM/output_update_residuals.R")
 
-    set.seed(1)
-    data <- sample_data()
-    
-    set.seed(1)
-    params <- init_model_parameters(
-        X = data$Xpred,
-        Y = data$Y,
-        SIAM = data$wind_mat,
-        n.trees = 50L
-    )
-
-    set.seed(1)
-    vars <- init_chain(
-        n.iterations = 10000L,
-        n.locations.all = params$n.locations.all,
-        p = params$p,
-        n = params$n,
-        n.trees = 50L,
-        X = data$Xpred,
-        missing_indexes = data$mis.ind,
-        SIAM = data$wind_mat,
-        W = data$Ws,
-        Y = params$Y,
-        rho = params$rho
-    )
-
     residuals <- update_residuals(
-        Y = vars$Y, 
-        vars$trees, 
-        1,
-        vars$spatial_theta,
-        vars$missing_indexes
+        y = output_init_chain$y, 
+        trees = output_init_chain$trees, 
+        t = 1,
+        spatial_theta = output_init_chain$spatial_theta,
+        missing_indexes = output_init_chain$missing_indexes
     )
 
     it("should return a vector",{

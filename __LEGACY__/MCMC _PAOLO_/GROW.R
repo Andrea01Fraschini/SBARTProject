@@ -111,7 +111,7 @@ GROW <- function(
     # New tree structure 
     dt.new <- dt
     dt.new.position <- dt.new$position[prop.term_node]
-    dt.new$termina[prop.term_node] <- FALSE
+    dt.new$terminal[prop.term_node] <- FALSE
     dt.add <- list(
         position = c(2 * dt.new.position, 2 * dt.new.position + 1), 
         parent = rep(dt.new.position, 2), 

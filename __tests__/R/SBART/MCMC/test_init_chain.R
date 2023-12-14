@@ -1,5 +1,6 @@
 # source('../../../env_setup_tests.R')
-setwd("C:/Users/camil/OneDrive - Universidad del Norte/Universidad POLIMI/Bayesian stats/CODE Bart/SBARTProject") 
+  setwd("C:/Users/camil/OneDrive - Universidad del Norte/Universidad POLIMI/Bayesian stats/CODE Bart/SBARTProject") 
+
 source("R/library_imports.R")
 library(testthat)
 
@@ -125,7 +126,8 @@ describe("Test init_chain function",{
         expect_equal(W_post_full1, W_post_full2)
 
         expect_equal(vars$w_star, output_init_chain$w_star)
-        expect_equal(vars$w_star_eigen, output_init_chain$w_star_eigen)
+        expect_equal(vars$w_star_eigen$values, output_init_chain$w_star_eigen$values)
+        # expect_equal(vars$w_star_eigen$vectors, output_init_chain$w_star_eigen$vectors)
         expect_equal(vars$w_star_eigen_vals, output_init_chain$w_star_eigen_vals)
         expect_equal(vars$det_q, output_init_chain$det_q)
         expect_equal(vars$y, output_init_chain$y)

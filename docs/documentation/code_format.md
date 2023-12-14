@@ -13,4 +13,5 @@
     - sel: Selected
     - da: Data augmentation
     - mult: idk
+    - obs: observations
 

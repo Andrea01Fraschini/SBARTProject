@@ -24,7 +24,7 @@ generate_output <- function(output, filename, quit = FALSE, write = TRUE){
     writeLines(content, path)
 
     if(quit){
-        quit(save="no")
+        quit(save="ask")
     }
   }
 }
@@ -199,7 +199,7 @@ W.post.full <- common.Wcheckformat(W.wind.full)
 
 det.Q <- 0
 Wstar <- diag(apply(W.wind,1,sum)) - W.wind
-Wstar.eigen <- eigen(Wstar)
+Wstar.eigen <- eigen(Wstar, symmetric=TRUE)
 Wstar.val <- Wstar.eigen$values
 det.Q <- 0.5 * sum(log((rho * Wstar.val + (1-rho))))
 
@@ -368,7 +368,7 @@ for(j in 2:n.iter){
         # CODE FOR TESTS-------------
         output <- list(
             dt_list = dt_list,
-            obs_list.ind = Obs_list
+            obs_list_ind = Obs_list
         )
         generate_output(output, "output_sample_trees", FALSE, t==1)
         # END CODE FOR TESTS---------
