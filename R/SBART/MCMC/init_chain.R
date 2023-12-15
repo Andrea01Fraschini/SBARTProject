@@ -103,7 +103,7 @@ init_chain <- function(n_iterations, n_locations_all, p, n_trees, n, x, y, missi
 
   # Compute eigenvalues of w_star
   w_star <- diag(apply(w_siam, 1, sum)) - w_siam
-  w_star_eigen <- eigen(w_star, symmetric = TRUE)
+  w_star_eigen <- eigen(w_star)
   w_star_eigen_vals <- w_star_eigen$values
   det_q <- 0.5 * sum(log((rho * w_star_eigen_vals + (1 - rho))))
 

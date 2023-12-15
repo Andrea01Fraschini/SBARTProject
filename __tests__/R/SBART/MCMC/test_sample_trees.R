@@ -1,6 +1,4 @@
 source('../../../env_setup_tests.R')
-  setwd("C:/Users/camil/OneDrive - Universidad del Norte/Universidad POLIMI/Bayesian stats/CODE Bart/SBARTProject") 
-
 source("R/library_imports.R")
 library(testthat)
 
@@ -8,31 +6,11 @@ describe("Test sample_trees function",{
     source("R/SBART/MCMC/sample_trees.R")
     source("output/KIM/output_init_model_parameters.R")
     source("output/KIM/output_init_chain.R")
+    source("__tests__/scripts/transform_dt_list.R")
     source("output/KIM/output_update_residuals.R")
     source("output/KIM/output_sample_trees.R")
 
-    dt_list_transformed <- lapply(output_init_chain$dt_list, function(dt) {
-        dt$terminal <- ifelse(dt$Terminal == 1, TRUE, FALSE)
-        dt$split <- dt$Split
-        dt$value <- dt$Value
-        dt$mu <- dt$MU
-
-        dt$Terminal <- NULL
-        dt$Split <- NULL
-        dt$Value <- NULL
-        dt$MU <- NULL
-
-        temp <- dt$begin
-        temp2 <- dt$end
-
-        dt$begin <- NULL
-        dt$end <- NULL
-
-        dt$begin <- temp
-        dt$end <- temp2
-        
-        return(dt)
-    })
+    dt_list_transformed <- transform_dt_list(output_init_chain$dt_list)
 
     set.seed(1)
     result <- sample_trees(

@@ -10,7 +10,7 @@
 #'
 #' @param y A numeric vector of target values.
 #' @param trees_pred A matrix where each column represents a predicted tree.
-#' @param W.post.full A list containing the structure of the spatial weights matrix.
+#' @param w_post_full A list containing the structure of the spatial weights matrix.
 #' @param n_locations_all A numeric value representing the total number of locations.
 #' @param spatial_theta A numeric vector of spatial parameters.
 #' @param tau2 A numeric value representing the variance of the spatial effect.
@@ -20,14 +20,14 @@
 #' @return A numeric vector representing the updated spatial effect.
 #' @export
 #'
-update_spatial_effect <- function(Y, trees_pred, W.post.full, n_locations_all, spatial_theta, tau2, rho, sigma2_samples, j) {
+update_spatial_effect <- function(y, trees_pred, w_post_full, n_locations_all, spatial_theta, tau2, rho, sigma2_samples, j) {
   sourceCpp("src/CARBayes.cpp")
 
-  offset <- (Y - rowSums(trees_pred))
+  offset <- (y - rowSums(trees_pred))
   spatial_theta <- gaussiancarupdate(
-            Wtriplet = W.post.full$W.triplet,
-            Wbegfin = W.post.full$W.begfin,
-            W.post.full$W.triplet.sum,
+            Wtriplet = w_post_full$W.triplet,
+            Wbegfin = w_post_full$W.begfin,
+            Wtripletsum = w_post_full$W.triplet.sum,
             nsites = n_locations_all,
             phi = spatial_theta,
             tau2 = tau2,

@@ -24,7 +24,7 @@ generate_output <- function(output, filename, quit = FALSE, write = TRUE){
     writeLines(content, path)
 
     if(quit){
-        quit(save="ask")
+        quit(save="no")
     }
   }
 }
@@ -387,13 +387,28 @@ for(j in 2:n.iter){
         # END CODE FOR TESTS---------
     }
 
+    # CODE FOR TESTS-------------
+    output <- list(
+        y = Y,
+        trees = Tree,
+        spatial_theta = spatial,
+        missing_indexes = mis.ind,
+        sigma2_alpha = nu/2,
+        sigma2_beta = nu*lambda/2,
+        n_locations_all = n.complete,
+        sigma2_samples = Sigma2,
+        j = j
+    )
+    generate_output(output, "input_sample_variance")
+    # END CODE FOR TESTS---------
+
     set.seed(1)
     # Sample variance parameter
-    Sigma2[j] <- rinvgamma(1, nu/2+n.complete/2, scale = nu*lambda/2 + sum((Y[-mis.ind]-rowSums(Tree)-spatial[-mis.ind])^2)/2)
+    Sigma2[j] <- MCMCpack::rinvgamma(1, nu/2+n.complete/2, scale = nu*lambda/2 + sum((Y[-mis.ind]-rowSums(Tree)-spatial[-mis.ind])^2)/2)
 
     # CODE FOR TESTS-------------
     output <- list(
-        sigma2.samples = Sigma2
+        sigma2_samples = Sigma2
     )
     generate_output(output, "output_sample_variance")
     # END CODE FOR TESTS---------
@@ -401,6 +416,7 @@ for(j in 2:n.iter){
     #######################################
     # Start update the spatial random effect
     #######################################
+    set.seed(1)
 
     offset <- (Y-rowSums(Tree11))
     spatial <- gaussiancarupdate(Wtriplet=W.post.full$W.triplet, Wbegfin=W.post.full$W.begfin, W.post.full$W.triplet.sum, nsites=length(Y), phi=spatial, tau2=tau2, rho=rho, nu2=Sigma2[j], offset=offset)   
@@ -413,6 +429,7 @@ for(j in 2:n.iter){
     generate_output(output, "output_update_spatial_effect")
     # END CODE FOR TESTS---------
     
+    set.seed(1)
     temp2 <- quadform(
               as.matrix(W.post.full$W.triplet), 
               W.post.full$W.triplet.sum, 
@@ -428,7 +445,7 @@ for(j in 2:n.iter){
 
     # CODE FOR TESTS-------------
     output <- list(
-        tau2.samples = TAU2,
+        tau2_samples = TAU2,
         temp = temp2
     )
     generate_output(output, "output_update_tau")
@@ -458,13 +475,14 @@ for(j in 2:n.iter){
 
     # CODE FOR TESTS-------------
     output <- list(
-        rho.samples = RHO,
-        det.Q = det.Q,
+        rho_samples = RHO,
+        det_q = det.Q,
         temp = temp2
     )
     generate_output(output, "output_update_rho")
     # END CODE FOR TESTS---------
    
+    set.seed(1)
     proposal.a.weight <- sample(1:5, 1)
     
     W.wind.proposal <- wind_mat*(W1^(I(proposal.a.weight==1)))*(W2^(I(proposal.a.weight==2)))*(W3^(I(proposal.a.weight==3)))*(W4^(I(proposal.a.weight==4)))*(W5^(I(proposal.a.weight==5)))
@@ -498,17 +516,25 @@ for(j in 2:n.iter){
 
     # CODE FOR TESTS-------------
     output <- list(
-        W_sel.samples = A.WEIGHT,
-        det.Q = det.Q,
-        W.siam.full = W.wind.full,
-        W.post.full = W.post.full,
-        Wstar = Wstar,
-        Wstar.eigen = Wstar.eigen,
-        Wstar.eigen_vals = Wstar.val
+        w_sel_samples = A.WEIGHT,
+        det_q = det.Q,
+        w_siam_full = W.wind.full,
+        w_post_full = W.post.full,
+        w_star = Wstar,
+        w_star_eigen = Wstar.eigen,
+        w_star_eigen_vals = Wstar.val
     )
     generate_output(output, "output_update_f")
     # END CODE FOR TESTS---------
+
+    # CODE FOR TESTS-------------
+    output <- list(
+        dt_list = dt_list
+    )
+    generate_output(output, "input_update_dirichlet_alpha")
+    # END CODE FOR TESTS---------
     
+    set.seed(1)
     DT <- unlist(lapply(dt_list, function(x) x$Split))
     add <- as.numeric(table(factor(DT[!is.na(DT)], levels=1:P)))
     
@@ -530,7 +556,7 @@ for(j in 2:n.iter){
 
     # CODE FOR TESTS-------------
     output <- list(
-      cov.sel_prob = prop.prob
+      cov_sel_prob = prop.prob
     )
     generate_output(output, "output_update_dirichlet_alpha", TRUE)
     # END CODE FOR TESTS---------

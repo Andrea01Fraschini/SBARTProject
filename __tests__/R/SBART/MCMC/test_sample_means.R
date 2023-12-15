@@ -3,78 +3,26 @@ source("R/library_imports.R")
 library(testthat)
 
 describe("Test sample_means function",{
-    source("data/sample_data.R")
-    source("R/SBART/init_model_parameters.R")
-    source("R/SBART/MCMC/init_chain.R")
-    source("R/SBART/MCMC/update_residuals.R")
-    source("R/SBART/MCMC/sample_trees.R")
     source("R/SBART/MCMC/sample_means.R")
+    source("output/KIM/output_init_model_parameters.R")
+    source("output/KIM/output_init_chain.R")
+    source("__tests__/scripts/transform_dt_list.R")
+    source("output/KIM/output_update_residuals.R")
+    source("output/KIM/output_sample_trees.R")
     source("output/KIM/output_sample_means.R")
 
-    set.seed(1)
-    data <- sample_data()
-    
-    set.seed(1)
-    params <- init_model_parameters(
-        X = data$Xpred,
-        Y = data$Y,
-        SIAM = data$wind_mat,
-        n.trees = 50L
-    )
-
-    set.seed(1)
-    vars <- init_chain(
-        n.iterations = 10000L,
-        n.locations.all = params$n.locations.all,
-        p = params$p,
-        n = params$n,
-        n.trees = 50L,
-        X = data$Xpred,
-        missing_indexes = data$mis.ind,
-        SIAM = data$wind_mat,
-        W = data$Ws,
-        Y = params$Y,
-        rho = params$rho
-    )
-
-    residuals <- update_residuals(
-        Y = vars$Y, 
-        vars$trees, 
-        1,
-        vars$spatial_theta,
-        vars$missing_indexes
-    )
-
-    set.seed(1)
-    trees <- sample_trees(
-        dt_list = vars$dt_list,
-        prob.grow = params$prob.grow,
-        prob.change = params$prob.change,
-        prob.prune = params$prob.prune,
-        sigma2.samples = vars$sigma2.samples,
-        j = 2,
-        sigma_mu = params$sigma_mu,
-        t = 1,
-        residuals = residuals,
-        cov.sel_prob = params$cov.sel_prob,
-        obs_list.ind = vars$obs_list.ind,
-        Xlist = vars$Xlist,
-        X.unique = vars$X.unique,
-        n = params$n,
-        alpha = params$alpha,
-        beta = params$beta
-    )
+    dt_list_transformed <- transform_dt_list(output_sample_trees$dt_list)
 
     set.seed(1)
     means <- sample_means(
-        sigma2 = vars$sigma2.samples,
-        sigma_mu = params$sigma_mu,
-        obs = trees$obs_list.ind,
-        residuals = residuals,
-        xcut = vars$X.unique,
-        n.available = params$n,
-        trees = vars$trees,
-        dt_list = trees$dt_list,
+        sigma2_samples = output_init_chain$sigma2_samples,
+        sigma_mu = output_init_model_parameters$sigma_mu,
+        obs_list_ind = output_sample_trees$obs_list_ind,
+        residuals = output_update_residuals$residuals,
+        x_cut = output_init_chain$x_unique,
+        n_available = output_init_model_parameters$n,
+        trees = output_init_chain$trees,
+        dt_list = dt_list_transformed,
         t = 1,
         j = 2
     )

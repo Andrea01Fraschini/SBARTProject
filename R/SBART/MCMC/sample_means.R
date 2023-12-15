@@ -3,12 +3,12 @@
 #' This function samples the means for the leaf nodes of a decision tree. 
 #' It uses the residuals and the current tree structure to sample a new mean for each leaf node.
 #'
-#' @param sigma2.samples A vector of samples for the error variance.
+#' @param sigma2_samples A vector of samples for the error variance.
 #' @param sigma_mu The variance of the leaf parameters (mu_ij).
-#' @param obs_list.ind A list of vectors, each containing the indices of observations for each tree.
+#' @param obs_list_ind A list of vectors, each containing the indices of observations for each tree.
 #' @param residuals A vector of residuals (R).
-#' @param xcut A partition of the predictor space.
-#' @param n.available The number of available observations.
+#' @param x_cut A partition of the predictor space.
+#' @param n_available The number of available observations.
 #' @param trees A matrix of tree values.
 #' @param dt_list A list of decision trees.
 #' @param t The index of the current tree.
@@ -20,13 +20,13 @@
 #'
 #' @examples
 #' # Assuming all the required parameters are defined...
-#' result = sample_means(sigma2.samples, sigma_mu, obs_list.ind, residuals, xcut, n.available, trees, dt_list, t, j)
+#' result = sample_means(sigma2_samples, sigma_mu, obs_list_ind, residuals, x_cut, n_available, trees, dt_list, t, j)
 #' @export
 #'
-sample_means <- function(sigma2.samples, sigma_mu, obs_list.ind, residuals, xcut, n.available, trees, dt_list, t, j) {
-    sigma2 <- sigma2.samples[j-1] # sigma2 is a list of length 1
-    obs <- obs_list.ind[[t]] # obs is a list of length 1
-    n <- n.available
+sample_means <- function(sigma2_samples, sigma_mu, obs_list_ind, residuals, x_cut, n_available, trees, dt_list, t, j) {
+    sigma2 <- sigma2_samples[j-1] # sigma2 is a list of length 1
+    obs <- obs_list_ind[[t]] # obs is a list of length 1
+    n <- n_available
     T <- rep(0, n) # assignment of obs through trees  
     dt <- dt_list[[t]] # current tree
 
