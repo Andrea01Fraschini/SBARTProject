@@ -29,6 +29,7 @@ ax = municipality_polygons.plot(edgecolor='black', color='white', linewidth=0.5)
 #plt.quiver(arrows['positions'], arrows['directions'])
 ax.quiver(arrows['X'],arrows['Y'],arrows['U'],arrows['V'], 
           color='red',
+          pivot='mid',
           headlength=2,
           headaxislength=2
 )
