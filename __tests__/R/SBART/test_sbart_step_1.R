@@ -90,7 +90,7 @@ describe("Test sample_variance function",{
         expect_equal(results$sigma_mu, output_init_model_parameters$sigma_mu)
         expect_equal(results$missing_indexes, output_init_model_parameters$missing_indexes)
     })
-    
+
     set.seed(1)
     vars <- init_chain(
         n_iterations = n_iterations,
@@ -482,5 +482,4 @@ describe("Test sample_variance function",{
         expect_equal(trees_pred, output_predict$trees_pred)
     })
 
-    # TODO: Where these are updated? vars$x_list, vars$x_mult, vars$x_unique
 })

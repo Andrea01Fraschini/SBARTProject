@@ -38,68 +38,56 @@ sbart_fit <- function(
   # Get model parameters
   #
   # --------------------------
-  model_params <- init_model_parameters(x, y, siam, n_trees)
-
-  p <- model_params$p
-  n <- model_params$n
-  n_locations_all <- model_params$n_locations_all
-  prob_grow <- model_params$prob_grow
-  prob_prune <- model_params$prob_prune
-  prob_change <- model_params$prob_change
-  alpha <- model_params$alpha
-  beta <- model_params$beta
-  dirichlet_alpha <- model_params$dirichlet_alpha
-  posterior_dirichlet_alpha <- model_params$posterior_dirichlet_alpha
-  cov_sel_prob <- model_params$cov_sel_prob
-  tau2_alpha <- model_params$tau2_alpha
-  tau2_beta <- model_params$tau2_beta
-  tau2_posterior_shape <- model_params$tau2_posterior_shape
-  tau2 <- model_params$tau2
-  proposal_sd_rho <- model_params$proposal_sd_rho
-  rho <- model_params$rho
-  a0 <- model_params$a0
-  b0 <- model_params$b0
-  y <- model_params$y
-  residuals <- model_params$residuals
-  sigma2 <- model_params$sigma2
-  nu <- model_params$nu
-  lambda <- model_params$lambda
-  sigma2_a <- model_params$sigma2_a
-  sigma2_b <- model_params$sigma2_b
-  sigma_mu <- model_params$sigma_mu
-  missing_indexes <- model_params$missing_indexes
+  params <- init_model_parameters(
+      x = x,
+      y = y,
+      siam = siam,
+      n_trees = n_trees
+  )
 
   # Initialize MCMC chain
   #
   # --------------------------
-  initial_variables <- init_chain(n_iterations, n_locations_all, p, n_trees, n, x, y, missing_indexes, siam, ws, rho)
+  vars <- init_chain(
+      n_iterations = n_iterations,
+      n_locations_all = params$n_locations_all,
+      p = params$p,
+      n_trees = n_trees,
+      n = params$n,
+      x = x,
+      y = params$y,
+      missing_indexes = missing_indexes,
+      siam = siam,
+      ws = ws,
+      rho = params$rho
+  )
 
-  sigma2_samples <- initial_variables$sigma2_samples
-  rho_samples <- initial_variables$rho_samples
-  tau2_samples <- initial_variables$tau2_samples
-  spatial_theta <- initial_variables$spatial_theta
-  cov_sel <- initial_variables$cov_sel
-  obs_list_ind <- initial_variables$obs_list_ind
-  dt_list <- initial_variables$dt_list
-  trees <- initial_variables$trees
-  trees_pred <- initial_variables$trees_pred
-  x_list <- initial_variables$x_list
-  x_mult <- initial_variables$x_mult
-  x_unique <- initial_variables$x_unique
-  w_sel <- initial_variables$w_sel
-  w_sel_samples <- initial_variables$w_sel_samples
-  w_count <- initial_variables$w_count
-  w_siam <- initial_variables$w_siam
-  w_siam_full <- initial_variables$w_siam_full
-  w_post <- initial_variables$w_post
-  w_post_full <- initial_variables$w_post_full
-  w_star <- initial_variables$w_star
-  w_star_eigen <- initial_variables$w_star_eigen
-  w_star_eigen_vals <- initial_variables$w_star_eigen_vals
-  det_q <- initial_variables$det_q
-  y <- initial_variables$y
-  missing_indexes <- initial_variables$missing_indexes
-  y_da <- initial_variables$y_da
+  sigma2_samples <- vars$sigma2_samples
+  rho_samples <- vars$rho_samples
+  tau2_samples <- vars$tau2_samples
+  spatial_theta <- vars$spatial_theta
+  cov_sel <- vars$cov_sel
+  obs_list_ind <- vars$obs_list_ind
+  dt_list <- vars$dt_list
+  trees <- vars$trees
+  trees_pred <- vars$trees_pred
+  x_list <- vars$x_list
+  x_mult <- vars$x_mult
+  x_unique <- vars$x_unique
+  w_sel <- vars$w_sel
+  w_sel_samples <- vars$w_sel_samples
+  w_count <- vars$w_count
+  w_siam <- vars$w_siam
+  w_siam_full <- vars$w_siam_full
+  w_post <- vars$w_post
+  w_post_full <- vars$w_post_full
+  w_star <- vars$w_star
+  w_star_eigen <- vars$w_star_eigen
+  w_star_eigen_vals <- vars$w_star_eigen_vals
+  det_q <- vars$det_q
+  y <- vars$y
+  missing_indexes <- vars$missing_indexes
+  y_da <- vars$y_da
 
   # Run MCMC
   #
@@ -113,92 +101,167 @@ sbart_fit <- function(
       # Update residuals
       #
       # --------------------------
-      residuals <- update_residuals(y, trees, t, spatial_theta, missing_indexes)
+      residuals <- update_residuals(
+            y = y, 
+            trees = trees, 
+            t = t,
+            spatial_theta = spatial_theta,
+            missing_indexes = missing_indexes
+        )
 
 
       # Metropolis Hastings step to sample T_t
       #
       # -------------------------- 
-      tree_samples <- sample_trees(dt_list, prob_grow, prob_change, prob_prune, sigma2_samples, j, sigma_mu, t, residuals, cov_sel_prob, obs_list_ind, x_list, x_unique, n, alpha, beta)
+      result_trees <- sample_trees(
+          dt_list = dt_list,
+          prob_grow = params$prob_grow,
+          prob_change = params$prob_change,
+          prob_prune = params$prob_prune,
+          sigma2_samples = sigma2_samples,
+          j = j,
+          sigma_mu = params$sigma_mu,
+          t = t,
+          residuals = residuals,
+          cov_sel_prob = params$cov_sel_prob,
+          obs_list_ind = obs_list_ind,
+          x_list = x_list,
+          x_unique = x_unique,
+          n = params$n,
+          alpha = params$alpha,
+          beta = params$beta
+      )
 
-      dt_list <- tree_samples$dt_list
-      obs_list_ind <- tree_samples$obs_list_ind
+      dt_list <- result_trees$dt_list
+      obs_list_ind <- result_trees$obs_list_ind
 
       # Step to sample M_t
       #
       # --------------------------
-      mean_samples <- sample_means(sigma2_samples, sigma_mu, obs_list_ind, residuals, x_cut, n, trees, dt_list, t, j)
-      
-      trees <- mean_samples$trees
-      dt_list <- mean_samples$dt_list
+      result_means <- sample_means(
+          sigma2_samples = sigma2_samples,
+          sigma_mu = params$sigma_mu,
+          obs_list_ind = obs_list_ind,
+          residuals = residuals,
+          x_cut = x_unique,
+          n_available = params$n,
+          trees = trees,
+          dt_list = dt_list,
+          t = t,
+          j = j
+      )
+
+      trees <- result_means$trees
+      dt_list <- result_means$dt_list
     }
 
     # Sample variance parameter
     #
     # --------------------------
-    sigma2_samples <- sample_variance(y, trees, spatial_theta, missing_indexes, sigma2_a, sigma2_b, n_locations_all, sigma2_samples, j)
-
+    sigma2_samples <- sample_variance(
+        y = y,
+        trees = trees,
+        spatial_theta = spatial_theta,
+        missing_indexes = missing_indexes,
+        sigma2_a = params$sigma2_a,
+        sigma2_b= params$sigma2_b,
+        n = params$n,
+        sigma2_samples = sigma2_samples,
+        j = j
+    )
   
     # Update of spatial effect 
     #
     # --------------------------
-    spatial_theta <- update_spatial_effect(y, trees_pred, w_post_full, n_locations_all, spatial_theta, tau2, rho, sigma2_samples, j)
-
+    spatial_theta <- update_spatial_effect(
+        y = y,
+        trees_pred = trees_pred,
+        w_post_full = w_post_full,
+        n_locations_all = params$n_locations_all,
+        spatial_theta = spatial_theta,
+        tau2 = params$tau2,
+        rho = params$rho,
+        sigma2_samples = sigma2_samples,
+        j = j
+    )
 
     # Update tau2 
     #
     # --------------------------
-    result_tau2 <- update_tau2(w_post_full, n_locations_all, spatial_theta, rho, tau2_beta, tau2_posterior_shape, tau2_samples, j)
-
-    tau2_samples <- result_tau2$tau2_samples
-    temp <- result_tau2$temp
-
+    results_tau2 <- update_tau2(
+        w_post_full = w_post_full,
+        n_locations_all = params$n_locations_all,
+        spatial_theta = spatial_theta,
+        rho = params$rho,
+        tau2_b = params$tau2_b,
+        tau2_posterior_shape = params$tau2_posterior_shape,
+        tau2_samples = tau2_samples,
+        j = j
+    )
 
     # Update rho based on Metropolis Hastings step
     #
     # --------------------------
-    result_rho <- update_rho(rho, proposal_sd_rho, w_post_full, n_locations_all, spatial_theta, tau2, w_star_eigen_vals, det_q, temp, rho_samples, j)
-
-    rho_samples <- result_rho$rho_samples
-    det_q <- result_rho$det_q
-    temp <- result_rho$temp
-
+    results_rho <- update_rho(
+        rho = params$rho,
+        proposal_sd_rho = params$proposal_sd_rho,
+        w_post_full = w_post_full,
+        n_locations_all = params$n_locations_all,
+        spatial_theta = spatial_theta,
+        tau2 = params$tau2,
+        w_star_eigen_vals = w_star_eigen_vals,
+        det_q = det_q,
+        temp = results_tau2$temp,
+        rho_samples = rho_samples,
+        j = j
+    )
 
     # update f based on Metropolis Hastings step
     #
     # --------------------------
-    result_f <- update_f(ws, w_count, siam, n_locations_all, spatial_theta, rho, tau2, det_q, temp, w_sel, w_siam_full, w_post_full, w_star, w_star_eigen, w_star_eigen_vals, w_sel_samples, j)
-
-    w_sel_samples <- result_f$w_sel_samples
-    det_q <- result_f$det_q
-    w_siam_full <- result_f$w_siam_full
-    w_star <- result_f$w_star
-    w_star_eigen <- result_f$w_star_eigen
-    w_star_eigen_vals <- result_f$w_star_eigen_vals
+    results_f <- update_f(
+        ws = ws,
+        w_count = w_count,
+        siam = siam,
+        n_locations_all = params$n_locations_all,
+        spatial_theta = spatial_theta,
+        rho = results_rho$rho_samples[j],
+        tau2 = results_tau2$tau2_samples[j],
+        det_q = results_rho$det_q,
+        temp = results_tau2$temp,
+        w_sel = w_sel,
+        w_siam_full = w_siam_full,
+        w_post_full = w_post_full,
+        w_star = w_star,
+        w_star_eigen = w_star_eigen,
+        w_star_eigen_vals = w_star_eigen_vals,
+        w_sel_samples = w_sel_samples,
+        j = j
+    )
 
 
     # Update dirichlet alpha 
     #
     # --------------------------
-    result_dirichlet <- update_dirichlet_alpha(dt_list, p, j, warmup, dirichlet_alpha, a0, b0, cov_sel_prob)
+    result_dirichlet <- update_dirichlet_alpha(
+        dt_list = dt_list,
+        p = params$p,
+        j = j,
+        warmup = 1000L,
+        dirichlet_alpha = params$dirichlet_alpha,
+        a0 = params$a0,
+        b0 = params$b0,
+        cov_sel_prob = params$cov_sel_prob
+    )
 
-    cov_sel_prob <- result_dirichlet$cov_sel_prob
-    rules_count <- result_dirichlet$rules_count
-    dirichlet_alpha <- result_dirichlet$dirichlet_alpha
-    posterior_dirichlet_alpha <- result_dirichlet$posterior_dirichlet_alpha
+    trees_pred <- matrix(unlist(sapply(1:n_trees, function(x) mean_predict(dt_list[[x]], x_list, x_mult, x_unique, params$n_locations_all))), nrow = params$n_locations_all, ncol = n_trees)
 
+    # TODO: Where these are updated? vars$x_list, vars$x_mult, vars$x_unique, and all the rest vars that are not returned by any function
 
-    trees_pred <- matrix(unlist(sapply(1:n_trees, function(x) mean_predict(dt_list[[x]], x_list, x_mult, x_unique, n_locations_all))), nrow = n_locations_all, ncol = n_trees)
-
-    if(any(is.na(trees_pred))){
-      browser()
-    }
 
     # check which variables are in the model 
-    cov_sel_temp <- ifelse(rules_count > 0, 1, 0)
+    cov_sel_temp <- ifelse(result_dirichlet$rules_count > 0, 1, 0)
     cov_sel <- rbind(cov_sel, cov_sel_temp)
-
-
   }
 
   results <- list(
