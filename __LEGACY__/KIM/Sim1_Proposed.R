@@ -577,6 +577,8 @@ for(j in 2:n.iter){
     set.seed(1)
     Tree11 <- matrix(unlist(sapply(1:m, function(x) Mean.Parameter_pred(dt_list[[x]], 1))), ncol=m, nrow=n)
 
+    print(n)
+
     # CODE FOR TESTS-------------
     output <- list(
         trees_pred = Tree11

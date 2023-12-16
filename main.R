@@ -6,29 +6,23 @@ source("data/sample_data.R") # import the sample data
 # Load the data
 data <- sample_data()
 
-with(data, {
-  Xpred <- Xpred
-  Y <- Y
-  Ws <- Ws
-  wind_mat <- wind_mat
-  mis.ind <- mis.ind
-})
-
 # Train the model
-model <- sbart.fit(
-    X = Xpred,
-    y.train = Y[-mis.ind], 
-    missing_indexes = mis.ind,
-    W = Ws, 
-    SIAM = wind_mat,
-    n.trees = 10L
+model <- sbart_fit(
+    x = data$x_predictors,
+    y = data$y,
+    ws = data$ws,
+    siam = data$wind_matrix,
+    missing_indexes = data$missing_indexes,
+    n_trees = 50L,
+    n_iterations = 10000L,
+    warmup = 1000L
 )
 
 # Make predictions
-predictions <- sbart.predict(
-    sbart.output = model, 
-    X.test = data$Xpred[mis.ind],
-    mis.ind
-)
+# predictions <- sbart.predict(
+#     sbart.output = model, 
+#     X.test = data$Xpred[mis.ind],
+#     mis.ind
+# )
 
 # TODO: Save the predictions to a file

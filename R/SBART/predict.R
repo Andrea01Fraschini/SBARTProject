@@ -68,7 +68,9 @@ mean_predict <- function(
         T[sel_ind.list[[i]]] <- dt$mu[terminal_nodes[i]]   
     }
 
-    
+    if(length(T)!=225){
+        print(length(T))
+    }
 
     return(list(T = T))
 }

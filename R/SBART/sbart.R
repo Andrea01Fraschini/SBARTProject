@@ -9,6 +9,19 @@ sbart_fit <- function(
     n_iterations = 10000L,
     warmup = 1000L
 ) {
+
+  # Set progress bar
+  #
+  #---------------------------
+  pb <- progress_bar$new(format = "(:spin) [:bar] :percent [Elapsed time: :elapsedfull || Estimated time remaining: :eta]",
+                       total = n_iterations - 1,
+                       complete = "=",   # Completion bar character
+                       incomplete = "-", # Incomplete bar character
+                       current = ">",    # Current bar character
+                       clear = FALSE,    # If TRUE, clears the bar when finish
+                       width = 100)      # Width of the progress barb
+
+
   source("R/SBART/predict.R")
   source("R/SBART/init_model_parameters.R")
   source("R/SBART/MCMC/init_chain.R")
@@ -92,6 +105,9 @@ sbart_fit <- function(
   #
   # --------------------------
   for (j in 2:n_iterations) {
+    # Update progress bar
+    pb$tick()
+
     for (t in 1:n_trees) {
 
       # Update residuals
@@ -170,7 +186,7 @@ sbart_fit <- function(
     rules_count <- result_dirichlet$rules_count
 
 
-    trees_pred <- matrix(unlist(sapply(1:n_trees, function(x) mean_predict(dt_list[[x]], x_list, x_mult, x_unique, n))), nrow = n, ncol = n_trees)
+    trees_pred <- matrix(unlist(sapply(1:n_trees, function(x) mean_predict(dt_list[[x]], x_list, x_mult, x_unique, n_locations_all))), nrow = n_locations_all, ncol = n_trees)
 
     if(any(is.na(trees_pred))){
       browser()
