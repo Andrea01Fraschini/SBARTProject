@@ -9,17 +9,17 @@
 #' @param missing_indexes A numeric vector of indexes where data is missing.
 #' @param sigma2_a A numeric value representing the shape parameter of the inverse gamma prior on σ^2.
 #' @param sigma2_b A numeric value representing the scale parameter of the inverse gamma prior on σ^2.
-#' @param n_locations_all A numeric value representing the number of observations.
+#' @param n A numeric value representing the number of observations.
 #' @param sigma2_samples A numeric vector of samples for σ^2.
 #' @param j The current iteration of the Markov chain.
 #'
 #' @return A numeric value representing a sample from the posterior distribution of σ^2.
 #' @export
 #'
-sample_variance <- function(y, trees, spatial_theta, missing_indexes, sigma2_a, sigma2_b, n_locations_all, sigma2_samples, j) {
+sample_variance <- function(y, trees, spatial_theta, missing_indexes, sigma2_a, sigma2_b, n, sigma2_samples, j) {
   
   r_final <- y[-missing_indexes] - rowSums(trees) - spatial_theta[-missing_indexes]
-  sigma2_samples[j] <- MCMCpack::rinvgamma(1, sigma2_a + n_locations_all / 2, scale = sigma2_b + sum((r_final) ^ 2) / 2)
+  sigma2_samples[j] <- MCMCpack::rinvgamma(1, sigma2_a + n / 2, scale = sigma2_b + sum((r_final) ^ 2) / 2)
 
   return(sigma2_samples)
 }

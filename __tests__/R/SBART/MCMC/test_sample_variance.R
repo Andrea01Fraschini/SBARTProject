@@ -16,7 +16,7 @@ describe("Test sample_variance function",{
         missing_indexes = input_sample_variance$missing_indexes,
         sigma2_a = input_sample_variance$sigma2_a,
         sigma2_b= input_sample_variance$sigma2_b,
-        n_locations_all = input_sample_variance$n_locations_all,
+        n = input_sample_variance$n,
         sigma2_samples = input_sample_variance$sigma2_samples,
         j = 2
     )

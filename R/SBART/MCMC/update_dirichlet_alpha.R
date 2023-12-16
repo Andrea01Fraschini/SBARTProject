@@ -20,13 +20,13 @@ update_dirichlet_alpha <- function(dt_list, p, j, warmup, dirichlet_alpha, a0, b
     log_ratio <- dirichlet_lik.proposal +
               log(
                   (proposal_dirichlet_alpha / (proposal_dirichlet_alpha + p)) ^ (a0 - b0) *
-                  (p / (proposal_dirichlet_alpha + p)) ^ (b - 1) *
+                  (p / (proposal_dirichlet_alpha + p)) ^ (b0 - 1) *
                   abs(1 / (proposal_dirichlet_alpha + p) - proposal_dirichlet_alpha / (proposal_dirichlet_alpha + p) ^ 2)
               ) + dnorm(dirichlet_alpha, proposal_dirichlet_alpha, 0.1, log = TRUE) -
               dirichlet_lik -
               log(
                   (dirichlet_alpha / (dirichlet_alpha + p)) ^ (a0 - b0) *
-                  (p / (dirichlet_alpha + p)) ^ (b - 1) *
+                  (p / (dirichlet_alpha + p)) ^ (b0 - 1) *
                   abs(1 / (dirichlet_alpha + p) - dirichlet_alpha / (dirichlet_alpha + p) ^ 2)
               ) - dnorm(proposal_dirichlet_alpha, dirichlet_alpha, 0.1, log = TRUE)
 

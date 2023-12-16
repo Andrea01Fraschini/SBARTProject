@@ -68,6 +68,6 @@ describe("Test sample_trees function",{
             expect_equal(dt_list1$begin, dt_list2$begin)
             expect_equal(dt_list1$end, dt_list2$end)
         }
-        expect_equal(result$obs_list.ind, output_sample_trees$obs_list.ind)
+        expect_equal(result$obs_list_ind, output_sample_trees$obs_list_ind)
     })
 })

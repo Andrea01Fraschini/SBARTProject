@@ -24,7 +24,7 @@ generate_output <- function(output, filename, quit = FALSE, write = TRUE){
     writeLines(content, path)
 
     if(quit){
-        quit(save="no")
+        quit(save="ask")
     }
   }
 }
@@ -328,7 +328,41 @@ TAU2 <- rep(0, n.iter)
 for(j in 2:n.iter){
 
     for(t in 1:m){
-        
+        # CODE FOR TESTS-------------
+        # Check all variables used in this loop
+        output <- list(
+            sigma2_samples = Sigma2,
+            rho_samples = RHO,
+            tau2_samples = TAU2,
+            spatial_theta = spatial,
+            cov_sel = ind,
+            obs_list_ind = Obs_list,
+            dt_list = dt_list,
+            trees = Tree,
+            trees_pred = Tree11,
+            x_list = Xpred.list,
+            x_mult = xpred.mult,
+            x_unique = Xcut,
+            w_sel = 1,
+            w_sel_samples = NULL,
+            w_count = 5,
+            w_siam = W.wind,
+            w_siam_full = W.wind.full,
+            w_post = W.post,
+            w_post_full = W.post.full,
+            w_star = Wstar,
+            w_star_eigen = Wstar.eigen,
+            w_star_eigen_vals = Wstar.val,
+            det_q = det.Q,
+            y = Y,
+            missing_indexes = mis.ind,
+            y_da = Y.da
+        )
+        generate_output(output, "output_loop_trees_3", FALSE ,t == 3)
+        # END CODE FOR TESTS---------
+
+
+        set.seed(1)
         R <- Y[-mis.ind] - rowSums(Tree[,-t]) - spatial[-mis.ind]
 
         # CODE FOR TESTS-------------
@@ -395,7 +429,7 @@ for(j in 2:n.iter){
         missing_indexes = mis.ind,
         sigma2_alpha = nu/2,
         sigma2_beta = nu*lambda/2,
-        n_locations_all = n.complete,
+        n = n.complete,
         sigma2_samples = Sigma2,
         j = j
     )
@@ -578,8 +612,6 @@ for(j in 2:n.iter){
  
     set.seed(1)
     Tree11 <- matrix(unlist(sapply(1:m, function(x) Mean.Parameter_pred(dt_list[[x]], 1))), ncol=m, nrow=n)
-
-    print(n)
 
     # CODE FOR TESTS-------------
     output <- list(

@@ -18,6 +18,8 @@ model <- sbart_fit(
     warmup = 1000L
 )
 
+save(model, file = "output/model.RData")
+
 # Make predictions
 # predictions <- sbart.predict(
 #     sbart.output = model, 

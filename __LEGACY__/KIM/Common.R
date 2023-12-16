@@ -1,13 +1,18 @@
 # Sample mean parameters
-Mean.Parameter <- function(sigma2, sigma_mu, dt,  Obs=Obs, R, ind=NULL){
-  
+Mean.Parameter <- function(sigma2, sigma_mu, dt,  Obs=Obs, R, ind=NULL){  
   if(ind==1){
-    xpred <- Xpred1; xcut <- Xcut1; nn <- n1
+    xpred <- Xpred1; 
+    xcut <- Xcut1; 
+    nn <- n1
   }else{
     if(ind==0){
-      xpred <- Xpred0; xcut <- Xcut0; nn <- n0
+      xpred <- Xpred0; 
+      xcut <- Xcut0; 
+      nn <- n0
     }else{
-      xpred <- Xpred; xcut <- Xcut; nn <-n.complete
+      xpred <- Xpred; 
+      xcut <- Xcut; 
+      nn <-n.complete
     }
   }
   T <- rep(0, nn)
@@ -24,5 +29,7 @@ Mean.Parameter <- function(sigma2, sigma_mu, dt,  Obs=Obs, R, ind=NULL){
      T[Obs.ind] <- dt$MU[terminal[i]] <- rnorm(1,Mean, sqrt(Var))
  # }
   }
+
+
   return(list(T=T, dt=dt))
 }
