@@ -557,7 +557,9 @@ for(j in 2:n.iter){
     # CODE FOR TESTS-------------
     output <- list(
       cov_sel_prob = prop.prob,
-      rules_count = add
+      rules_count = add,
+      dirichlet_alpha = dir.alpha,
+      posterior_dirichlet_alpha = post.dir.alpha
     )
     generate_output(output, "output_update_dirichlet_alpha")
     # END CODE FOR TESTS---------

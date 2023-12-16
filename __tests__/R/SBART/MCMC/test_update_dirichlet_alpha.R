@@ -22,10 +22,12 @@ describe("Test sample_variance function",{
         a0 = output_init_model_parameters$a0,
         b0 = output_init_model_parameters$b0,
         cov_sel_prob = output_init_model_parameters$cov_sel_prob
-    ) # cov_sel_prob, rules_count
+    ) # cov_sel_prob, rules_count, dirichlet_alpha, posterior_dirichlet_alpha
 
     it("should get kim's result",{
         expect_equal(result$cov_sel_prob, output_update_dirichlet_alpha$cov_sel_prob)
         expect_equal(result$rules_count, output_update_dirichlet_alpha$rules_count)
+        expect_equal(result$dirichlet_alpha, output_update_dirichlet_alpha$dirichlet_alpha)
+        expect_equal(result$posterior_dirichlet_alpha, output_update_dirichlet_alpha$posterior_dirichlet_alpha)
     })
 })
