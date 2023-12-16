@@ -184,6 +184,8 @@ sbart_fit <- function(
 
     cov_sel_prob <- result_dirichlet$cov_sel_prob
     rules_count <- result_dirichlet$rules_count
+    dirichlet_alpha <- result_dirichlet$dirichlet_alpha
+    posterior_dirichlet_alpha <- result_dirichlet$posterior_dirichlet_alpha
 
 
     trees_pred <- matrix(unlist(sapply(1:n_trees, function(x) mean_predict(dt_list[[x]], x_list, x_mult, x_unique, n_locations_all))), nrow = n_locations_all, ncol = n_trees)
