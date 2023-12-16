@@ -9,7 +9,7 @@
 #' @param y Vector of observations
 #' @param missing_indexes Indexes of missing observations
 #' @param siam Spatial interaction adjacency matrix
-#' @param w List of weight matrices for spatial interaction
+#' @param ws List of weight matrices for spatial interaction
 #' @param rho Spatial smoothing parameter
 #'
 #' @return A list containing the following elements:
@@ -41,7 +41,7 @@
 #'   - y_da: A matrix of imputed values for the missing responses.
 #' @export
 #' 
-init_chain <- function(n_iterations, n_locations_all, p, n_trees, n, x, y, missing_indexes, siam, w, rho) {
+init_chain <- function(n_iterations, n_locations_all, p, n_trees, n, x, y, missing_indexes, siam, ws, rho) {
   source('R/common/format_w_matrix.R')
   # TODO: Document better, with the references and etc.
   missing_indexes <- which(is.na(y))
@@ -85,14 +85,14 @@ init_chain <- function(n_iterations, n_locations_all, p, n_trees, n, x, y, missi
   x_mult[[p + 1]] <- 1:(n_locations_all)
   x_unique <- lapply(1:p, function(t) sort(unique(x[-missing_indexes, t])))
 
-  # Initialize w matrix and related parameters
+  # Initialize ws matrix and related parameters
   w_sel <- 1
   w_sel_samples <- NULL
-  w_count <- length(w)
-  lapply(w, function(x) diag(x) <- 0)
+  w_count <- length(ws)
+  lapply(ws, function(x) diag(x) <- 0)
   w_siam <- siam
   for (i in 1:w_count) {
-    w_siam <- w_siam * w[[i]] ^ I(w_sel == i)
+    w_siam <- w_siam * ws[[i]] ^ I(w_sel == i)
   }
   w_siam_full <- w_siam
   w_siam <- w_siam[-missing_indexes, -missing_indexes]

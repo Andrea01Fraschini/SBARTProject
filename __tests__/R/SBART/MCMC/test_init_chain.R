@@ -20,7 +20,7 @@ describe("Test init_chain function",{
         y = output_init_model_parameters$y,
         missing_indexes = output_sample_data_1$missing_indexes,
         siam = output_sample_data_1$wind_matrix,
-        w = output_sample_data_2$ws,
+        ws = output_sample_data_2$ws,
         rho = output_init_model_parameters$rho
     )
 

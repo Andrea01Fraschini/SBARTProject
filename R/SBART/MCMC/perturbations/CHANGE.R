@@ -62,7 +62,7 @@ CHANGE <- function(
     prop.split_rule <- value <- sort(unique(x.list[[prop.split_var]][obs.ind]))[sample(1:(unique.len - 1), 1) + 1]
 
     obs.left.star <- obs.ind[which(x.list[[prop.split_var]][obs.ind] < value)]
-    obs.right.star <- setdiff(obs.ind, obs.left)
+    obs.right.star <- setdiff(obs.ind, obs.left.star)
 
     leaves.left <- which(dt$position == 2 * singly.intern_nodes)
     leaves.right <- which(dt$position == 2 * singly.intern_nodes + 1)

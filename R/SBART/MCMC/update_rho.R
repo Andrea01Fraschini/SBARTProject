@@ -19,6 +19,7 @@ update_rho <- function(rho, proposal_sd_rho, w_post_full, n_locations_all, spati
   sourceCpp("src/CARBayes.cpp")
 
   proposal_rho <- rtruncnorm(n = 1, a = 0, b = 1, mean = rho, sd = proposal_sd_rho)
+  
   temp2 <- quadform(
             as.matrix(w_post_full$W.triplet),
             w_post_full$W.triplet.sum,

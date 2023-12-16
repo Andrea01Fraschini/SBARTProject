@@ -190,7 +190,7 @@ GROW <- function(
     trans_ratio <- log(prob.prune) + log(length(terminal_nodes)) - log(max(prop.prob[prop.split_var] / sum(prop.prob[enough.unique]), 0)) + log((unique.len - 1)) - log(prob.grow) - log(count) # unsure on prob.grow and prob.prune, in case replace with 0.28
 
     # Likelihood ratio (log scale)
-    source("CommonFunctions.R")
+    source("R/common/log_likelihood_ratio.R")
     likelihood_ratio <- log_likelihood_ratio(sigma2 = sigma2, sigma_mu = sigma_mu, residuals = residuals, obs.left = obs.left, obs.right = obs.right)
 
     # Structure ratio (log scale)

@@ -1,12 +1,12 @@
 update_dirichlet_alpha <- function(dt_list, p, j, warmup, dirichlet_alpha, a0, b0, cov_sel_prob) {
   dt.split_vars <- unlist(lapply(dt_list, function(x) x$split))
-  rules.count <- as.numeric(table(factor(dt.split_vars[!is.na(dt.split_vars)], levels = 1:p)))
+  rules_count <- as.numeric(table(factor(dt.split_vars[!is.na(dt.split_vars)], levels = 1:p)))
   
   if (j < warmup) {
-    posterior.dirichlet.alpha <- rep(1, p) + rules.count
+    posterior.dirichlet.alpha <- rep(1, p) + rules_count
   } else {
     proposal.dirichlet.alpha <- max(rnorm(1, dirichlet.alpha, 0.1), 0.1 ^ 10)
-    sum_s <- log(ifelse(cov.sel_prob < 0.1 ^ 300, 0.1 ^ 300, cov.sel_prob))
+    sum_s <- log(ifelse(cov_sel_prob < 0.1 ^ 300, 0.1 ^ 300, cov_sel_prob))
 
     dirichlet_likelihood <- function(x) {
       lik <- sum(sum_s * (rep(x, p) - 1)) +
@@ -33,10 +33,10 @@ update_dirichlet_alpha <- function(dt_list, p, j, warmup, dirichlet_alpha, a0, b
     if (log_ratio > log(runif(1))) {
       dirichlet.alpha <- proposal.dirichlet.alpha
     }
-    posterior.dirichlet.alpha <- rep(dirichlet.alpha / p, p) + rules.count
+    posterior.dirichlet.alpha <- rep(dirichlet.alpha / p, p) + rules_count
   }
 
-  cov.sel_prob <- rdirichlet(1, posterior.dirichlet.alpha)
+  cov_sel_prob <- rdirichlet(1, posterior.dirichlet.alpha)
   
-  return(cov.sel_prob)
+  return(list(cov_sel_prob = cov_sel_prob, rules_count = rules_count))
 }

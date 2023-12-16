@@ -109,10 +109,6 @@ Xpred1 <- do.call(cbind, cov)
 # Vector of X predictors
 Xpred <- cbind(x1,x2,x3,x4,x5, Xpred1)
 
-# CODE FOR TESTS
-output <- list(y = Y, x_predictors = Xpred, missing_indexes = mis.ind, wind_matrix = wind_mat)
-generate_output(output, "output_sample_data_1")
-# END CODE FOR TESTS
 
 ####################
 # Set the BART model
@@ -183,12 +179,6 @@ diag(W3) <- 0
 diag(W4) <- 0
 diag(W5) <- 0
 
-# CODE FOR TESTS-------------
-output <- list(ws = list(W1, W2, W3, W4, W5))
-generate_output(output, "output_sample_data_2")
-# END CODE FOR TESTS---------
-
-
 W.wind <- wind_mat*(W1^(I(a.weight==1)))*(W2^(I(a.weight==2)))*(W3^(I(a.weight==3)))*(W4^(I(a.weight==4)))*(W5^(I(a.weight==5)))
 W.wind <- W.wind[-mis.ind, -mis.ind]
 rownames(W.wind) <- 1:(n.full-length(mis.ind))
@@ -203,47 +193,10 @@ Wstar.eigen <- eigen(Wstar, symmetric=TRUE)
 Wstar.val <- Wstar.eigen$values
 det.Q <- 0.5 * sum(log((rho * Wstar.val + (1-rho))))
 
-set.seed(1)
 prop.prob <- rdirichlet(1, rep(dir.alpha,P))
 post.dir.alpha <- rep(1,P) # Posterior on selection probabilities
 mis.ind <- which(is.na(Y))
 R <- Y  # Initial values of R
-
-# CODE FOR TESTS-------------
-output <- list(
-    p = P,
-    n = length(Y[-mis.ind]),
-    n_locations_all = length(Y),
-    prob_grow = p.grow,
-    prob_prune = p.prune,
-    prob_change = p.change,
-    alpha = alpha,
-    beta = beta,
-    dirichlet_alpha = dir.alpha,
-    posterior_dirichlet_alpha = post.dir.alpha,
-    cov_sel_prob = prop.prob,
-    tau2_alpha = prior.tau2[1],
-    tau2_beta = prior.tau2[2],
-    tau2_posterior_shape = tau2.posterior.shape,
-    tau2 = tau2,
-    proposal_sd_rho = proposal.sd.rho,
-    rho = rho,
-    a0 = 0.5,
-    b0 = 1,
-    y = Y,
-    residuals = R,
-    sigma2 = sigma2,
-    nu = nu,
-    lambda = lambda,
-    sigma2_alpha = nu/2,
-    sigma2_beta = nu*lambda/2,
-    sigma_mu = sigma_mu,
-    missing_indexes = mis.ind
-)
-generate_output(output, "output_init_model_parameters")
-# END CODE FOR TESTS---------
-
-
 
 #####################################################################
 ############# Run main MCMC #########################################
@@ -256,7 +209,6 @@ Sigma2[1] <- 0.1
 
 # Missing index & Obj for imputed outcome
 Y.da <- matrix(nrow=length(mis.ind), ncol=n.iter)
-set.seed(1)
 Y.da[,1] <- rnorm(length(mis.ind), mean(Y, na.rm=TRUE), 1)
 Y[mis.ind] <- Y.da[,1]
 count <- 0
@@ -286,38 +238,6 @@ for(i in 1:P){
 xpred.mult[[P+1]] <- 1:(n)
 Xcut <- lapply(1:dim(Xpred)[2], function(t) sort(unique(Xpred[-mis.ind,t]))) # unique values of the predictors
 
-# CODE FOR TESTS-------------
-output <- list(
-    sigma2_samples = Sigma2,
-    rho_samples = rep(0, n.iter),
-    tau2_samples = rep(0, n.iter),
-    spatial_theta = spatial,
-    cov_sel = ind,
-    obs_list_ind = Obs_list,
-    dt_list = dt_list,
-    trees = Tree,
-    trees_pred = Tree11,
-    x_list = Xpred.list,
-    x_mult = xpred.mult,
-    x_unique = Xcut,
-    w_sel = 1,
-    w_sel_samples = NULL,
-    w_count = 5,
-    w_siam = W.wind,
-    w_siam_full = W.wind.full,
-    w_post = W.post,
-    w_post_full = W.post.full,
-    w_star = Wstar,
-    w_star_eigen = Wstar.eigen,
-    w_star_eigen_vals = Wstar.val,
-    det_q = det.Q,
-    y = Y,
-    missing_indexes = mis.ind,
-    y_da = Y.da
-)
-generate_output(output, "output_init_chain")
-# END CODE FOR TESTS---------
-
 # CODE ADDED BY US NOT KIM ----
 RHO <- rep(0, n.iter) 
 TAU2 <- rep(0, n.iter)
@@ -331,14 +251,6 @@ for(j in 2:n.iter){
         
         R <- Y[-mis.ind] - rowSums(Tree[,-t]) - spatial[-mis.ind]
 
-        # CODE FOR TESTS-------------
-        output <- list(
-            residuals = R
-        )
-        generate_output(output, "output_update_residuals", FALSE ,t == 1)
-        # END CODE FOR TESTS---------
-
-        set.seed(1)
         ### Find the depth of the tree (0 or 1 or 2)
         tree.length <- length(dt_list[[t]]$position)
         if(tree.length == 1){  # tree has no node yet
@@ -365,71 +277,24 @@ for(j in 2:n.iter){
             }}}
         }
 
-        # CODE FOR TESTS-------------
-        output <- list(
-            dt_list = dt_list,
-            obs_list_ind = Obs_list
-        )
-        generate_output(output, "output_sample_trees", FALSE, t==1)
-        # END CODE FOR TESTS---------
-        
-        set.seed(1)
         Mean <- Mean.Parameter(Sigma2[j-1], sigma_mu, dt=dt_list[[t]],  Obs=Obs_list[[t]], R, ind=2)
         Tree[,t] <- Mean$T
         dt_list[[t]] <- Mean$dt
-
-        # CODE FOR TESTS-------------
-        output <- list(
-            trees = Tree,
-            dt_list = dt_list
-        )
-        generate_output(output, "output_sample_means", FALSE, t==1)
-        # END CODE FOR TESTS---------
     }
 
-    # CODE FOR TESTS-------------
-    output <- list(
-        y = Y,
-        trees = Tree,
-        spatial_theta = spatial,
-        missing_indexes = mis.ind,
-        sigma2_alpha = nu/2,
-        sigma2_beta = nu*lambda/2,
-        n_locations_all = n.complete,
-        sigma2_samples = Sigma2,
-        j = j
-    )
-    generate_output(output, "input_sample_variance")
-    # END CODE FOR TESTS---------
-
-    set.seed(1)
     # Sample variance parameter
     Sigma2[j] <- MCMCpack::rinvgamma(1, nu/2+n.complete/2, scale = nu*lambda/2 + sum((Y[-mis.ind]-rowSums(Tree)-spatial[-mis.ind])^2)/2)
 
-    # CODE FOR TESTS-------------
-    output <- list(
-        sigma2_samples = Sigma2
-    )
-    generate_output(output, "output_sample_variance")
-    # END CODE FOR TESTS---------
 
     #######################################
     # Start update the spatial random effect
     #######################################
-    set.seed(1)
+
 
     offset <- (Y-rowSums(Tree11))
     spatial <- gaussiancarupdate(Wtriplet=W.post.full$W.triplet, Wbegfin=W.post.full$W.begfin, W.post.full$W.triplet.sum, nsites=length(Y), phi=spatial, tau2=tau2, rho=rho, nu2=Sigma2[j], offset=offset)   
     spatial <- spatial - mean(spatial)
     
-    # CODE FOR TESTS-------------
-    output <- list(
-        spatial_theta = spatial
-    )
-    generate_output(output, "output_update_spatial_effect")
-    # END CODE FOR TESTS---------
-    
-    set.seed(1)
     temp2 <- quadform(
               as.matrix(W.post.full$W.triplet), 
               W.post.full$W.triplet.sum, 
@@ -443,15 +308,6 @@ for(j in 2:n.iter){
     tau2 <- 1 / rgamma(1, tau2.posterior.shape, scale=(1/tau2.posterior.scale))
     TAU2[j] <- tau2
 
-    # CODE FOR TESTS-------------
-    output <- list(
-        tau2_samples = TAU2,
-        temp = temp2
-    )
-    generate_output(output, "output_update_tau")
-    # END CODE FOR TESTS---------
-    
-    set.seed(1)
     # update rho parameter
     proposal.rho <- rtruncnorm(n=1, a=0, b=1, mean=rho, sd=proposal.sd.rho)
     temp3 <- quadform(as.matrix(W.post.full$W.triplet), W.post.full$W.triplet.sum, W.post.full$n.triplet, length(Y), spatial, spatial, proposal.rho)
@@ -472,17 +328,7 @@ for(j in 2:n.iter){
       temp2 <- temp3
     }
     RHO[j] <- rho
-
-    # CODE FOR TESTS-------------
-    output <- list(
-        rho_samples = RHO,
-        det_q = det.Q,
-        temp = temp2
-    )
-    generate_output(output, "output_update_rho")
-    # END CODE FOR TESTS---------
    
-    set.seed(1)
     proposal.a.weight <- sample(1:5, 1)
     
     W.wind.proposal <- wind_mat*(W1^(I(proposal.a.weight==1)))*(W2^(I(proposal.a.weight==2)))*(W3^(I(proposal.a.weight==3)))*(W4^(I(proposal.a.weight==4)))*(W5^(I(proposal.a.weight==5)))
@@ -514,27 +360,6 @@ for(j in 2:n.iter){
     }
     A.WEIGHT[j] <- a.weight
 
-    # CODE FOR TESTS-------------
-    output <- list(
-        w_sel_samples = A.WEIGHT,
-        det_q = det.Q,
-        w_siam_full = W.wind.full,
-        w_post_full = W.post.full,
-        w_star = Wstar,
-        w_star_eigen = Wstar.eigen,
-        w_star_eigen_vals = Wstar.val
-    )
-    generate_output(output, "output_update_f")
-    # END CODE FOR TESTS---------
-
-    # CODE FOR TESTS-------------
-    output <- list(
-        dt_list = dt_list
-    )
-    generate_output(output, "input_update_dirichlet_alpha")
-    # END CODE FOR TESTS---------
-    
-    set.seed(1)
     DT <- unlist(lapply(dt_list, function(x) x$Split))
     add <- as.numeric(table(factor(DT[!is.na(DT)], levels=1:P)))
     
@@ -553,36 +378,8 @@ for(j in 2:n.iter){
     }
     
     prop.prob <- rdirichlet(1, post.dir.alpha)
-
-    # CODE FOR TESTS-------------
-    output <- list(
-      cov_sel_prob = prop.prob,
-      rules_count = add
-    )
-    generate_output(output, "output_update_dirichlet_alpha")
-    # END CODE FOR TESTS---------
-
-    # CODE FOR TESTS-------------
-    output <- list(
-        n_trees = m,
-        dt_list = dt_list,
-        x_list = Xpred.list,
-        x_mult = xpred.mult,
-        x_unique = Xcut,
-        n = n
-    )
-    generate_output(output, "input_predict")
-    # END CODE FOR TESTS---------
  
-    set.seed(1)
     Tree11 <- matrix(unlist(sapply(1:m, function(x) Mean.Parameter_pred(dt_list[[x]], 1))), ncol=m, nrow=n)
-
-    # CODE FOR TESTS-------------
-    output <- list(
-        trees_pred = Tree11
-    )
-    generate_output(output, "output_predict", TRUE)
-    # END CODE FOR TESTS---------
 
     # Data augmentation
     count <- count + 1
@@ -591,6 +388,17 @@ for(j in 2:n.iter){
     ind.temp<-ifelse(add > 0, 1, 0)
     ind <- rbind(ind, ind.temp)
 }
+
+# CODE FOR TESTS-------------
+    output <- list(
+        covariates_selection_chain = ind,
+        spatial_theta_chain = spatial,
+        sigma2_chain = Sigma2,
+        trees_chain = Tree11,
+        w_selection_chain = A.WEIGHT
+    )
+    generate_output(output, "output_sbart", TRUE)
+    # END CODE FOR TESTS---------
 
 save(Y.true, Y, shift,Y.da, mis.ind, A.WEIGHT, ind, Sigma2, file=paste0("Sim1_",process,".RData"))
 

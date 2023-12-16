@@ -14,8 +14,8 @@ describe("Test sample_variance function",{
         trees = input_sample_variance$trees,
         spatial_theta = input_sample_variance$spatial_theta,
         missing_indexes = input_sample_variance$missing_indexes,
-        sigma2_alpha = input_sample_variance$sigma2_alpha,
-        sigma2_beta = input_sample_variance$sigma2_beta,
+        sigma2_a = input_sample_variance$sigma2_a,
+        sigma2_b= input_sample_variance$sigma2_b,
         n_locations_all = input_sample_variance$n_locations_all,
         sigma2_samples = input_sample_variance$sigma2_samples,
         j = 2

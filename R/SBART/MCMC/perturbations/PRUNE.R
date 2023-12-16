@@ -60,12 +60,12 @@ PRUNE <- function(
     subset.ind < which(dt$position == 2 * singly.intern_nodes) # select first child leaf (left leaf)
     begin.left <- dt$begin[subset.ind]
     end.left <- dt$end[subset.ind]
-    obs.left <- obs[begin.left, end.left] 
+    obs.left <- obs[begin.left: end.left] 
 
     subset.ind < which(dt$position == 2 * singly.intern_nodes) # select second child leaf (right leaf)
     begin.right <- dt$begin[subset.ind]
     end.right <- dt$end[subset.ind]
-    obs.right <- obs[begin.right, end.right] 
+    obs.right <- obs[begin.right: end.right] 
 
     enough.unique <- which(mapply(function(x) length(unique(x.list[[x]][obs[begin:end]])), 1:p) >= 2) # indexes of covariates with enough unique values 
     prop.prob <- prop.prob[prop.split_var] / sum(prop.prob[enough.unique]) # P(selecting the jth attribute to split on)
