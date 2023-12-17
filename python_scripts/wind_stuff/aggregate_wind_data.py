@@ -21,6 +21,9 @@ for group in groups:
     speeds_10m = group_data['WE_wind_speed_10m_mean']
     speeds_100m = group_data['WE_wind_speed_100m_mean']
     
+    average_speed_10m = np.average(speeds_10m)
+    average_speed_100m = np.average(speeds_100m)
+
     directions_10m = group_data['WE_mode_wind_direction_10m']
     directions_100m = group_data['WE_mode_wind_direction_100m']
 
@@ -29,13 +32,17 @@ for group in groups:
     
     new_row = {'Longitude': lon, 'Latitude': lat, 
                'prevalent_direction_100m': avg_direction_100m, 
-               'prevalent_direction_10m':avg_direction_10m }
+               'average_speed_100m':average_speed_100m, 
+               'prevalent_direction_10m':avg_direction_10m, 
+               'average_speed_10m':average_speed_10m, 
+               }
     rows.append(new_row)
 
-# TODO: add average speed for data visualization
 aggregated_data = pd.DataFrame(rows, columns=['Longitude', 'Latitude', 
-                                              'prevalent_direction_100m', 
-                                              'prevalent_direction_10m'])
+                                              'prevalent_direction_100m',
+                                              'average_speed_100m',                                               
+                                              'prevalent_direction_10m',
+                                              'average_speed_10m'])
 
 print(aggregated_data.head())
 
