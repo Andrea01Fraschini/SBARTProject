@@ -1,3 +1,5 @@
+source("R/common/tree_utilities.R")
+
 # ---- Example of use: ---- 
 # trees_list <- list() 
 # example_dt <- list(
@@ -99,17 +101,4 @@ add_children_recursive <- function(dt, node_index, parent) {
         if (length(left_child_index) > 0) add_children_recursive(dt, left_child_index, current_node)
         if (length(right_child_index) > 0) add_children_recursive(dt, right_child_index, current_node)
     }
-}
-
-
-#' Add children (recursive)
-#' 
-#' Given a tree and the position of one of its nodes, returns the index where the data of that node can be found. 
-#'  
-#' @param tree A decision tree.
-#' @param node_position Position of a node in the tree.
-#' 
-#' @return the index of the node corresponding to the given position. If the node position is not in the tree, returns an empty array. 
-get_node_index_by_pos <- function(tree, node_position) {
-    return(which(tree$position == node_position))
 }

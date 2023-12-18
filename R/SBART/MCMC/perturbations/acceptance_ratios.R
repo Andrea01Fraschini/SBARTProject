@@ -1,22 +1,5 @@
+source("R/common/tree_utilities.R")
 # Sources: bartMachine appendix A (https://arxiv.org/abs/1312.2171), C. Kim (2022) (https://doi.org/10.1080/00949655.2022.2102633) appendix A.
-
-get_terminal_nodes <- function(tree) {
-    terminal_nodes <- which(tree$terminal)
-    return(terminal_nodes)
-}
-
-get_gen2_internal_nodes <- function(tree) {
-    terminal_nodes <- get_terminal_nodes(tree)
-    gen2_internal_nodes <- which(table(tree$parent[terminal_nodes]) == 2)
-    gen2_internal_nodes <- as.integer(names(gen2_internal_nodes)) # necessary due to the fact that table gives names to vector elements 
-    return(gen2_internal_nodes) 
-}
-
-get_node_depth <- function(tree, node_index) {
-    node_position <- tree$position[node_index]
-    depth <- floor(log2(node_position))
-    return(depth)
-}
 
 grow_log_transition_ratio <- function(
     grow_probability, 
