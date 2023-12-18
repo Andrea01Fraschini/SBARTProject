@@ -1,4 +1,4 @@
-rm(list = ls())
+rm(list = setdiff(ls(), "GLOBAL_test_environment_wd"))
 
 # Check if the code is running on GitHub Actions
 if (Sys.getenv("GITHUB_ACTIONS") == "true") {
@@ -6,5 +6,5 @@ if (Sys.getenv("GITHUB_ACTIONS") == "true") {
   setwd("/home/runner/work/SBARTProject/SBARTProject")
 } else {
   # Set the working directory for your local machine
-  setwd("C:/Users/camil/OneDrive - Universidad del Norte/Universidad POLIMI/Bayesian stats/CODE Bart/SBARTProject") 
+  setwd(GLOBAL_test_environment_wd) 
 }

@@ -1,5 +1,4 @@
-# source('../../env_setup_tests.R')
-  setwd("C:/Users/camil/OneDrive - Universidad del Norte/Universidad POLIMI/Bayesian stats/CODE Bart/SBARTProject") 
+source('../../env_setup_tests.R')
 
 library(testthat)
 source("R/library_imports.R")

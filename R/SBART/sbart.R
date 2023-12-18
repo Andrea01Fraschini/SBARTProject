@@ -89,6 +89,10 @@ sbart_fit <- function(
   missing_indexes <- vars$missing_indexes
   y_da <- vars$y_da
 
+  # Initialize tree structures history
+  tree_structures_history <- list()
+  tree_structures_history[[1]] <- dt_list
+
   # Run MCMC
   #
   # --------------------------
@@ -108,7 +112,6 @@ sbart_fit <- function(
             spatial_theta = spatial_theta,
             missing_indexes = missing_indexes
         )
-
 
       # Metropolis Hastings step to sample T_t
       #
@@ -262,6 +265,9 @@ sbart_fit <- function(
     # check which variables are in the model 
     cov_sel_temp <- ifelse(result_dirichlet$rules_count > 0, 1, 0)
     cov_sel <- rbind(cov_sel, cov_sel_temp)
+
+    # save current tree structure
+    tree_structures_history[[j]] <- dt_list
   }
 
   results <- list(
@@ -269,7 +275,8 @@ sbart_fit <- function(
         spatial_theta_chain = spatial_theta,
         sigma2_chain = sigma2_samples,
         trees_chain = trees_pred,
-        w_selection_chain = w_sel_samples
+        w_selection_chain = w_sel_samples,
+        dt_history = tree_structures_history
     )
 
   return(results)

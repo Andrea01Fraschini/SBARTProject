@@ -99,12 +99,12 @@ PRUNE <- function(
         subset.ind <- which(dt.new$position == singly.intern_nodes)
         dt.new$split[subset.ind] <- NA
         dt.new$value[subset.ind] <- NA
-        dt.new$termina[subset.ind] <- TRUE
+        dt.new$terminal[subset.ind] <- TRUE
         
         obs.new <- obs
         obs.new[begin:end] <- sort(obs[begin:end])
 
-        return(list(dt = dt, obs = obs.new))
+        return(list(dt = dt.new, obs = obs.new))
     }
 
     # reject new tree structure 

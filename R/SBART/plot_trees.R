@@ -1,6 +1,7 @@
-library(data.tree)
+source("R/common/tree_utilities.R")
 
-# ---- Example of use: ----  
+# ---- Example of use: ---- 
+# trees_list <- list() 
 # example_dt <- list(
 #     position = c(1, 2, 3, 6, 7), 
 #     terminal = c(FALSE, TRUE, FALSE, TRUE, TRUE), 
@@ -10,26 +11,31 @@ library(data.tree)
 #     (other fields) = (...) 
 # )
 #
-# plot_decision_tree(example_dt)
+# trees_list[[1]] <- exmaple_dt
+# plot_decision_trees(trees_list)
 # --------------------------
 
-
-#' Plot decision tree
+#' Plot decision trees
 #' 
-#' This function creates a plot of a single decision tree. 
+#' This function creates a single plot containing all decision trees. 
 #' 
-#' @param dt A decision tree. If no tree_format_adapter is specified, the tree must be a list with (at least) the following fileds: 
+#' @param trees A list of decision trees. If no tree_format_adapter is specified, the trees must be a list with (at least) the following fileds: 
 #' - position: position of the nodes, 
 #' - terminal: TRUE if the node is a leaf node, FALSE otherwise, 
 #' - split: indexes of the split variables, 
 #' - value: indexes of the values of the splitting constants (related to the splitting variables), 
 #' - mu: if the node is a leaf, this represents the prediction made by the node. 
-#' @param tree_format_adapter A function that takes dt as an agument and formats it in a specific way so that it can be plotted.
-#' 
+#' @param ncol An integer indicating the number of columns in the plot.
+#' @param nrow An integer indicating the number of rows in the plot.
+#' @param tree_format_adapter A function that takes a single tree as an agument and formats it in a specific way so that it can be plotted.
+#'
 #' @export 
-plot_decision_tree <- function(dt, tree_format_adapter = default_dt_adapter) {
-    adapted_tree <- tree_format_adapter(dt) 
-    plot(adapted_tree)
+plot_decision_trees <- function(trees, ncol = 10L, nrow = ceiling(length(trees)/ncol), tree_format_adapter = default_dt_adapter) {
+    tree_structures <- list()
+    for (i in 1:length(trees)) {
+        tree_structures[[i]] <- tree_format_adapter(trees[[i]])
+    }
+    combineWidgets(list = lapply(tree_structures, function(tree) plot(tree)), ncol = ncol, nrow = nrow)
 }
 
 #' Default DT adapter 
@@ -61,7 +67,7 @@ default_dt_adapter <- function(dt) {
 format_node_data <- function(dt, node_index) {
     node <- list()
     if (dt$terminal[node_index]) {
-        node$text <- dt$mu[node_index]
+        node$text <- toString(dt$mu[node_index])
         node$terminal <- TRUE
     } else {
         split_var <- dt$split[node_index]
@@ -95,17 +101,4 @@ add_children_recursive <- function(dt, node_index, parent) {
         if (length(left_child_index) > 0) add_children_recursive(dt, left_child_index, current_node)
         if (length(right_child_index) > 0) add_children_recursive(dt, right_child_index, current_node)
     }
-}
-
-
-#' Add children (recursive)
-#' 
-#' Given a tree and the position of one of its nodes, returns the index where the data of that node can be found. 
-#'  
-#' @param tree A decision tree.
-#' @param node_position Position of a node in the tree.
-#' 
-#' @return the index of the node corresponding to the given position. If the node position is not in the tree, returns an empty array. 
-get_node_index_by_pos <- function(tree, node_position) {
-    return(which(tree$position == node_position))
 }
