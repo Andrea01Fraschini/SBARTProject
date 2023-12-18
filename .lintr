@@ -1,0 +1,18 @@
+linters: linters_with_defaults(
+    line_length_linter(120),
+    commented_code_linter = NULL,
+    indentation_linter(indent = 4),
+    quotes_linter(delimiter = c("\""))
+  )
+exclusions: list(
+    "__LEGACY__",
+    ".github",
+    "data",
+    "docs",
+    "notebooks",
+    "output",
+    "python",
+    "renv",
+    "src"
+  )
+

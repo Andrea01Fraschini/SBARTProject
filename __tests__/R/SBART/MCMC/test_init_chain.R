@@ -2,7 +2,7 @@ source('../../../env_setup_tests.R')
 source("R/library_imports.R")
 library(testthat)
 
-describe("Test init_chain function",{
+describe("Test init_chain function", {
     source("R/SBART/MCMC/init_chain.R")
     source("output/KIM/output_sample_data_1.R")
     source("output/KIM/output_sample_data_2.R")

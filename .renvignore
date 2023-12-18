@@ -1,0 +1,16 @@
+library/
+local/
+cellar/
+lock/
+python/
+sandbox/
+staging/
+
+src/**/*
+python/**/*
+output/**/*
+notebooks/**/*
+docs/**/*
+data/**/*
+workflows/**/*
+__LEGACY__/**/*

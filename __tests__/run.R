@@ -1,15 +1,7 @@
 rm(list = ls())
+library(testthat)
 
 GLOBAL_test_environment_wd <- getwd()
-
-if (Sys.info()["sysname"] != "Linux") {
-  # CHANGE THIS PATH TO YOUR LOCAL PATH
-  GLOBAL_test_environment_wd <- "C:/Users/camil/OneDrive - Universidad del Norte/Universidad POLIMI/Bayesian stats/CODE Bart/SBARTProject" 
-}
-
-# if(!require("devtools")) install.packages("devtools", repos = "http://cran.us.r-project.org", dependencies = TRUE)
-# if(!require("testthat")) install.packages("testthat", repos = "http://cran.us.r-project.org", dependencies = TRUE)
-library(testthat)
 
 test_dir("__tests__/data")
 test_dir("__tests__/R/SBART")
