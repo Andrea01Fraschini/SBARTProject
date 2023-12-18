@@ -200,6 +200,7 @@ describe("Test step by step iteration 3 sbart",{
     cov_sel_prob <- params$cov_sel_prob
     tau2 <- params$tau2
     rho <- params$rho
+    dirichlet_alpha <- params$dirichlet_alpha
 
     for (j in 2:3){
         for(t in 1:50){
@@ -523,10 +524,10 @@ describe("Test step by step iteration 3 sbart",{
             p = params$p,
             j = j,
             warmup = 1000L,
-            dirichlet_alpha = params$dirichlet_alpha,
+            dirichlet_alpha = dirichlet_alpha,
             a0 = params$a0,
             b0 = params$b0,
-            cov_sel_prob = params$cov_sel_prob
+            cov_sel_prob = cov_sel_prob
         ) # cov_sel_prob, rules_count, dirichlet_alpha, posterior_dirichlet_alpha
 
         cov_sel_prob <- result_dirichlet$cov_sel_prob

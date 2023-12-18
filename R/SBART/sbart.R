@@ -65,6 +65,7 @@ sbart <- function(
   cov_sel_prob <- params$cov_sel_prob
   tau2 <- params$tau2
   rho <- params$rho
+  dirichlet_alpha <- params$dirichlet_alpha
 
   sigma2_samples <- vars$sigma2_samples
   rho_samples <- vars$rho_samples
@@ -241,10 +242,10 @@ sbart <- function(
         siam = siam,
         n_locations_all = params$n_locations_all,
         spatial_theta = spatial_theta,
-        rho = results_rho$rho_samples[j],
-        tau2 = results_tau2$tau2_samples[j],
-        det_q = results_rho$det_q,
-        temp = results_tau2$temp,
+        rho = rho_samples[j],
+        tau2 = tau2_samples[j],
+        det_q = det_q,
+        temp = temp,
         w_sel = w_sel,
         w_siam_full = w_siam_full,
         w_post_full = w_post_full,
@@ -272,10 +273,10 @@ sbart <- function(
         p = params$p,
         j = j,
         warmup = 1000L,
-        dirichlet_alpha = params$dirichlet_alpha,
+        dirichlet_alpha = dirichlet_alpha,
         a0 = params$a0,
         b0 = params$b0,
-        cov_sel_prob = params$cov_sel_prob
+        cov_sel_prob = cov_sel_prob
     )
 
     cov_sel_prob <- result_dirichlet$cov_sel_prob
