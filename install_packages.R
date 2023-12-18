@@ -13,3 +13,6 @@
   install.packages("Matrix", repos = "http://cran.us.r-project.org", Dependencies = TRUE)
   install.packages("invgamma", repos = "http://cran.us.r-project.org", Dependencies = TRUE)
   install.packages("progress", repos = "http://cran.us.r-project.org", Dependencies = TRUE)
+  install.packages("data.tree", repos = "http://cran.us.r-project.org", Dependencies = TRUE)
+  install.packages("DiagrammeR", repos = "http://cran.us.r-project.org", Dependencies = TRUE)
+  install.packages("manipulateWidget", repos = "http://cran.us.r-project.org", Dependencies = TRUE)
