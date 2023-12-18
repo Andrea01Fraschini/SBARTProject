@@ -74,9 +74,8 @@ mean.vector[wind_seed2] <- -2.5
 mean.vector[wind_seed3] <- 0.5
 
 
-for(process in 1:100){
+# for(process in 1:100){
 
-  set.seed(1)
   
 x1 <- rnorm(K, 1*(Grid[,1]/10-1)^2, 1.5)
 x2 <- rnorm(K, mean.vector, 1)
@@ -98,6 +97,7 @@ Y.true <- Y <- 2.5+1.5*x1 + 1.5*x2 - 1*x3 + 1.5*x4 -1.5*x5 + 0.25*x4*x5 + theta 
 missing <- mis.ind <- sample(1:225, 195, replace=F)
 Y[missing] <- NA
 
+  
 # Total 50 potential predictors
 P <- 50
 n <- 225
@@ -138,6 +138,7 @@ n.full <- length(Y)  # Num. of the locations
 
 n.complete <- length(which(!is.na(Y)))  # Num. of the locations with observation
 
+set.seed(1)
 
 # Initial Setup (priors, initial values and hyper-parameters)
 p.grow <- 0.28            # Prob. of GROW
@@ -417,5 +418,5 @@ for(j in 2:n.iter){
 
 save(Y.true, Y, shift,Y.da, mis.ind, A.WEIGHT, ind, Sigma2, file=paste0("Sim1_",process,".RData"))
 
-}
+# }
 

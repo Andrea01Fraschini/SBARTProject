@@ -6,7 +6,6 @@ python/
 sandbox/
 staging/
 
-src/**/*
 python/**/*
 output/**/*
 notebooks/**/*

@@ -41,6 +41,16 @@ sample_trees <- function(dt_list, prob_grow, prob_change, prob_prune, sigma2_sam
             sample(2:4, 1, prob = c(prob_grow, prob_prune, prob_change)) # Pick a perturbation 
         )
 
+  # debug_string <- switch(
+  #           step, # selection var 
+  #           "GROW.root",
+  #           "GROW",
+  #           "PRUNE",
+  #           "CHANGE",
+  #       )
+
+  # print(paste("Perturbation: ", debug_string, sep = ""))
+
   perturbation <- switch(
             step, # selection var 
             GROW.root,

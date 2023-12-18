@@ -346,7 +346,7 @@ for(j in 2:n.iter){
             x_mult = xpred.mult,
             x_unique = Xcut,
             w_sel = 1,
-            w_sel_samples = NULL,
+            w_sel_samples = A.WEIGHT,
             w_count = 5,
             w_siam = W.wind,
             w_siam_full = W.wind.full,
@@ -360,9 +360,41 @@ for(j in 2:n.iter){
             missing_indexes = mis.ind,
             y_da = Y.da
         )
-        generate_output(output, "output_loop_trees_3", FALSE ,t == 3)
+        generate_output(output, "output_loop_trees_3", FALSE ,t == 3 && j == 2)
         # END CODE FOR TESTS---------
 
+        # CODE FOR TESTS-------------
+        # Check all variables used in this loop
+        output <- list(
+            sigma2_samples = Sigma2,
+            rho_samples = RHO,
+            tau2_samples = TAU2,
+            spatial_theta = spatial,
+            cov_sel = ind,
+            obs_list_ind = Obs_list,
+            dt_list = dt_list,
+            trees = Tree,
+            trees_pred = Tree11,
+            x_list = Xpred.list,
+            x_mult = xpred.mult,
+            x_unique = Xcut,
+            w_sel = 1,
+            w_sel_samples = A.WEIGHT,
+            w_count = 5,
+            w_siam = W.wind,
+            w_siam_full = W.wind.full,
+            w_post = W.post,
+            w_post_full = W.post.full,
+            w_star = Wstar,
+            w_star_eigen = Wstar.eigen,
+            w_star_eigen_vals = Wstar.val,
+            det_q = det.Q,
+            y = Y,
+            missing_indexes = mis.ind,
+            y_da = Y.da
+        )
+        generate_output(output, "output_loop_trees_3_2", FALSE ,t == 3 && j == 3)
+        # END CODE FOR TESTS---------
 
         set.seed(1)
         R <- Y[-mis.ind] - rowSums(Tree[,-t]) - spatial[-mis.ind]
@@ -371,7 +403,14 @@ for(j in 2:n.iter){
         output <- list(
             residuals = R
         )
-        generate_output(output, "output_update_residuals", FALSE ,t == 1)
+        generate_output(output, "output_update_residuals", FALSE ,t == 1 && j == 2)
+        # END CODE FOR TESTS---------
+
+        # CODE FOR TESTS-------------
+        output <- list(
+            residuals = R
+        )
+        generate_output(output, "output_update_residuals_2", FALSE ,t == 1 && j == 3)
         # END CODE FOR TESTS---------
 
         set.seed(1)
@@ -406,7 +445,15 @@ for(j in 2:n.iter){
             dt_list = dt_list,
             obs_list_ind = Obs_list
         )
-        generate_output(output, "output_sample_trees", FALSE, t==1)
+        generate_output(output, "output_sample_trees", FALSE, t==1 && j == 2)
+        # END CODE FOR TESTS---------
+
+        # CODE FOR TESTS-------------
+        output <- list(
+            dt_list = dt_list,
+            obs_list_ind = Obs_list
+        )
+        generate_output(output, "output_sample_trees_2", FALSE, t==1 && j == 3)
         # END CODE FOR TESTS---------
         
         set.seed(1)
@@ -419,7 +466,15 @@ for(j in 2:n.iter){
             trees = Tree,
             dt_list = dt_list
         )
-        generate_output(output, "output_sample_means", FALSE, t==1)
+        generate_output(output, "output_sample_means", FALSE, t==1 && j == 2)
+        # END CODE FOR TESTS---------
+
+        # CODE FOR TESTS-------------
+        output <- list(
+            trees = Tree,
+            dt_list = dt_list
+        )
+        generate_output(output, "output_sample_means_2", FALSE, t==1 && j == 3)
         # END CODE FOR TESTS---------
     }
 
@@ -435,7 +490,22 @@ for(j in 2:n.iter){
         sigma2_samples = Sigma2,
         j = j
     )
-    generate_output(output, "input_sample_variance")
+    generate_output(output, "input_sample_variance", FALSE, j == 2)
+    # END CODE FOR TESTS---------
+
+     # CODE FOR TESTS-------------
+    output <- list(
+        y = Y,
+        trees = Tree,
+        spatial_theta = spatial,
+        missing_indexes = mis.ind,
+        sigma2_alpha = nu/2,
+        sigma2_beta = nu*lambda/2,
+        n = n.complete,
+        sigma2_samples = Sigma2,
+        j = j
+    )
+    generate_output(output, "input_sample_variance_2", FALSE, j == 3)
     # END CODE FOR TESTS---------
 
     set.seed(1)
@@ -446,7 +516,14 @@ for(j in 2:n.iter){
     output <- list(
         sigma2_samples = Sigma2
     )
-    generate_output(output, "output_sample_variance")
+    generate_output(output, "output_sample_variance", FALSE, j == 2)
+    # END CODE FOR TESTS---------
+
+    # CODE FOR TESTS-------------
+    output <- list(
+        sigma2_samples = Sigma2
+    )
+    generate_output(output, "output_sample_variance_2", FALSE, j == 3)
     # END CODE FOR TESTS---------
 
     #######################################
@@ -462,7 +539,14 @@ for(j in 2:n.iter){
     output <- list(
         spatial_theta = spatial
     )
-    generate_output(output, "output_update_spatial_effect")
+    generate_output(output, "output_update_spatial_effect", FALSE, j == 2)
+    # END CODE FOR TESTS---------
+
+    # CODE FOR TESTS-------------
+    output <- list(
+        spatial_theta = spatial
+    )
+    generate_output(output, "output_update_spatial_effect_2", FALSE, j == 3)
     # END CODE FOR TESTS---------
     
     set.seed(1)
@@ -484,7 +568,15 @@ for(j in 2:n.iter){
         tau2_samples = TAU2,
         temp = temp2
     )
-    generate_output(output, "output_update_tau")
+    generate_output(output, "output_update_tau", FALSE, j == 2)
+    # END CODE FOR TESTS---------
+
+    # CODE FOR TESTS-------------
+    output <- list(
+        tau2_samples = TAU2,
+        temp = temp2
+    )
+    generate_output(output, "output_update_tau_2", FALSE, j == 3)
     # END CODE FOR TESTS---------
     
     set.seed(1)
@@ -515,7 +607,16 @@ for(j in 2:n.iter){
         det_q = det.Q,
         temp = temp2
     )
-    generate_output(output, "output_update_rho")
+    generate_output(output, "output_update_rho", FALSE, j == 2)
+    # END CODE FOR TESTS---------
+
+    # CODE FOR TESTS-------------
+    output <- list(
+        rho_samples = RHO,
+        det_q = det.Q,
+        temp = temp2
+    )
+    generate_output(output, "output_update_rho_2", FALSE, j == 3)
     # END CODE FOR TESTS---------
    
     set.seed(1)
@@ -560,14 +661,27 @@ for(j in 2:n.iter){
         w_star_eigen = Wstar.eigen,
         w_star_eigen_vals = Wstar.val
     )
-    generate_output(output, "output_update_f")
+    generate_output(output, "output_update_f", FALSE, j == 2)
+    # END CODE FOR TESTS---------
+
+    # CODE FOR TESTS-------------
+    output <- list(
+        w_sel_samples = A.WEIGHT,
+        det_q = det.Q,
+        w_siam_full = W.wind.full,
+        w_post_full = W.post.full,
+        w_star = Wstar,
+        w_star_eigen = Wstar.eigen,
+        w_star_eigen_vals = Wstar.val
+    )
+    generate_output(output, "output_update_f_2", FALSE, j == 3)
     # END CODE FOR TESTS---------
 
     # CODE FOR TESTS-------------
     output <- list(
         dt_list = dt_list
     )
-    generate_output(output, "input_update_dirichlet_alpha")
+    generate_output(output, "input_update_dirichlet_alpha", FALSE, j == 2)
     # END CODE FOR TESTS---------
     
     set.seed(1)
@@ -597,7 +711,17 @@ for(j in 2:n.iter){
       dirichlet_alpha = dir.alpha,
       posterior_dirichlet_alpha = post.dir.alpha
     )
-    generate_output(output, "output_update_dirichlet_alpha")
+    generate_output(output, "output_update_dirichlet_alpha", FALSE, j == 2)
+    # END CODE FOR TESTS---------
+
+    # CODE FOR TESTS-------------
+    output <- list(
+      cov_sel_prob = prop.prob,
+      rules_count = add,
+      dirichlet_alpha = dir.alpha,
+      posterior_dirichlet_alpha = post.dir.alpha
+    )
+    generate_output(output, "output_update_dirichlet_alpha_2", FALSE, j == 3)
     # END CODE FOR TESTS---------
 
     # CODE FOR TESTS-------------
@@ -609,7 +733,7 @@ for(j in 2:n.iter){
         x_unique = Xcut,
         n = n
     )
-    generate_output(output, "input_predict")
+    generate_output(output, "input_predict", FALSE, j == 2)
     # END CODE FOR TESTS---------
  
     set.seed(1)
@@ -619,7 +743,14 @@ for(j in 2:n.iter){
     output <- list(
         trees_pred = Tree11
     )
-    generate_output(output, "output_predict", TRUE)
+    generate_output(output, "output_predict", FALSE, j == 2)
+    # END CODE FOR TESTS---------
+
+    # CODE FOR TESTS-------------
+    output <- list(
+        trees_pred = Tree11
+    )
+    generate_output(output, "output_predict_2", TRUE, j == 3)
     # END CODE FOR TESTS---------
 
     # Data augmentation

@@ -7,7 +7,7 @@ source("data/sample_data.R") # import the sample data
 data <- sample_data()
 
 # Train the model
-model <- sbart_fit(
+model <- sbart(
     x = data$x_predictors,
     y = data$y,
     ws = data$ws,

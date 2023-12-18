@@ -41,14 +41,6 @@ init_model_parameters <- function(x, y, siam, n_trees) {
   alpha <- 0.95
   beta <- 2
 
-  # Selection probabilities for covariates 
-  #
-  # (s_1, ... ,s_P) ∼ Dirichlet( α/P, ... ,α/P ) 
-  # --------------------------
-  dirichlet_alpha <- 1
-  posterior_dirichlet_alpha <- rep(1, p)
-  cov_sel_prob <- rdirichlet(1, rep(dirichlet_alpha, p))
-
   # Hyperparameters for spatial random effect 
   #
   # θ_i ∣ θ_(-i), ρ, τ^2 ∼  N(ρ (∑^n_(k=1) w_ikθ_k) / ρ (∑^n_{k=1} w_{ik})+1-ρ, τ^2 / ρ (∑^n_{k=1} w_{ik}) +1-ρ )
@@ -84,6 +76,14 @@ init_model_parameters <- function(x, y, siam, n_trees) {
   lambda <- uniroot.all(sigma_quantile, c(0.1 ^ 5, 10))
   sigma2_a <- nu / 2
   sigma2_b <- nu * lambda / 2
+
+  # Selection probabilities for covariates 
+  #
+  # (s_1, ... ,s_P) ∼ Dirichlet( α/P, ... ,α/P ) 
+  # --------------------------
+  dirichlet_alpha <- 1
+  posterior_dirichlet_alpha <- rep(1, p)
+  cov_sel_prob <- rdirichlet(1, rep(dirichlet_alpha, p))
 
   # Mean prior hyperparameters
   #

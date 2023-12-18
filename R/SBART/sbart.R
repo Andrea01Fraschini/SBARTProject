@@ -1,5 +1,5 @@
 
-sbart_fit <- function(
+sbart <- function(
     x,
     y,
     ws,
@@ -62,6 +62,10 @@ sbart_fit <- function(
       rho = params$rho
   )
 
+  cov_sel_prob <- params$cov_sel_prob
+  tau2 <- params$tau2
+  rho <- params$rho
+
   sigma2_samples <- vars$sigma2_samples
   rho_samples <- vars$rho_samples
   tau2_samples <- vars$tau2_samples
@@ -106,12 +110,12 @@ sbart_fit <- function(
       #
       # --------------------------
       residuals <- update_residuals(
-            y = y, 
-            trees = trees, 
-            t = t,
-            spatial_theta = spatial_theta,
-            missing_indexes = missing_indexes
-        )
+          y = y, 
+          trees = trees, 
+          t = t,
+          spatial_theta = spatial_theta,
+          missing_indexes = vars$missing_indexes
+      )
 
       # Metropolis Hastings step to sample T_t
       #
@@ -126,7 +130,7 @@ sbart_fit <- function(
           sigma_mu = params$sigma_mu,
           t = t,
           residuals = residuals,
-          cov_sel_prob = params$cov_sel_prob,
+          cov_sel_prob = cov_sel_prob,
           obs_list_ind = obs_list_ind,
           x_list = x_list,
           x_unique = x_unique,
@@ -182,8 +186,8 @@ sbart_fit <- function(
         w_post_full = w_post_full,
         n_locations_all = params$n_locations_all,
         spatial_theta = spatial_theta,
-        tau2 = params$tau2,
-        rho = params$rho,
+        tau2 = tau2,
+        rho = rho,
         sigma2_samples = sigma2_samples,
         j = j
     )
@@ -195,29 +199,38 @@ sbart_fit <- function(
         w_post_full = w_post_full,
         n_locations_all = params$n_locations_all,
         spatial_theta = spatial_theta,
-        rho = params$rho,
+        rho = rho,
         tau2_b = params$tau2_b,
         tau2_posterior_shape = params$tau2_posterior_shape,
         tau2_samples = tau2_samples,
         j = j
     )
 
+    tau2_samples <- results_tau2$tau2_samples
+    tau2 <- tau2_samples[j]
+    temp <- results_tau2$temp
+
     # Update rho based on Metropolis Hastings step
     #
     # --------------------------
     results_rho <- update_rho(
-        rho = params$rho,
+        rho = rho,
         proposal_sd_rho = params$proposal_sd_rho,
         w_post_full = w_post_full,
         n_locations_all = params$n_locations_all,
         spatial_theta = spatial_theta,
-        tau2 = params$tau2,
+        tau2 = tau2,
         w_star_eigen_vals = w_star_eigen_vals,
         det_q = det_q,
-        temp = results_tau2$temp,
+        temp = temp,
         rho_samples = rho_samples,
         j = j
     )
+
+    rho_samples <- results_rho$rho_samples
+    rho <- rho_samples[j]
+    temp <- results_rho$temp
+    det_q <- results_rho$det_q
 
     # update f based on Metropolis Hastings step
     #
@@ -242,6 +255,14 @@ sbart_fit <- function(
         j = j
     )
 
+    w_sel_samples <- results_f$w_sel_samples
+    det_q <- results_f$det_q
+    w_siam_full <- results_f$w_siam_full
+    w_post_full <- results_f$w_post_full
+    w_star <- results_f$w_star
+    w_star_eigen <- results_f$w_star_eigen
+    w_star_eigen_vals <- results_f$w_star_eigen_vals
+
 
     # Update dirichlet alpha 
     #
@@ -257,14 +278,20 @@ sbart_fit <- function(
         cov_sel_prob = params$cov_sel_prob
     )
 
+    cov_sel_prob <- result_dirichlet$cov_sel_prob
+    rules_count <- result_dirichlet$rules_count
+    dirichlet_alpha <- result_dirichlet$dirichlet_alpha
+    posterior_dirichlet_alpha <- result_dirichlet$posterior_dirichlet_alpha
+
+
     trees_pred <- matrix(unlist(sapply(1:n_trees, function(x) mean_predict(dt_list[[x]], x_list, x_mult, x_unique, params$n_locations_all))), nrow = params$n_locations_all, ncol = n_trees)
 
-    # TODO: Where these are updated? vars$x_list, vars$x_mult, vars$x_unique, and all the rest vars that are not returned by any function
-
-
     # check which variables are in the model 
-    cov_sel_temp <- ifelse(result_dirichlet$rules_count > 0, 1, 0)
+    cov_sel_temp<-ifelse(rules_count > 0, 1, 0)
     cov_sel <- rbind(cov_sel, cov_sel_temp)
+
+    y_da[,j-1] <- rnorm(length(missing_indexes), c(rowSums(trees_pred)+spatial_theta)[missing_indexes], sqrt(sigma2_samples[j]))
+    y[missing_indexes] <- y_da[,j-1]
 
     # save current tree structure
     tree_structures_history[[j]] <- dt_list
@@ -283,22 +310,22 @@ sbart_fit <- function(
 }
 
 
-sbart_predict <- function(sbart.output, X.test, missing_indexes) {
-  mean <- rowSums(sbart.output$trees_chain) + spatial
-  sigma2 <- sbart.output$sigma2_chain
+# sbart_predict <- function(sbart.output, X.test, missing_indexes) {
+#   mean <- rowSums(sbart.output$trees_chain) + spatial
+#   sigma2 <- sbart.output$sigma2_chain
 
-  chains_len <- length(sigma2)
-  n.trees <- dim(sbart.output$trees_chain)[2]
-  n.missing <- dim(X.test)[1]
-  y.missing <- matrix(nrow = n.missing, ncol = chains_len)
+#   chains_len <- length(sigma2)
+#   n.trees <- dim(sbart.output$trees_chain)[2]
+#   n.missing <- dim(X.test)[1]
+#   y.missing <- matrix(nrow = n.missing, ncol = chains_len)
 
-  count <- 0
-  for (i in 1:chains_len) {
-    for (j in 1:n.trees) {
-      count <- count + 1
-      y.missing[, count] <- rnorm(n.missing, c(mean)[missing_indexes], sigma2[j])
-    }
-  }
+#   count <- 0
+#   for (i in 1:chains_len) {
+#     for (j in 1:n.trees) {
+#       count <- count + 1
+#       y.missing[, count] <- rnorm(n.missing, c(mean)[missing_indexes], sigma2[j])
+#     }
+#   }
 
-  return(y.missing)
-}
+#   return(y.missing)
+# }
