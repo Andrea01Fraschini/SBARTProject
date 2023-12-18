@@ -5,6 +5,8 @@ Sys.setenv("PKG_CXXFLAGS"="-std=c++11")
 if (Sys.getenv("GITHUB_ACTIONS") == "true") {
   # Set the working directory for GitHub Actions
   setwd("/home/runner/work/SBARTProject/SBARTProject/__LEGACY__/KIM")
+} else if (Sys.info()["sysname"] == "Linux") {
+  setwd(getwd())
 } else {
   # Set the working directory for your local machine
   setwd("C:/Users/camil/OneDrive - Universidad del Norte/Universidad POLIMI/Bayesian stats/CODE Bart/SBARTProject/__LEGACY__/KIM") 
