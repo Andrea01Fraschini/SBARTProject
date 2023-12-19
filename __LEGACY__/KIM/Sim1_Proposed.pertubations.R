@@ -14,6 +14,9 @@ if (Sys.getenv("GITHUB_ACTIONS") == "true") {
 
 
 ### CODE FOR TESTS
+done_grow <- FALSE
+done_change <- FALSE
+done_prune <- FALSE
 generate_output <- function(output, filename, quit = FALSE, write = TRUE){
   if (write){
     path <- paste0("../../output/KIM/", filename, ".R")
@@ -185,12 +188,6 @@ diag(W3) <- 0
 diag(W4) <- 0
 diag(W5) <- 0
 
-# CODE FOR TESTS-------------
-output <- list(ws = list(W1, W2, W3, W4, W5))
-generate_output(output, "output_sample_data_2")
-# END CODE FOR TESTS---------
-
-
 W.wind <- wind_mat*(W1^(I(a.weight==1)))*(W2^(I(a.weight==2)))*(W3^(I(a.weight==3)))*(W4^(I(a.weight==4)))*(W5^(I(a.weight==5)))
 W.wind <- W.wind[-mis.ind, -mis.ind]
 rownames(W.wind) <- 1:(n.full-length(mis.ind))
@@ -210,42 +207,6 @@ prop.prob <- rdirichlet(1, rep(dir.alpha,P))
 post.dir.alpha <- rep(1,P) # Posterior on selection probabilities
 mis.ind <- which(is.na(Y))
 R <- Y  # Initial values of R
-
-# CODE FOR TESTS-------------
-output <- list(
-    p = P,
-    n = length(Y[-mis.ind]),
-    n_locations_all = length(Y),
-    prob_grow = p.grow,
-    prob_prune = p.prune,
-    prob_change = p.change,
-    alpha = alpha,
-    beta = beta,
-    dirichlet_alpha = dir.alpha,
-    posterior_dirichlet_alpha = post.dir.alpha,
-    cov_sel_prob = prop.prob,
-    tau2_alpha = prior.tau2[1],
-    tau2_beta = prior.tau2[2],
-    tau2_posterior_shape = tau2.posterior.shape,
-    tau2 = tau2,
-    proposal_sd_rho = proposal.sd.rho,
-    rho = rho,
-    a0 = 0.5,
-    b0 = 1,
-    y = Y,
-    residuals = R,
-    sigma2 = sigma2,
-    nu = nu,
-    lambda = lambda,
-    sigma2_alpha = nu/2,
-    sigma2_beta = nu*lambda/2,
-    sigma_mu = sigma_mu,
-    missing_indexes = mis.ind
-)
-generate_output(output, "output_init_model_parameters")
-# END CODE FOR TESTS---------
-
-
 
 #####################################################################
 ############# Run main MCMC #########################################
@@ -288,38 +249,6 @@ for(i in 1:P){
 xpred.mult[[P+1]] <- 1:(n)
 Xcut <- lapply(1:dim(Xpred)[2], function(t) sort(unique(Xpred[-mis.ind,t]))) # unique values of the predictors
 
-# CODE FOR TESTS-------------
-output <- list(
-    sigma2_samples = Sigma2,
-    rho_samples = rep(0, n.iter),
-    tau2_samples = rep(0, n.iter),
-    spatial_theta = spatial,
-    cov_sel = ind,
-    obs_list_ind = Obs_list,
-    dt_list = dt_list,
-    trees = Tree,
-    trees_pred = Tree11,
-    x_list = Xpred.list,
-    x_mult = xpred.mult,
-    x_unique = Xcut,
-    w_sel = 1,
-    w_sel_samples = NULL,
-    w_count = 5,
-    w_siam = W.wind,
-    w_siam_full = W.wind.full,
-    w_post = W.post,
-    w_post_full = W.post.full,
-    w_star = Wstar,
-    w_star_eigen = Wstar.eigen,
-    w_star_eigen_vals = Wstar.val,
-    det_q = det.Q,
-    y = Y,
-    missing_indexes = mis.ind,
-    y_da = Y.da
-)
-generate_output(output, "output_init_chain")
-# END CODE FOR TESTS---------
-
 # CODE ADDED BY US NOT KIM ----
 RHO <- rep(0, n.iter) 
 TAU2 <- rep(0, n.iter)
@@ -330,88 +259,9 @@ TAU2 <- rep(0, n.iter)
 for(j in 2:n.iter){
 
     for(t in 1:m){
-        # CODE FOR TESTS-------------
-        # Check all variables used in this loop
-        output <- list(
-            sigma2_samples = Sigma2,
-            rho_samples = RHO,
-            tau2_samples = TAU2,
-            spatial_theta = spatial,
-            cov_sel = ind,
-            obs_list_ind = Obs_list,
-            dt_list = dt_list,
-            trees = Tree,
-            trees_pred = Tree11,
-            x_list = Xpred.list,
-            x_mult = xpred.mult,
-            x_unique = Xcut,
-            w_sel = 1,
-            w_sel_samples = A.WEIGHT,
-            w_count = 5,
-            w_siam = W.wind,
-            w_siam_full = W.wind.full,
-            w_post = W.post,
-            w_post_full = W.post.full,
-            w_star = Wstar,
-            w_star_eigen = Wstar.eigen,
-            w_star_eigen_vals = Wstar.val,
-            det_q = det.Q,
-            y = Y,
-            missing_indexes = mis.ind,
-            y_da = Y.da
-        )
-        generate_output(output, "output_loop_trees_3", FALSE ,t == 3 && j == 2)
-        # END CODE FOR TESTS---------
-
-        # CODE FOR TESTS-------------
-        # Check all variables used in this loop
-        output <- list(
-            sigma2_samples = Sigma2,
-            rho_samples = RHO,
-            tau2_samples = TAU2,
-            spatial_theta = spatial,
-            cov_sel = ind,
-            obs_list_ind = Obs_list,
-            dt_list = dt_list,
-            trees = Tree,
-            trees_pred = Tree11,
-            x_list = Xpred.list,
-            x_mult = xpred.mult,
-            x_unique = Xcut,
-            w_sel = 1,
-            w_sel_samples = A.WEIGHT,
-            w_count = 5,
-            w_siam = W.wind,
-            w_siam_full = W.wind.full,
-            w_post = W.post,
-            w_post_full = W.post.full,
-            w_star = Wstar,
-            w_star_eigen = Wstar.eigen,
-            w_star_eigen_vals = Wstar.val,
-            det_q = det.Q,
-            y = Y,
-            missing_indexes = mis.ind,
-            y_da = Y.da
-        )
-        generate_output(output, "output_loop_trees_3_2", FALSE ,t == 3 && j == 3)
-        # END CODE FOR TESTS---------
 
         set.seed(1)
         R <- Y[-mis.ind] - rowSums(Tree[,-t]) - spatial[-mis.ind]
-
-        # CODE FOR TESTS-------------
-        output <- list(
-            residuals = R
-        )
-        generate_output(output, "output_update_residuals", FALSE ,t == 1 && j == 2)
-        # END CODE FOR TESTS---------
-
-        # CODE FOR TESTS-------------
-        output <- list(
-            residuals = R
-        )
-        generate_output(output, "output_update_residuals_2", FALSE ,t == 1 && j == 3)
-        # END CODE FOR TESTS---------
 
         if(j == 2 || j == 3){
         set.seed(1)
@@ -428,20 +278,128 @@ for(j in 2:n.iter){
         } else {
             step <- sample(1:3, 1, prob=c(p.grow, p.prune, p.change))  # Pick a step
             if(step==3){  # CHANGE step
+              
+              # CODE FOR TESTS-------------
+              done_change <- TRUE
+              print("CHANGE")
+              output <- list(
+                  dt_list = dt_list,
+                  obs_list_ind = Obs_list,
+                  sigma2_samples = Sigma2,
+                  j= j,
+                  t = t,
+                  sigma_mu = sigma_mu,
+                  residuals = R,
+                  cov_sel_prob = prop.prob,
+                  x_list = Xpred.list,
+                  x_unique = Xcut,
+                  n = n.complete,
+                  alpha = alpha,
+                  beta = beta,
+                  prob_grow = p.grow,
+                  prob_change = p.change,
+                  prob_prune = p.prune
+              )
+              generate_output(output, "input_change")
+              # END CODE FOR TESTS---------
+
+              set.seed(1)
+
               change.step <- CHANGE(sigma2=Sigma2[j-1], sigma_mu=sigma_mu, dt=dt_list[[t]], R=R, prop.prob=prop.prob, Obs=Obs_list[[t]], ind=2)
               dt_list[[t]] <- change.step$dt
               Obs_list[[t]] <- change.step$Obs
+
+              # CODE FOR TESTS-------------
+              output <- list(
+                  dt_list = dt_list,
+                  obs_list_ind = Obs_list
+              )
+              generate_output(output, "output_change")
+              # END CODE FOR TESTS---------
             }else{
             if(step==2){   # PRUNE step
+
+                # CODE FOR TESTS-------------
+                done_prune <- TRUE
+                print("PRUNE")
+                output <- list(
+                    dt_list = dt_list,
+                  obs_list_ind = Obs_list,
+                  sigma2_samples = Sigma2,
+                  j= j,
+                  t = t,
+                  sigma_mu = sigma_mu,
+                  residuals = R,
+                  cov_sel_prob = prop.prob,
+                  x_list = Xpred.list,
+                  x_unique = Xcut,
+                  n = n.complete,
+                  alpha = alpha,
+                  beta = beta,
+                  prob_grow = p.grow,
+                  prob_change = p.change,
+                  prob_prune = p.prune
+                )
+                generate_output(output, "input_prune")
+                # END CODE FOR TESTS---------
+
+                set.seed(1)
+
                 prune.step <- PRUNE(sigma2=Sigma2[j-1], sigma_mu=sigma_mu, dt=dt_list[[t]], R=R, prop.prob=prop.prob, Obs=Obs_list[[t]], ind=2)
                 dt_list[[t]] <- prune.step$dt
                 Obs_list[[t]] <- prune.step$Obs
+
+                # CODE FOR TESTS-------------
+                output <- list(
+                    dt_list = dt_list,
+                    obs_list_ind = Obs_list
+                )
+                generate_output(output, "output_prune")
             }else{
             if(step==1){   # GROW step
+
+              # CODE FOR TESTS-------------
+              done_grow <- TRUE
+              print("GROW")
+              output <- list(
+                  dt_list = dt_list,
+                  obs_list_ind = Obs_list,
+                  sigma2_samples = Sigma2,
+                  j= j,
+                  t = t,
+                  sigma_mu = sigma_mu,
+                  residuals = R,
+                  cov_sel_prob = prop.prob,
+                  x_list = Xpred.list,
+                  x_unique = Xcut,
+                  n = n.complete,
+                  alpha = alpha,
+                  beta = beta,
+                  prob_grow = p.grow,
+                  prob_change = p.change,
+                  prob_prune = p.prune
+              )
+              generate_output(output, "input_grow")
+              # END CODE FOR TESTS---------
+
+              set.seed(1)
+
               grow.step <- GROW(sigma2=Sigma2[j-1], sigma_mu=sigma_mu, dt=dt_list[[t]], R=R, prop.prob=prop.prob,  Obs=Obs_list[[t]], ind=2)
               dt_list[[t]] <- grow.step$dt
               Obs_list[[t]] <- grow.step$Obs
+
+              # CODE FOR TESTS-------------
+              output <- list(
+                  dt_list = dt_list,
+                  obs_list_ind = Obs_list
+              )
+              generate_output(output, "output_grow")
+              # END CODE FOR TESTS---------
             }}}
+
+            if(done_change && done_grow && done_prune){
+              quit(save="no")
+            }
         }
 
         # CODE FOR TESTS-------------
@@ -482,53 +440,9 @@ for(j in 2:n.iter){
         # END CODE FOR TESTS---------
     }
 
-    # CODE FOR TESTS-------------
-    output <- list(
-        y = Y,
-        trees = Tree,
-        spatial_theta = spatial,
-        missing_indexes = mis.ind,
-        sigma2_alpha = nu/2,
-        sigma2_beta = nu*lambda/2,
-        n = n.complete,
-        sigma2_samples = Sigma2,
-        j = j
-    )
-    generate_output(output, "input_sample_variance", FALSE, j == 2)
-    # END CODE FOR TESTS---------
-
-     # CODE FOR TESTS-------------
-    output <- list(
-        y = Y,
-        trees = Tree,
-        spatial_theta = spatial,
-        missing_indexes = mis.ind,
-        sigma2_alpha = nu/2,
-        sigma2_beta = nu*lambda/2,
-        n = n.complete,
-        sigma2_samples = Sigma2,
-        j = j
-    )
-    generate_output(output, "input_sample_variance_2", FALSE, j == 3)
-    # END CODE FOR TESTS---------
-
     set.seed(1)
     # Sample variance parameter
     Sigma2[j] <- MCMCpack::rinvgamma(1, nu/2+n.complete/2, scale = nu*lambda/2 + sum((Y[-mis.ind]-rowSums(Tree)-spatial[-mis.ind])^2)/2)
-
-    # CODE FOR TESTS-------------
-    output <- list(
-        sigma2_samples = Sigma2
-    )
-    generate_output(output, "output_sample_variance", FALSE, j == 2)
-    # END CODE FOR TESTS---------
-
-    # CODE FOR TESTS-------------
-    output <- list(
-        sigma2_samples = Sigma2
-    )
-    generate_output(output, "output_sample_variance_2", FALSE, j == 3)
-    # END CODE FOR TESTS---------
 
     #######################################
     # Start update the spatial random effect
@@ -538,20 +452,6 @@ for(j in 2:n.iter){
     offset <- (Y-rowSums(Tree11))
     spatial <- gaussiancarupdate(Wtriplet=W.post.full$W.triplet, Wbegfin=W.post.full$W.begfin, W.post.full$W.triplet.sum, nsites=length(Y), phi=spatial, tau2=tau2, rho=rho, nu2=Sigma2[j], offset=offset)   
     spatial <- spatial - mean(spatial)
-    
-    # CODE FOR TESTS-------------
-    output <- list(
-        spatial_theta = spatial
-    )
-    generate_output(output, "output_update_spatial_effect", FALSE, j == 2)
-    # END CODE FOR TESTS---------
-
-    # CODE FOR TESTS-------------
-    output <- list(
-        spatial_theta = spatial
-    )
-    generate_output(output, "output_update_spatial_effect_2", FALSE, j == 3)
-    # END CODE FOR TESTS---------
     
     set.seed(1)
     temp2 <- quadform(
@@ -566,22 +466,6 @@ for(j in 2:n.iter){
     tau2.posterior.scale <- temp2 + prior.tau2[2]
     tau2 <- 1 / rgamma(1, tau2.posterior.shape, scale=(1/tau2.posterior.scale))
     TAU2[j] <- tau2
-
-    # CODE FOR TESTS-------------
-    output <- list(
-        tau2_samples = TAU2,
-        temp = temp2
-    )
-    generate_output(output, "output_update_tau", FALSE, j == 2)
-    # END CODE FOR TESTS---------
-
-    # CODE FOR TESTS-------------
-    output <- list(
-        tau2_samples = TAU2,
-        temp = temp2
-    )
-    generate_output(output, "output_update_tau_2", FALSE, j == 3)
-    # END CODE FOR TESTS---------
     
     set.seed(1)
     # update rho parameter
@@ -604,24 +488,6 @@ for(j in 2:n.iter){
       temp2 <- temp3
     }
     RHO[j] <- rho
-
-    # CODE FOR TESTS-------------
-    output <- list(
-        rho_samples = RHO,
-        det_q = det.Q,
-        temp = temp2
-    )
-    generate_output(output, "output_update_rho", FALSE, j == 2)
-    # END CODE FOR TESTS---------
-
-    # CODE FOR TESTS-------------
-    output <- list(
-        rho_samples = RHO,
-        det_q = det.Q,
-        temp = temp2
-    )
-    generate_output(output, "output_update_rho_2", FALSE, j == 3)
-    # END CODE FOR TESTS---------
    
     set.seed(1)
     proposal.a.weight <- sample(1:5, 1)
@@ -654,39 +520,6 @@ for(j in 2:n.iter){
       Wstar.val <- Wstar.val.proposal
     }
     A.WEIGHT[j] <- a.weight
-
-    # CODE FOR TESTS-------------
-    output <- list(
-        w_sel_samples = A.WEIGHT,
-        det_q = det.Q,
-        w_siam_full = W.wind.full,
-        w_post_full = W.post.full,
-        w_star = Wstar,
-        w_star_eigen = Wstar.eigen,
-        w_star_eigen_vals = Wstar.val
-    )
-    generate_output(output, "output_update_f", FALSE, j == 2)
-    # END CODE FOR TESTS---------
-
-    # CODE FOR TESTS-------------
-    output <- list(
-        w_sel_samples = A.WEIGHT,
-        det_q = det.Q,
-        w_siam_full = W.wind.full,
-        w_post_full = W.post.full,
-        w_star = Wstar,
-        w_star_eigen = Wstar.eigen,
-        w_star_eigen_vals = Wstar.val
-    )
-    generate_output(output, "output_update_f_2", FALSE, j == 3)
-    # END CODE FOR TESTS---------
-
-    # CODE FOR TESTS-------------
-    output <- list(
-        dt_list = dt_list
-    )
-    generate_output(output, "input_update_dirichlet_alpha", FALSE, j == 2)
-    # END CODE FOR TESTS---------
     
     set.seed(1)
     DT <- unlist(lapply(dt_list, function(x) x$Split))
@@ -707,55 +540,9 @@ for(j in 2:n.iter){
     }
     
     prop.prob <- rdirichlet(1, post.dir.alpha)
-
-    # CODE FOR TESTS-------------
-    output <- list(
-      cov_sel_prob = prop.prob,
-      rules_count = add,
-      dirichlet_alpha = dir.alpha,
-      posterior_dirichlet_alpha = post.dir.alpha
-    )
-    generate_output(output, "output_update_dirichlet_alpha", FALSE, j == 2)
-    # END CODE FOR TESTS---------
-
-    # CODE FOR TESTS-------------
-    output <- list(
-      cov_sel_prob = prop.prob,
-      rules_count = add,
-      dirichlet_alpha = dir.alpha,
-      posterior_dirichlet_alpha = post.dir.alpha
-    )
-    generate_output(output, "output_update_dirichlet_alpha_2", FALSE, j == 3)
-    # END CODE FOR TESTS---------
-
-    # CODE FOR TESTS-------------
-    output <- list(
-        n_trees = m,
-        dt_list = dt_list,
-        x_list = Xpred.list,
-        x_mult = xpred.mult,
-        x_unique = Xcut,
-        n = n
-    )
-    generate_output(output, "input_predict", FALSE, j == 2)
-    # END CODE FOR TESTS---------
  
     set.seed(1)
     Tree11 <- matrix(unlist(sapply(1:m, function(x) Mean.Parameter_pred(dt_list[[x]], 1))), ncol=m, nrow=n)
-
-    # CODE FOR TESTS-------------
-    output <- list(
-        trees_pred = Tree11
-    )
-    generate_output(output, "output_predict", FALSE, j == 2)
-    # END CODE FOR TESTS---------
-
-    # CODE FOR TESTS-------------
-    output <- list(
-        trees_pred = Tree11
-    )
-    generate_output(output, "output_predict_2", FALSE, j == 3)
-    # END CODE FOR TESTS---------
 
     # Data augmentation
     count <- count + 1
