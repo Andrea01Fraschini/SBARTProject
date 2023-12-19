@@ -413,11 +413,7 @@ for(j in 2:n.iter){
         generate_output(output, "output_update_residuals_2", FALSE ,t == 1 && j == 3)
         # END CODE FOR TESTS---------
 
-        if(j == 2 || j == 3){
         set.seed(1)
-        }else{
-        set.seed(j-1)
-        }
         ### Find the depth of the tree (0 or 1 or 2)
         tree.length <- length(dt_list[[t]]$position)
         if(tree.length == 1){  # tree has no node yet
