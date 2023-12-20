@@ -1,22 +1,28 @@
-# Getting Started
+## Get started
 
-## Run model
+### Install dependencies
 
-This guide will help you set up and run the code. Follow the steps below:
+```
+ renv::restore()
+```
 
-1. **Set up your environment**: Open the `env_setup.R` file and replace the placeholder path with the actual path to your working directory. 
+### Run the project
 
-2. **Install necessary packages**: Run the `install_packages.R` script. This will install all the necessary R packages. Make sure to do this in an R notebook for best results.
+You can either run the console version by executing "main.R" file or Run the more user friendly version.
 
-3. **Run model**: Open the `main.R` file and run the script.
+#### Console version
 
+```
+ renv::run("main.R") 
+```
 
-## Run tests
+#### UI version
 
-1. **Set up your environment**: Open the `env_setup_tests.R` file and replace the placeholder path with the actual path to your working directory. 
+```R
+ shiny::runApp()
+```
 
-2. **Update the run.R script**: Open the `run.R` file and replace the placeholder path with the path to your working directory.
-
-3. **Run the tests**: After setting up your environment and installing the packages, you can run the tests to make sure everything is working correctly.
-
-Remember to replace all placeholder paths with actual paths to your working directory. The placeholder paths are just examples and will not work on your machine.
+### Run the test
+```
+ renv::run("__tests__/run.R") 
+```

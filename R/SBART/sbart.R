@@ -7,7 +7,8 @@ sbart <- function(
     missing_indexes,
     n_trees = 50L,
     n_iterations = 10000L,
-    warmup = 1000L
+    warmup = 1000L,
+    progress = NULL
 ) {
 
   # Set progress bar
@@ -102,9 +103,6 @@ sbart <- function(
   #
   # --------------------------
   for (j in 2:n_iterations) {
-    # Update progress bar
-    pb$tick()
-
     for (t in 1:n_trees) {
 
       # Update residuals
@@ -296,6 +294,16 @@ sbart <- function(
 
     # save current tree structure
     tree_structures_history[[j]] <- dt_list
+
+    # Update progress bar
+    pb$tick()
+
+    if (!is.null(progress)) {
+      progress(
+            iteration = j,
+            dt_list = dt_list
+      )
+    }
   }
 
   results <- list(
