@@ -25,7 +25,7 @@ In the above image, if we consider 60° as the angle parameter, we'll have that 
 To compute whether a point is in the cone of influence, we must use some linear algebra. I'm sure there is a better way, but this is all I could think.
 
 Let $\mathbf{c} = (c_x, c_y)$ be a point on the map, $\mathbf{w} = (w_x, w_y)$ the prevailing wind vector in that point and $\theta$ the angle parameter. Then we can define two other vectors $\mathbf{u}$ and $\mathbf{v}$ in this way:
-```math
+$$
     \mathbf{u} = \left(
         \matrix{
             \cos{\theta} & -\sin{\theta}\cr
@@ -44,7 +44,7 @@ Let $\mathbf{c} = (c_x, c_y)$ be a point on the map, $\mathbf{w} = (w_x, w_y)$ t
             -w_x\sin{\theta} - w_y\cos{\theta}
         }
         \right)
-```
+$$
 $$
     \mathbf{v} = \left(
         \matrix{
