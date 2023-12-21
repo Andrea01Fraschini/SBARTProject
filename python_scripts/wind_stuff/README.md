@@ -8,4 +8,18 @@ The scripts and their functions are:
 - **convert_wind_data.py**: converts cathegorical data in *AGC_Wind_Data.csv* to numerical data for processing and creates the file *Converted_AGC_Wind_Data.csv*
 - **aggregate_wind_data.py**: aggregates time series data from *Converted_AGC_Wind_Data.csv* into point data for each point in the grid and creates the file *Aggregated_wind_data.csv*
 
-The other scripts are for other stuff idk we'll see.
+# Wind adjacency algorithm
+
+It's an implementation of what Kim did in [the paper](https://doi.org/10.1080/00949655.2022.2102633). It builds an adjacency matrix in which adjacency between a given point and any other is considered present if the second point is inside an area determined by the prevailing wind speed at the first point and by an arbitrary angle parameter.
+
+<img src="images/image.png" alt="algorithm diagram" style="
+    width: 60%;
+    max-width: 600px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+"/>
+
+In the above image, if we consider 60° as the angle parameter, we'll have that _L_ is adjacent only to _B_ and _C_ (note that adjacency is a **symmetric** relationship). If we instead consider 75°, then _A_ and _D_ will **also** be considered adjacent to _L_. Note that in this case the distance between points is not considered. The distance matrix will be automatically selected by the SBART algorithm and used as a weight for this wind adjacency matrix.
+
+To compute whether a point is in the cone of influence
