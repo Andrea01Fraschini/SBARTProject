@@ -25,7 +25,7 @@ In the above image, if we consider 60° as the angle parameter, we'll have that 
 To compute whether a point is in the cone of influence, we must use some linear algebra. I'm sure there is a better way, but this is all I could think.
 
 Let $\mathbf{c} = (c_x, c_y)$ be a point on the map, $\mathbf{w} = (w_x, w_y)$ the prevailing wind vector in that point and $\theta$ the angle parameter. Then we can define two other vectors $\mathbf{u}$ and $\mathbf{v}$ in this way:
-$$
+```math
     \mathbf{u} = \left(
         \matrix{
             \cos{\theta} & -\sin{\theta}\cr
@@ -44,7 +44,8 @@ $$
             -w_x\sin{\theta} - w_y\cos{\theta}
         }
         \right)
-    \\
+```
+```math
     \mathbf{v} = \left(
         \matrix{
             \cos{(-\theta)} & -\sin{(-\theta)}\cr
@@ -63,7 +64,7 @@ $$
             +w_x\sin{\theta} - w_y\cos{\theta}
         }
         \right)
-$$
+```
 
 Note that the matrix $\left( \matrix{\cos{\theta} & -\sin{\theta} \cr \sin{\theta} & \cos{\theta}}\right)$ is the **transformation matrix** that rotates the points in the plane counterclockwise through an angle of $\theta$ about the origin. The vectors obtained are represented in the image below:
 
@@ -78,11 +79,11 @@ Note that the matrix $\left( \matrix{\cos{\theta} & -\sin{\theta} \cr \sin{\thet
 With these two vectors ($\mathbf{u}$ and $\mathbf{v}$) we can define the points in the shaded area:
 
 A point $\mathbf{d}$ is adjacent to $\mathbf{c}$ (is in the shaded area) if there exist two **non-negative** numbers $s$ and $t$ such that:
-$$
+```math
     \mathbf{d} = \mathbf{c} + s \mathbf{u} + t \mathbf{v}
-$$
+```
 If we define $\mathbf{d'} = \mathbf{d}-\mathbf{c} = (x,y)$ and we expand the expression, we can rewrite it as a $2\times 2$ linear system.
-$$
+```
     \left(
         \matrix{
             -w_x\cos{\theta} + w_y\sin{\theta} & -w_x\cos{\theta} - w_y\sin{\theta}\cr
@@ -102,9 +103,9 @@ $$
             y
         }
     \right)
-$$
+```
 Notice that as long as $\theta$ is between $0$ and $\pi/2$ both excluded, then $u$ and $v$ are linearly indipendent and so the system admits a unique solution given by the expression below.
-$$
+```math
     \left(
         \matrix{
             s \cr
@@ -124,9 +125,9 @@ $$
             y
         }
     \right)
-$$
+```
 The matrix is always invertible and is equal to...
-$$
+```math
     \left(
         \matrix{
             -w_x\cos{\theta} + w_y\sin{\theta} & -w_x\cos{\theta} - w_y\sin{\theta}\cr
@@ -140,5 +141,5 @@ $$
             w_x\sin{\theta} + w_y\cos{\theta} & w_y\sin{\theta}-w_x\cos{\theta}
         }
     \right)
-$$ 
+```
 If the components of the solution are all non negative, then $\mathbf{d}$ is in the shaded region and therefore adjacent to $\mathbf{c}$, otherwise no.
