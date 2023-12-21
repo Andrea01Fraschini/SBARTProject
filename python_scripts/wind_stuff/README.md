@@ -27,42 +27,42 @@ To compute whether a point is in the cone of influence, we must use some linear 
 Let $\mathbf{c} = (c_x, c_y)$ be a point on the map, $\mathbf{w} = (w_x, w_y)$ the prevailing wind vector in that point and $\theta$ the angle parameter. Then we can define two other vectors $\mathbf{u}$ and $\mathbf{v}$ in this way:
 $$
     \mathbf{u} = \left(
-        \begin{array}{cc}
-            \cos{\theta} & -\sin{\theta}\\
+        \matrix{
+            \cos{\theta} & -\sin{\theta}\cr
             \sin{\theta} & \cos{\theta}
-        \end{array}
+        }
         \right)(-\mathbf{w}) =
         \left(
-        \begin{array}{cc}
-            -\cos{\theta} & \sin{\theta}\\
+        \matrix{
+            -\cos{\theta} & \sin{\theta}\cr
             -\sin{\theta} & -\cos{\theta}
-        \end{array}
+        }
         \right)\mathbf{w} = 
         \left(
-        \begin{array}{c}
-            -w_x\cos{\theta} + w_y\sin{\theta}\\
+        \matrix{
+            -w_x\cos{\theta} + w_y\sin{\theta}\cr
             -w_x\sin{\theta} - w_y\cos{\theta}
-        \end{array}
+        }
         \right)
 $$
 $$
     \mathbf{v} = \left(
-        \begin{array}{cc}
-            \cos{(-\theta)} & -\sin{(-\theta)}\\
+        \matrix{
+            \cos{(-\theta)} & -\sin{(-\theta)}\cr
             \sin{(-\theta)} & \cos{(-\theta)}
-        \end{array}
+        }
         \right)(-\mathbf{w}) = 
         \left(
-        \begin{array}{cc}
-            -\cos{\theta} & -\sin{\theta}\\
+        \matrix{
+            -\cos{\theta} & -\sin{\theta}\cr
             \sin{\theta} & -\cos{\theta}
-        \end{array}
+        }
         \right)\mathbf{w} = 
         \left(
         \begin{array}{c}
-            -w_x\cos{\theta} - w_y\sin{\theta}\\
+            -w_x\cos{\theta} - w_y\sin{\theta}\cr
             +w_x\sin{\theta} - w_y\cos{\theta}
-        \end{array}
+        }
         \right)
 $$
 
@@ -85,61 +85,61 @@ $$
 If we define $\mathbf{d'} = \mathbf{d}-\mathbf{c} = (x,y)$ and we expand the expression, we can rewrite it as a $2\times 2$ linear system.
 $$
     \left(
-        \begin{array}{cc}
-            -w_x\cos{\theta} + w_y\sin{\theta} & -w_x\cos{\theta} - w_y\sin{\theta}\\
+        \matrix{
+            -w_x\cos{\theta} + w_y\sin{\theta} & -w_x\cos{\theta} - w_y\sin{\theta}\cr
             -w_x\sin{\theta} - w_y\cos{\theta} & +w_x\sin{\theta} - w_y\cos{\theta}
-        \end{array}
+        }
     \right)
     \left(
-        \begin{array}{c}
+        \matrix{
             s \\
             t
-        \end{array}
+        }
     \right)
     =
     \left(
-        \begin{array}{c}
+        \matrix{
             x \\
             y
-        \end{array}
+        }
     \right)
 $$
 Notice that as long as $\theta$ is between $0$ and $\pi/2$ both excluded, then $u$ and $v$ are linearly indipendent and so the system admits a unique solution given by the expression below.
 $$
     \left(
-        \begin{array}{c}
+        \matrix{
             s \\
             t
-        \end{array}
+        }
     \right)
     =
     \left(
-        \begin{array}{cc}
+        \matrix{
             -w_x\cos{\theta} + w_y\sin{\theta} & -w_x\cos{\theta} - w_y\sin{\theta}\\
             -w_x\sin{\theta} - w_y\cos{\theta} & +w_x\sin{\theta} - w_y\cos{\theta}
-        \end{array}
+        }
     \right)^{-1}
     \left(
-        \begin{array}{c}
+        \matrix{
             x \\
             y
-        \end{array}
+        }
     \right)
 $$
 The matrix is always invertible and is equal to...
 $$
     \left(
-        \begin{array}{cc}
+        \matrix{
             -w_x\cos{\theta} + w_y\sin{\theta} & -w_x\cos{\theta} - w_y\sin{\theta}\\
             -w_x\sin{\theta} - w_y\cos{\theta} & +w_x\sin{\theta} - w_y\cos{\theta}
-        \end{array}
+        }
     \right)^{-1} = 
     \frac{1}{-(w_x^2+w_y^2)\sin{(2\theta)}}
     \left(
-        \begin{array}{cc}
+        \matrix{
             w_x\sin{\theta} - w_y\cos{\theta} & w_x\cos{\theta} + w_y\sin{\theta}\\
             w_x\sin{\theta} + w_y\cos{\theta} & w_y\sin{\theta}-w_x\cos{\theta}
-        \end{array}
+        }
     \right)
 $$ 
 If the components of the solution are all non negative, then $\mathbf{d}$ is in the shaded region and therefore adjacent to $\mathbf{c}$, otherwise no.
