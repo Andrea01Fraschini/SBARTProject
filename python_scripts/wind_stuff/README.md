@@ -24,20 +24,20 @@ In the above image, if we consider 60° as the angle parameter, we'll have that 
 
 To compute whether a point is in the cone of influence, we must use some linear algebra. I'm sure there is a better way, but this is all I could think.
 
-Let $\bold{c} = (c_x, c_y)$ be a point on the map, $\bold{w} = (w_x, w_y)$ the prevailing wind vector in that point and $\theta$ the angle parameter. Then we can define two other vectors $\bold{u}$ and $\bold{v}$ in this way:
+Let $\mathbf{c} = (c_x, c_y)$ be a point on the map, $\mathbf{w} = (w_x, w_y)$ the prevailing wind vector in that point and $\theta$ the angle parameter. Then we can define two other vectors $\mathbf{u}$ and $\mathbf{v}$ in this way:
 $$
-    \bold{u} = \left(
+    \mathbf{u} = \left(
         \begin{array}{cc}
             \cos{\theta} & -\sin{\theta}\\
             \sin{\theta} & \cos{\theta}
         \end{array}
-        \right)(-\bold{w}) =
+        \right)(-\mathbf{w}) =
         \left(
         \begin{array}{cc}
             -\cos{\theta} & \sin{\theta}\\
             -\sin{\theta} & -\cos{\theta}
         \end{array}
-        \right)\bold{w} = 
+        \right)\mathbf{w} = 
         \left(
         \begin{array}{c}
             -w_x\cos{\theta} + w_y\sin{\theta}\\
@@ -46,18 +46,18 @@ $$
         \right)
 $$
 $$
-    \bold{v} = \left(
+    \mathbf{v} = \left(
         \begin{array}{cc}
             \cos{(-\theta)} & -\sin{(-\theta)}\\
             \sin{(-\theta)} & \cos{(-\theta)}
         \end{array}
-        \right)(-\bold{w}) = 
+        \right)(-\mathbf{w}) = 
         \left(
         \begin{array}{cc}
             -\cos{\theta} & -\sin{\theta}\\
             \sin{\theta} & -\cos{\theta}
         \end{array}
-        \right)\bold{w} = 
+        \right)\mathbf{w} = 
         \left(
         \begin{array}{c}
             -w_x\cos{\theta} - w_y\sin{\theta}\\
@@ -76,13 +76,13 @@ Note that the matrix $\left(\begin{array}{cc}\cos{\theta} & -\sin{\theta}\\\sin{
     margin-right: auto;
 "/>
 
-With these two vectors ($\bold{u}$ and $\bold{v}$) we can define the points in the shaded area:
+With these two vectors ($\mathbf{u}$ and $\mathbf{v}$) we can define the points in the shaded area:
 
-A point $\bold{d}$ is adjacent to $\bold{c}$ (is in the shaded area) if there exist two **non-negative** numbers $s$ and $t$ such that:
+A point $\mathbf{d}$ is adjacent to $\mathbf{c}$ (is in the shaded area) if there exist two **non-negative** numbers $s$ and $t$ such that:
 $$
-    \bold{d} = \bold{c} + s \bold{u} + t \bold{v}
+    \mathbf{d} = \mathbf{c} + s \mathbf{u} + t \mathbf{v}
 $$
-If we define $\bold{d'} = \bold{d}-\bold{c} = (x,y)$ and we expand the expression, we can rewrite it as a $2\times 2$ linear system.
+If we define $\mathbf{d'} = \mathbf{d}-\mathbf{c} = (x,y)$ and we expand the expression, we can rewrite it as a $2\times 2$ linear system.
 $$
     \left(
         \begin{array}{cc}
@@ -142,4 +142,4 @@ $$
         \end{array}
     \right)
 $$ 
-If the components of the solution are all non negative, then $\bold{d}$ is in the shaded region and therefore adjacent to $\bold{c}$, otherwise no.
+If the components of the solution are all non negative, then $\mathbf{d}$ is in the shaded region and therefore adjacent to $\mathbf{c}$, otherwise no.
