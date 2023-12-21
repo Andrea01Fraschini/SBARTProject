@@ -83,7 +83,7 @@ A point $\mathbf{d}$ is adjacent to $\mathbf{c}$ (is in the shaded area) if ther
     \mathbf{d} = \mathbf{c} + s \mathbf{u} + t \mathbf{v}
 ```
 If we define $\mathbf{d'} = \mathbf{d}-\mathbf{c} = (x,y)$ and we expand the expression, we can rewrite it as a $2\times 2$ linear system.
-```
+```math
     \left(
         \matrix{
             -w_x\cos{\theta} + w_y\sin{\theta} & -w_x\cos{\theta} - w_y\sin{\theta}\cr
