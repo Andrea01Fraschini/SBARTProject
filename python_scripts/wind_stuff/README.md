@@ -59,7 +59,7 @@ $$
         }
         \right)\mathbf{w} = 
         \left(
-        \begin{array}{c}
+        \matrix{
             -w_x\cos{\theta} - w_y\sin{\theta}\cr
             +w_x\sin{\theta} - w_y\cos{\theta}
         }
