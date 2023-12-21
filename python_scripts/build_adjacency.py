@@ -42,12 +42,12 @@ def build(v):
 
 
 
-map = gpd.read_file('./REGIONE_LOMBARDIA/Comuni_correnti_poligonali.shp') # load file as a geodataframe
+map = gpd.read_file('./python_scripts/REGIONE_LOMBARDIA/Comuni_correnti_poligonali.shp') # load file as a geodataframe
 map = map.to_crs({'init': 'epsg:4326'}) # set a Coordinate Reference System
 map = map[["geometry"]] # select geometry column
 array = map.to_numpy().flatten() # convert to numpy array
 
 adjacency_tuples, adjacency_m = build(array)
 
-pd.DataFrame(adjacency_tuples).to_csv("./adjacency_files/adjacency_tuples.csv")
-pd.DataFrame(adjacency_m).to_csv("./adjacency_files/adjacency_matrix.csv")
+pd.DataFrame(adjacency_tuples).to_csv("./python_scripts/adjacency_files/adjacency_tuples.csv")
+pd.DataFrame(adjacency_m).to_csv("./python_scripts/adjacency_files/adjacency_matrix.csv")

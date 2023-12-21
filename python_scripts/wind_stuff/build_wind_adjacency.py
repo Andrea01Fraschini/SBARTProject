@@ -8,16 +8,14 @@ centroids_pdf = pd.read_csv("./MunicipalitiesCentroids.csv") # read CSV as panda
 
 # convert dataframe into GeoDataFrame
 centroids = gpd.GeoDataFrame(
-    # select all columns apart from the "geometry" column
-    centroids_pdf.loc[:, [c for c in centroids_pdf.columns if c != "geometry"]],
-    # use column "geometry" for geometries
     geometry=gpd.GeoSeries.from_wkt(centroids_pdf["geometry"]),
     crs="epsg:4326" # set Coordinate Reference System
 )
 
+centroids_array = centroids[['geometry']].to_numpy().flatten()
 
 known_wind = wab.build_wind_dataframe(wind_data, altitude=100)
-tuples, matrix = wab.build_wind_adjacency_matrix(centroids, known_wind, angle=60)
+tuples, matrix = wab.build_wind_adjacency_matrix(centroids_array, known_wind, angle=60)
 
-pd.DataFrame(tuples).to_csv(".python_scripts/adjacency_files/wind_adjacency_tuples_60.csv", index=False)
-pd.DataFrame(matrix).to_csv(".python_scripts/adjacency_files/adjacency_matrix_60.csv", index=False)
+pd.DataFrame(tuples).to_csv("./python_scripts/adjacency_files/wind_adjacency_tuples_60b.csv", index=False)
+pd.DataFrame(matrix).to_csv("./python_scripts/adjacency_files/adjacency_matrix_60b.csv", index=False)
