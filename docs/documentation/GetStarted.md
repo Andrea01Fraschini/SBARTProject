@@ -22,7 +22,7 @@ You can either run the console version by executing "main.R" file or Run the mor
  shiny::runApp()
 ```
 
-### Run the test
+### Run the tests
 ```
  renv::run("__tests__/run.R") 
 ```
