@@ -19,12 +19,3 @@ model <- sbart(
 )
 
 save(model, file = "output/model.RData")
-
-# Make predictions
-# predictions <- sbart.predict(
-#     sbart.output = model, 
-#     X.test = data$Xpred[mis.ind],
-#     mis.ind
-# )
-
-# TODO: Save the predictions to a file

@@ -23,7 +23,18 @@
 #' result = sample_means(sigma2_samples, sigma_mu, obs_list_ind, residuals, x_cut, n_available, trees, dt_list, t, j)
 #' @export
 #'
-sample_means <- function(sigma2_samples, sigma_mu, obs_list_ind, residuals, x_cut, n_available, trees, dt_list, t, j) {
+sample_means <- function(
+    sigma2_samples, 
+    sigma_mu,
+    obs_list_ind, 
+    residuals, 
+    x_cut, 
+    n_available, 
+    trees, 
+    dt_list, 
+    t, 
+    j
+) {
     sigma2 <- sigma2_samples[j-1] # sigma2 is a list of length 1
     obs <- obs_list_ind[[t]] # obs is a list of length 1
     n <- n_available

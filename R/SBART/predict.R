@@ -1,8 +1,24 @@
+#' mean_predict
+#'
+#' This function computes the mean prediction of the trees in the sbart model.
+#'
+#' @param dt A list of decision trees
+#' @param x_list A list of covariates for the available locations
+#' @param x_mult A list of all covariates including missing locations
+#' @param x_cut A list of unique values for the covariates
+#' @param n_available The number of available observations
+#'
+#' @return A list containing the predicted mean values
+#'
+#' @examples
+#' # To be filled with relevant example
+#'
+#' @export
 mean_predict <- function(
     dt, # list of decision trees
-    x_list, # list of all covariates 
-    x_mult, 
-    x_cut, # partition of the predictor space 
+    x_list, # list of all covariates
+    x_mult,
+    x_cut, # partition of the predictor space
     n_available # number of availavle observatons
 ) {
     n <- n_available
@@ -26,7 +42,7 @@ mean_predict <- function(
         split.hist[[i]] <- dt$split[dt$position == parent.node]
         value.hist[[i]] <- dt$value[dt$position == parent.node]
         side.hist[[i]] <- (current.node) %% 2
-        
+
         while (parent.node != 1) {
             current.node <- dt$position[dt$position == parent.node]
             parent.node <- dt$parent[dt$position == parent.node]
@@ -40,8 +56,6 @@ mean_predict <- function(
         side.hist[[i]] <- rev(side.hist[[i]])
     }
 
-    # TODO: fix, there should be no NaNs in 
-    # sel_ind at the end of each iteration. 
     sel_ind.list <- list()
     T <- rep(0, n)
 
@@ -49,9 +63,8 @@ mean_predict <- function(
 
     for (i in 1:terminal.len) {
         count <- 0
-        
-        while (count < length(split.hist[[i]])) {
 
+        while (count < length(split.hist[[i]])) {
             count <- count + 1
             if (side.hist[[i]][count] == 0) {
                 sub.ind <- which(x_list.temp[[split.hist[[i]][count]]] < x_cut[[split.hist[[i]][count]]][value.hist[[i]][count]])
@@ -65,10 +78,10 @@ mean_predict <- function(
         sel_ind.list[[i]] <- x_list.temp[[(p + 1)]]
 
         x_list.temp <- lapply(x_mult, function(x) x[-sel_ind.list[[i]]])
-        T[sel_ind.list[[i]]] <- dt$mu[terminal_nodes[i]]   
+        T[sel_ind.list[[i]]] <- dt$mu[terminal_nodes[i]]
     }
 
-    if(length(T)!=225){
+    if (length(T) != 225) {
         print(length(T))
     }
 

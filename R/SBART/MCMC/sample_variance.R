@@ -16,10 +16,19 @@
 #' @return A numeric value representing a sample from the posterior distribution of σ^2.
 #' @export
 #'
-sample_variance <- function(y, trees, spatial_theta, missing_indexes, sigma2_a, sigma2_b, n, sigma2_samples, j) {
-  
-  r_final <- y[-missing_indexes] - rowSums(trees) - spatial_theta[-missing_indexes]
-  sigma2_samples[j] <- MCMCpack::rinvgamma(1, sigma2_a + n / 2, scale = sigma2_b + sum((r_final) ^ 2) / 2)
+sample_variance <- function(
+    y, 
+    trees, 
+    spatial_theta, 
+    missing_indexes, 
+    sigma2_a, 
+    sigma2_b, 
+    n, 
+    sigma2_samples, 
+    j
+) {
+    r_final <- y[-missing_indexes] - rowSums(trees) - spatial_theta[-missing_indexes]
+    sigma2_samples[j] <- MCMCpack::rinvgamma(1, sigma2_a + n / 2, scale = sigma2_b + sum((r_final)^2) / 2)
 
-  return(sigma2_samples)
+    return(sigma2_samples)
 }

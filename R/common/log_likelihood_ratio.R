@@ -20,8 +20,13 @@
 #' log_lh_ratio = log_likelihood_ratio(sigma2, sigma_mu, residuals, obs.left, obs.right)
 #' @export
 #'
-log_likelihood_ratio <- function(sigma2, sigma_mu, residuals, obs.left, obs.right) {
-    
+log_likelihood_ratio <- function(
+    sigma2, 
+    sigma_mu, 
+    residuals, 
+    obs.left, 
+    obs.right
+) {
     n.left <- length(obs.left)
     n.right <- length(obs.right)
 

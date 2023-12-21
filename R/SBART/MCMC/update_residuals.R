@@ -12,9 +12,14 @@
 #' @return A numeric vector of residuals.
 #' @export
 #'
-update_residuals <- function(y, trees, t, spatial_theta, missing_indexes) {
+update_residuals <- function(
+    y, 
+    trees, 
+    t, 
+    spatial_theta, 
+    missing_indexes
+) {
+    residuals <- y[-missing_indexes] - rowSums(trees[, -t]) - spatial_theta[-missing_indexes]
 
-  residuals <- y[-missing_indexes] - rowSums(trees[, -t]) - spatial_theta[-missing_indexes]
-  
-  return(residuals)
+    return(residuals)
 }

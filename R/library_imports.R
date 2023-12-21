@@ -1,3 +1,4 @@
+# Import all packages used in the project
 library(lmf)
 library(MASS)
 library(invgamma)
@@ -12,7 +13,7 @@ library(reshape)
 library(progress)
 library(data.tree)
 library(manipulateWidget)
-library("shiny")
+library(shiny)
 library(shinyjs)
 library(shinyWidgets)
 library(DT)

@@ -1,4 +1,3 @@
-#'  TODO: Update documentation
 #'  Update tau
 #'
 #' This function performs a Gibbs step to update the variance of the spatial effect τ^2.
@@ -16,22 +15,29 @@
 #' @return A numeric value representing a sample from the posterior distribution of τ^2.
 #' @export
 #'
-update_tau2 <- function(w_post_full, n_locations_all, spatial_theta, rho, tau2_b, tau2_posterior_shape, tau2_samples, j) {
-  sourceCpp("src/CARBayes.cpp")
+update_tau2 <- function(
+    w_post_full, n_locations_all,
+    spatial_theta,
+    rho, tau2_b,
+    tau2_posterior_shape,
+    tau2_samples,
+    j
+) {
+    sourceCpp("src/CARBayes.cpp")
 
-  temp <- quadform(
-            as.matrix(w_post_full$W.triplet),
-            w_post_full$W.triplet.sum,
-            w_post_full$n.triplet,
-            n_locations_all,
-            spatial_theta,
-            spatial_theta,
-            rho
-        )
-  tau2_posterior_scale <- temp + tau2_b 
-  tau2 <- 1 / rgamma(1, tau2_posterior_shape, scale = (1 / tau2_posterior_scale))
-  
-  tau2_samples[j] <- tau2
+    temp <- quadform(
+        as.matrix(w_post_full$W.triplet),
+        w_post_full$W.triplet.sum,
+        w_post_full$n.triplet,
+        n_locations_all,
+        spatial_theta,
+        spatial_theta,
+        rho
+    )
+    tau2_posterior_scale <- temp + tau2_b
+    tau2 <- 1 / rgamma(1, tau2_posterior_shape, scale = (1 / tau2_posterior_scale))
 
-  return(list(tau2_samples = tau2_samples, temp = temp))
+    tau2_samples[j] <- tau2
+
+    return(list(tau2_samples = tau2_samples, temp = temp))
 }
