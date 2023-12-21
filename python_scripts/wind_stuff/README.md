@@ -12,7 +12,7 @@ The scripts and their functions are:
 
 It's an implementation of what Kim did in [the paper](https://doi.org/10.1080/00949655.2022.2102633). It builds an adjacency matrix in which adjacency between a given point and any other is considered present if the second point is inside an area determined by the prevailing wind speed at the first point and by an arbitrary angle parameter.
 
-<img src="images/image.png" alt="algorithm diagram" style="
+<img src="images/diagram.png" alt="algorithm diagram" style="
     width: 60%;
     max-width: 600px;
     display: block;
@@ -22,4 +22,124 @@ It's an implementation of what Kim did in [the paper](https://doi.org/10.1080/00
 
 In the above image, if we consider 60° as the angle parameter, we'll have that _L_ is adjacent only to _B_ and _C_ (note that adjacency is a **symmetric** relationship). If we instead consider 75°, then _A_ and _D_ will **also** be considered adjacent to _L_. Note that in this case the distance between points is not considered. The distance matrix will be automatically selected by the SBART algorithm and used as a weight for this wind adjacency matrix.
 
-To compute whether a point is in the cone of influence
+To compute whether a point is in the cone of influence, we must use some linear algebra. I'm sure there is a better way, but this is all I could think.
+
+Let $\bold{c} = (c_x, c_y)$ be a point on the map, $\bold{w} = (w_x, w_y)$ the prevailing wind vector in that point and $\theta$ the angle parameter. Then we can define two other vectors $\bold{u}$ and $\bold{v}$ in this way:
+$$
+    \bold{u} = \left(
+        \begin{array}{cc}
+            \cos{\theta} & -\sin{\theta}\\
+            \sin{\theta} & \cos{\theta}
+        \end{array}
+        \right)(-\bold{w}) =
+        \left(
+        \begin{array}{cc}
+            -\cos{\theta} & \sin{\theta}\\
+            -\sin{\theta} & -\cos{\theta}
+        \end{array}
+        \right)\bold{w} = 
+        \left(
+        \begin{array}{c}
+            -w_x\cos{\theta} + w_y\sin{\theta}\\
+            -w_x\sin{\theta} - w_y\cos{\theta}
+        \end{array}
+        \right)
+$$
+$$
+    \bold{v} = \left(
+        \begin{array}{cc}
+            \cos{(-\theta)} & -\sin{(-\theta)}\\
+            \sin{(-\theta)} & \cos{(-\theta)}
+        \end{array}
+        \right)(-\bold{w}) = 
+        \left(
+        \begin{array}{cc}
+            -\cos{\theta} & -\sin{\theta}\\
+            \sin{\theta} & -\cos{\theta}
+        \end{array}
+        \right)\bold{w} = 
+        \left(
+        \begin{array}{c}
+            -w_x\cos{\theta} - w_y\sin{\theta}\\
+            +w_x\sin{\theta} - w_y\cos{\theta}
+        \end{array}
+        \right)
+$$
+
+Note that the matrix $\left(\begin{array}{cc}\cos{\theta} & -\sin{\theta}\\\sin{\theta} & \cos{\theta}\end{array}\right)$ is the **transformation matrix** that rotates the points in the plane counterclockwise through an angle of $\theta$ about the origin. The vectors obtained are represented in the image below:
+
+<img src="images/vectors.png" alt="algorithm diagram" style="
+    width: 50%;
+    max-width: 500px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+"/>
+
+With these two vectors ($\bold{u}$ and $\bold{v}$) we can define the points in the shaded area:
+
+A point $\bold{d}$ is adjacent to $\bold{c}$ (is in the shaded area) if there exist two **non-negative** numbers $s$ and $t$ such that:
+$$
+    \bold{d} = \bold{c} + s \bold{u} + t \bold{v}
+$$
+If we define $\bold{d'} = \bold{d}-\bold{c} = (x,y)$ and we expand the expression, we can rewrite it as a $2\times 2$ linear system.
+$$
+    \left(
+        \begin{array}{cc}
+            -w_x\cos{\theta} + w_y\sin{\theta} & -w_x\cos{\theta} - w_y\sin{\theta}\\
+            -w_x\sin{\theta} - w_y\cos{\theta} & +w_x\sin{\theta} - w_y\cos{\theta}
+        \end{array}
+    \right)
+    \left(
+        \begin{array}{c}
+            s \\
+            t
+        \end{array}
+    \right)
+    =
+    \left(
+        \begin{array}{c}
+            x \\
+            y
+        \end{array}
+    \right)
+$$
+Notice that as long as $\theta$ is between $0$ and $\pi/2$ both excluded, then $u$ and $v$ are linearly indipendent and so the system admits a unique solution given by the expression below.
+$$
+    \left(
+        \begin{array}{c}
+            s \\
+            t
+        \end{array}
+    \right)
+    =
+    \left(
+        \begin{array}{cc}
+            -w_x\cos{\theta} + w_y\sin{\theta} & -w_x\cos{\theta} - w_y\sin{\theta}\\
+            -w_x\sin{\theta} - w_y\cos{\theta} & +w_x\sin{\theta} - w_y\cos{\theta}
+        \end{array}
+    \right)^{-1}
+    \left(
+        \begin{array}{c}
+            x \\
+            y
+        \end{array}
+    \right)
+$$
+The matrix is always invertible and is equal to...
+$$
+    \left(
+        \begin{array}{cc}
+            -w_x\cos{\theta} + w_y\sin{\theta} & -w_x\cos{\theta} - w_y\sin{\theta}\\
+            -w_x\sin{\theta} - w_y\cos{\theta} & +w_x\sin{\theta} - w_y\cos{\theta}
+        \end{array}
+    \right)^{-1} = 
+    \frac{1}{-(w_x^2+w_y^2)\sin{(2\theta)}}
+    \left(
+        \begin{array}{cc}
+            w_x\sin{\theta} - w_y\cos{\theta} & w_x\cos{\theta} + w_y\sin{\theta}\\
+            w_x\sin{\theta} + w_y\cos{\theta} & w_y\sin{\theta}-w_x\cos{\theta}
+        \end{array}
+    \right)
+$$ 
+If the components of the solution are all non negative, then $\bold{d}$ is in the shaded region and therefore adjacent to $\bold{c}$, otherwise no.
