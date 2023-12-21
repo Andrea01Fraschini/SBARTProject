@@ -25,7 +25,7 @@ In the above image, if we consider 60° as the angle parameter, we'll have that 
 To compute whether a point is in the cone of influence, we must use some linear algebra. I'm sure there is a better way, but this is all I could think.
 
 Let $\mathbf{c} = (c_x, c_y)$ be a point on the map, $\mathbf{w} = (w_x, w_y)$ the prevailing wind vector in that point and $\theta$ the angle parameter. Then we can define two other vectors $\mathbf{u}$ and $\mathbf{v}$ in this way:
-$$
+```math
     \mathbf{u} = \left(
         \matrix{
             \cos{\theta} & -\sin{\theta}\cr
@@ -44,7 +44,7 @@ $$
             -w_x\sin{\theta} - w_y\cos{\theta}
         }
         \right)
-$$
+```
 $$
     \mathbf{v} = \left(
         \matrix{
@@ -92,14 +92,14 @@ $$
     \right)
     \left(
         \matrix{
-            s \\
+            s \cr
             t
         }
     \right)
     =
     \left(
         \matrix{
-            x \\
+            x \cr
             y
         }
     \right)
@@ -108,20 +108,20 @@ Notice that as long as $\theta$ is between $0$ and $\pi/2$ both excluded, then $
 $$
     \left(
         \matrix{
-            s \\
+            s \cr
             t
         }
     \right)
     =
     \left(
         \matrix{
-            -w_x\cos{\theta} + w_y\sin{\theta} & -w_x\cos{\theta} - w_y\sin{\theta}\\
+            -w_x\cos{\theta} + w_y\sin{\theta} & -w_x\cos{\theta} - w_y\sin{\theta}\cr
             -w_x\sin{\theta} - w_y\cos{\theta} & +w_x\sin{\theta} - w_y\cos{\theta}
         }
     \right)^{-1}
     \left(
         \matrix{
-            x \\
+            x \cr
             y
         }
     \right)
@@ -130,14 +130,14 @@ The matrix is always invertible and is equal to...
 $$
     \left(
         \matrix{
-            -w_x\cos{\theta} + w_y\sin{\theta} & -w_x\cos{\theta} - w_y\sin{\theta}\\
+            -w_x\cos{\theta} + w_y\sin{\theta} & -w_x\cos{\theta} - w_y\sin{\theta}\cr
             -w_x\sin{\theta} - w_y\cos{\theta} & +w_x\sin{\theta} - w_y\cos{\theta}
         }
     \right)^{-1} = 
     \frac{1}{-(w_x^2+w_y^2)\sin{(2\theta)}}
     \left(
         \matrix{
-            w_x\sin{\theta} - w_y\cos{\theta} & w_x\cos{\theta} + w_y\sin{\theta}\\
+            w_x\sin{\theta} - w_y\cos{\theta} & w_x\cos{\theta} + w_y\sin{\theta}\cr
             w_x\sin{\theta} + w_y\cos{\theta} & w_y\sin{\theta}-w_x\cos{\theta}
         }
     \right)
