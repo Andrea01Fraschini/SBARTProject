@@ -44,8 +44,7 @@ $$
             -w_x\sin{\theta} - w_y\cos{\theta}
         }
         \right)
-$$
-$$
+    \\
     \mathbf{v} = \left(
         \matrix{
             \cos{(-\theta)} & -\sin{(-\theta)}\cr
