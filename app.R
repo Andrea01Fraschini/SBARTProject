@@ -1,5 +1,6 @@
 source("R/library_imports.R") # import the libraries
 source("R/SBART/sbart.R") # import the SBART functions
+source("R/SBART/plot_trees.R") # import the SBART functions
 source("data/sample_data.R") # import the sample data
 source("R/common/tree_utilities.R") # import the plot_trees function
 
@@ -16,15 +17,18 @@ ui <- fluidPage(
   progressBar(
     id = "pb",
     value = 0,
-    total = 10000,
+    total = 100,
     title = "",
     display_pct = TRUE
   ),
-  DT::dataTableOutput("table")
+  DT::dataTableOutput("table"),
+  titlePanel("Tree Structures"),
+  tags$style(type="text/css", "#treePlot { width: 100% !important; height: 600px !important; }"),
+  uiOutput("trees")
 )
 
 server <- function(input, output, session) {
-  DF1 <- reactiveValues(data = as.data.frame(matrix(nrow = 1, ncol = 3)))
+  DF1 <- reactiveValues(data = as.data.frame(matrix(nrow = 1, ncol = 2)))
   started <- FALSE
   length_printed <- 0
 
@@ -41,8 +45,8 @@ server <- function(input, output, session) {
     } else {
       started <<- TRUE
       shinyjs::runjs("$('#start').text('Stop');")
-      temp <- as.data.frame(matrix(nrow = as.integer(input$n_trees), ncol = 3))
-      names(temp) <- c("#", "depth", "mu_s")
+      temp <- as.data.frame(matrix(nrow = as.integer(input$n_trees), ncol = 2))
+      names(temp) <- c("depth", "mu_s")
       DF1$data <- temp
     }
 
@@ -72,14 +76,21 @@ server <- function(input, output, session) {
         if (iteration == input$n_iterations) {
           temp <- DF1$data
           for (i in 1:as.integer(input$n_trees)) {
-            temp[i, 1] <- i
-            temp[i, 2] <- "comming soon"
+            temp[i, 1] <- max(sapply(dt_list[[i]]$position, function(x) get_node_depth(dt_list[[i]], get_node_index_by_pos(dt_list[[i]], x))))
             mu_values <- dt_list[[i]]$mu
             mu_string <- paste(mu_values[1], mu_values[2], mu_values[3], sep = ", ")
-            temp[i, 3] <- mu_string
+            temp[i, 2] <- mu_string
           }
 
           DF1$data <- temp
+
+          # Update tree structures
+          output$trees <- renderUI({
+            if (file.exists("output/model.RData")) {
+              load("output/model.RData")
+              plot_decision_trees(dt_list, ncol = 5)
+            }
+          })
         }
       }
     )

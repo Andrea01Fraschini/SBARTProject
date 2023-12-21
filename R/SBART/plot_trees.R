@@ -35,7 +35,7 @@ plot_decision_trees <- function(trees, ncol = 10L, nrow = ceiling(length(trees) 
     for (i in 1:length(trees)) {
         tree_structures[[i]] <- tree_format_adapter(trees[[i]])
     }
-    combineWidgets(list = lapply(tree_structures, function(tree) plot(tree)), ncol = ncol, nrow = nrow)
+    combineWidgets(list = lapply(tree_structures, function(tree) plot(tree)))
 }
 
 #' Default DT adapter
