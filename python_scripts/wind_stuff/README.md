@@ -66,7 +66,7 @@ $$
         \right)
 $$
 
-Note that the matrix $\left(\begin{array}{cc}\cos{\theta} & -\sin{\theta}\\\sin{\theta} & \cos{\theta}\end{array}\right)$ is the **transformation matrix** that rotates the points in the plane counterclockwise through an angle of $\theta$ about the origin. The vectors obtained are represented in the image below:
+Note that the matrix $\left( \matrix{\cos{\theta} & -\sin{\theta} \cr \sin{\theta} & \cos{\theta}}\right)$ is the **transformation matrix** that rotates the points in the plane counterclockwise through an angle of $\theta$ about the origin. The vectors obtained are represented in the image below:
 
 <img src="images/vectors.png" alt="algorithm diagram" style="
     width: 50%;
