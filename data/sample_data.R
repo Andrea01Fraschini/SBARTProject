@@ -58,6 +58,8 @@ sample_data <- function() {
 
   y <- 2.5 + 1.5 * x1 + 1.5 * x2 - 1 * x3 + 1.5 * x4 - 1.5 * x5 + 0.25 * x4 * x5 + theta + phi
 
+  y_actual <- y
+
   # Randomly selected missing locations
   missing_indexes <- sample(1:225, 195, replace = FALSE)
   y[missing_indexes] <- NA
@@ -92,7 +94,8 @@ sample_data <- function() {
     x_predictors = x_predictors,
     missing_indexes = missing_indexes,
     ws = ws,
-    wind_matrix = wind_matrix
+    wind_matrix = wind_matrix,
+    y_actual = y_actual
   )
 
   return(result)

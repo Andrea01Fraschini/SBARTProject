@@ -47,7 +47,6 @@ sbart <- function(
         width = 100
     ) # Width of the progress barb
 
-
     source("R/SBART/predict.R")
     source("R/SBART/init_model_parameters.R")
     source("R/SBART/MCMC/init_chain.R")
@@ -121,6 +120,9 @@ sbart <- function(
     # Initialize tree structures history
     tree_structures_history <- list()
     tree_structures_history[[1]] <- dt_list
+
+    # Initialize y predictions history
+    y_history <- list()
 
     # Run MCMC
     #
@@ -314,8 +316,17 @@ sbart <- function(
         y_da[, j - 1] <- rnorm(length(missing_indexes), c(rowSums(trees_pred) + spatial_theta)[missing_indexes], sqrt(sigma2_samples[j])) # nolint: line_length_linter.
         y[missing_indexes] <- y_da[, j - 1]
 
+        # For error handling
+        if(any(is.na(y[missing_indexes]))) {
+            print("Error: y[missing_indexes] is NA")
+            print(which(is.na(y[missing_indexes])))
+        }
+
         # save current tree structure
         tree_structures_history[[j]] <- dt_list
+
+        # save current y predictions
+        y_history[[j]] <- y
 
         # Update progress bar
         pb$tick()
@@ -334,7 +345,9 @@ sbart <- function(
         sigma2_chain = sigma2_samples,
         trees_chain = trees_pred,
         w_selection_chain = w_sel_samples,
-        dt_history = tree_structures_history
+        dt_history = tree_structures_history,
+        y_predictions = y,
+        y_predictions_history = y_history
     )
 
     return(results)
