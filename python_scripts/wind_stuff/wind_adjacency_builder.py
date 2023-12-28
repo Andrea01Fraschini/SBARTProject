@@ -102,6 +102,7 @@ def build_wind_adjacency_matrix(centroids, wind_data, angle):
             if np.all(solution >= 0):
                 # update adjacency matrix
                 adjacency_matrix[c][d] = adjacency_matrix[d][c] = 1
+                
                 # adjacency_tuples.append((c, d))
                 # adjacency_tuples.append((d, c))
             

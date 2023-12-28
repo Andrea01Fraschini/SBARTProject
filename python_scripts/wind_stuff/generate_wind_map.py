@@ -53,8 +53,7 @@ ax.quiver(arrows['X'],arrows['Y'],arrows['U'],arrows['V'],
 
 #ID = 610 #sondrio
 #ID = 183 #milano
-#ID = 1279 #cremona
-ID = 690
+ID = 1279 #cremona
 
 adjacency_matrix = pd.read_csv("./python_scripts/adjacency_files/wind_adjacency_matrix_30.csv").to_numpy()
 color_list = []
@@ -66,7 +65,7 @@ for adj in adjacency_matrix[ID]:
 
 centroids['color']=color_list
 #centroids = centroids.assign(color=color_list)
-centroids.plot(ax=ax, markersize=5, column="color", cmap='seismic')
+centroids.plot(ax=ax, markersize=10, column="color", cmap='seismic')
 
 # X = np.linspace(min(arrows['X']), max(arrows['X']), 200)
 # Y = np.linspace(min(arrows['Y']), max(arrows['Y']), 200)

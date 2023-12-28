@@ -14,13 +14,13 @@ centroids = gpd.GeoDataFrame(
     crs="epsg:4326" # set Coordinate Reference System
 )
 
-map = gpd.read_file('./REGIONE_LOMBARDIA/Comuni_correnti_poligonali.shp') # load map of polygons
+map = gpd.read_file('./python_scripts/REGIONE_LOMBARDIA/Comuni_correnti_poligonali.shp') # load map of polygons
 map = map.to_crs({'init': 'epsg:4326'}) # set a Coordinate Reference System
 
 # convert into geodataframe
 municipality_polygons = gpd.GeoDataFrame(map[["NOME_COM", "geometry"]], crs = map.crs)
 
-adjacency_tuples = pd.read_csv("./adjacency_files/adjacency_tuples.csv")
+adjacency_tuples = pd.read_csv("./python_scripts/adjacency_files/adjacency_tuples.csv")
 
 v = adjacency_tuples.to_numpy()
 N = len(municipality_polygons)

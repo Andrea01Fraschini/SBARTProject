@@ -70,4 +70,4 @@ functions = [
 matrices = build(centroids, functions)
 
 for i, m in enumerate(matrices):
-    pd.DataFrame(m).to_csv(f"./cost_matrices/cost_matrix_{i}.csv")
+    pd.DataFrame(m).to_csv(f"./python_scripts/cost_matrices/cost_matrix_{i}.csv")
