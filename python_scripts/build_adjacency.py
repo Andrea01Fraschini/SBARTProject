@@ -49,5 +49,5 @@ array = map.to_numpy().flatten() # convert to numpy array
 
 adjacency_tuples, adjacency_m = build(array)
 
-pd.DataFrame(adjacency_tuples).to_csv("./python_scripts/adjacency_files/adjacency_tuples.csv")
-pd.DataFrame(adjacency_m).to_csv("./python_scripts/adjacency_files/adjacency_matrix.csv")
+pd.DataFrame(adjacency_tuples).to_csv("./python_scripts/adjacency_files/adjacency_tuples.csv", index=False)
+pd.DataFrame(adjacency_m).to_csv("./python_scripts/adjacency_files/adjacency_matrix.csv", index=False)
