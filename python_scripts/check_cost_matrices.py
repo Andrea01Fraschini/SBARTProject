@@ -20,14 +20,12 @@ centroids = gpd.GeoDataFrame(
     crs="epsg:4326" # set Coordinate Reference System
 )
 
-fig, ax = plt.subplots(2, 3, figsize=(10, 10))
-
+fig, ax = plt.subplots(2, 3)
+fig.delaxes(ax[1][2])
 
 for i in range(5):
     cost_matrix = pd.read_csv(f"./python_scripts/cost_matrices/cost_matrix_{i}.csv")
     m = cost_matrix.to_numpy()
-
-    m = m[1:, 1:]
 
     distances_from_munic = m[ID]
 

@@ -36,7 +36,7 @@ for _, i, j in v: # _ is the enumeration index, i and j form the tuple (i, j)
 # wrap lines in a geodataframe for plotting
 lines = gpd.GeoDataFrame(geometry=lines_geometry)
 
-fig, ax = plt.subplots(1, 1, figsize=(10, 10))
+fig, ax = plt.subplots(1, 1)
 
 municipality_polygons.plot(ax=ax, edgecolor='black', linewidth=0.5)
 centroids.plot(ax=ax, color='red', markersize=2)
