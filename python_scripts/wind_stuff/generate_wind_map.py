@@ -52,11 +52,11 @@ ax.quiver(arrows['X'],arrows['Y'],arrows['U'],arrows['V'],
 )
 
 #ID = 610 #sondrio
-ID = 183 #milano
+#ID = 183 #milano
 #ID = 1279 #cremona
-#ID = 690
+ID = 690
 
-adjacency_matrix = pd.read_csv("./python_scripts/adjacency_files/adjacency_matrix_60b.csv").to_numpy()
+adjacency_matrix = pd.read_csv("./python_scripts/adjacency_files/wind_adjacency_matrix_30.csv").to_numpy()
 color_list = []
 
 for adj in adjacency_matrix[ID]:

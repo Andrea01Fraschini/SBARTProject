@@ -15,7 +15,11 @@ centroids = gpd.GeoDataFrame(
 centroids_array = centroids[['geometry']].to_numpy().flatten()
 
 known_wind = wab.build_wind_dataframe(wind_data, altitude=100)
-tuples, matrix = wab.build_wind_adjacency_matrix(centroids_array, known_wind, angle=60)
 
-pd.DataFrame(tuples).to_csv("./python_scripts/adjacency_files/wind_adjacency_tuples_60b.csv", index=False)
-pd.DataFrame(matrix).to_csv("./python_scripts/adjacency_files/adjacency_matrix_60b.csv", index=False)
+#tuples, matrix = wab.build_wind_adjacency_matrix(centroids_array, known_wind, angle=60)
+
+angle = 30
+matrix = wab.build_wind_adjacency_matrix(centroids_array, known_wind, angle)
+
+#pd.DataFrame(tuples).to_csv("./python_scripts/adjacency_files/wind_adjacency_tuples_60b.csv", index=False)
+pd.DataFrame(matrix).to_csv(f"./python_scripts/adjacency_files/wind_adjacency_matrix_{angle}.csv", index=False)
