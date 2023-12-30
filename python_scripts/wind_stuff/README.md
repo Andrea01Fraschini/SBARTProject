@@ -18,9 +18,9 @@ The scripts and their functions are:
 
 - ### _wind_adjacency_builder.py_: 
   Python module used by _build_wind_adjacency.py_ that contains the logic for building the wind adjacency matrix.
-
+<!-- 
 - ### _generate_wind_data.py_: 
-  Plots every municipality as a dot colored differently depending if it's adjacent to Cremona according to a hard coded adjacency file (it's a very neat example for showing that the algorithm works). Will probably be substituted by a notebook.
+  Plots every municipality as a dot colored differently depending if it's adjacent to Cremona according to a hard coded adjacency file (it's a very neat example for showing that the algorithm works). Will probably be substituted by a notebook. -->
 
 
 # Wind adjacency algorithm
