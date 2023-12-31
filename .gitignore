@@ -5,9 +5,9 @@ cache/*
 
 .Rhistory
 
-python_scripts/__pycache__
-python_scripts/wind_stuff/__pycache__
-python_scripts/wind_stuff/Aggregated_wind_data.csv
-python_scripts/wind_stuff/Converted_AGC_Wind_Data.csv
-python_scripts/REGIONE_LOMBARDIA/*
+python/__pycache__
+python/wind_stuff/__pycache__
+python/wind_stuff/Aggregated_wind_data.csv
+python/wind_stuff/Converted_AGC_Wind_Data.csv
+python/REGIONE_LOMBARDIA/*
 
