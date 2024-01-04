@@ -14,8 +14,7 @@ Here you will find every python script used to compute everything related to the
   - cost_matrix_2.csv: $\quad\frac{1}{d^{1.5}}$
   - cost_matrix_3.csv: $\quad\frac{1}{d^2}$
   - cost_matrix_4.csv: $\quad e^{-d}$
-- ### _REGIONE_LOMBARDIA/_
-    It contains polygon data to draw the lombardy map. Since this is only used for visualization (and I'm planning to make a notebook for doing that), I will probably remove this along with the visualization files.
+
 - ### _wind_stuff/_
     It contains all the scripts used for doing things with wind and not just spatial data. More info are contained in its _README_ file.
 
