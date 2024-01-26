@@ -11,9 +11,11 @@ columns_to_remove <- c("WE_mode_wind_direction_10m", "WE_mode_wind_direction_100
 df_cleaned <- clean_data(df, columns_to_remove)
 df_mean_by_year <- get_mean_by_year(df_cleaned)
 
+# This part was added by me since stefano code try to keep it as the option (1) proposed by andrea
 year <- 2016
 side_length <- 0.1
 df_grid_by_year <- generate_grid_by_year(df_mean_by_year, side_length, year)
+# End of the part added by me
 
 shp_data <- st_read("data/AgrImOnIA/raw/Comuni_correnti_poligonali.shp")
 
