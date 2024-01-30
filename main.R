@@ -1,10 +1,18 @@
 source("R/env_setup.R") # set up the environment
 source("R/library_imports.R") # import the libraries
 source("R/SBART/sbart.R") # import the SBART functions
-source("data/sample_data.R") # import the sample data
+source("data/get_data.R") # import the sample data
+source("R/common/check_data.R") # import the data checking functions
+source("config.R") # import the configuration
 
 # Load the data
-data <- sample_data()
+data <- get_data()
+
+# Check the data
+result <- check_data(data)
+if (result$error) {
+    stop(result$message)
+}
 
 # Train the model
 model <- sbart(
@@ -13,9 +21,9 @@ model <- sbart(
     ws = data$ws,
     siam = data$wind_matrix,
     missing_indexes = data$missing_indexes,
-    n_trees = 50L,
-    n_iterations = 10000L,
-    warmup = 1000L
+    n_trees = n_trees,
+    n_iterations = n_iterations,
+    warmup = warmup
 )
 
-save(model, file = "output/model.RData")
+save(model, file = paste0("output/", model_filename, ".Rdata"))

@@ -28,4 +28,4 @@ df_weighted_sum <- compute_weighted_sum(df_intersected, covariate_indices)
 # Write the result to a CSV file
 df_regular <- as.data.frame(df_weighted_sum)
 df_without_geometry <- df_regular %>% select(-geometry)
-write.csv(df_without_geometry, paste0("data/AgrImOnIA/processed/df_weighted_sum", year, ".csv"), row.names = FALSE)
+write.csv(df_without_geometry, "data/AgrImOnIA/processed/df.csv", row.names = FALSE)
