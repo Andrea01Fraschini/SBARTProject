@@ -1,17 +1,19 @@
 source("R/library_imports.R") # import the libraries
 source("R/SBART/sbart.R") # import the SBART functions
 source("R/SBART/plot_trees.R") # import the SBART functions
-source("data/sample_data.R") # import the sample data
+source("data/get_data.R") # import the sample data
 source("R/common/tree_utilities.R") # import the plot_trees function
 source("R/common/get_model_score.R") # import the score function
+source("R/common/check_data.R") # import the data checking functions
+source("config.R") # import the configuration
 
 ui <- dashboardPage(
     dashboardHeader(title = "SBART Model for spatial data"),
     dashboardSidebar(
         sidebarMenu(
-            numericInput("n_trees", "Number of Trees:", 10, min = 1, max = 100),
-            numericInput("n_iterations", "Number of Iterations:", 100, min = 1, max = 20000),
-            numericInput("warmup", "Warmup:", 50, min = 1, max = 5000),
+            numericInput("n_trees", "Number of Trees:", n_trees, min = 1, max = 1000),
+            numericInput("n_iterations", "Number of Iterations:", n_iterations, min = 1, max = 200000),
+            numericInput("warmup", "Warmup:", warmup, min = 1, max = 50000),
             actionButton("start", "Start")
         )
     ),
@@ -57,9 +59,16 @@ server <- function(input, output, session) {
         shinyjs::disable("n_trees")
         shinyjs::disable("n_iterations")
         shinyjs::disable("warmup")
+        shinyjs::disable("start")
 
         # Load the data
-        data <- sample_data()
+        data <- get_data()
+
+        # Check the data
+        result <- check_data(data)
+        if (result$error) {
+            stop(result$message)
+        }
 
         # Train the model
         model <<- sbart(
@@ -104,7 +113,7 @@ server <- function(input, output, session) {
             plot(scores, type = "l", xlab = "Iteration", ylab = "Score")
         })
 
-        save(model, file = "output/model.RData")
+        save(model, file = paste0("output/", model_filename, ".Rdata"))
     })
 }
 
