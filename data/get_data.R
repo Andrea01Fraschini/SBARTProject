@@ -17,7 +17,7 @@ get_data <- function() {
   data <- read.csv(paste0("data/", data_filename, ".csv"), header = TRUE, row.names = 1)
 
   # Response variable
-  y <-
+  y <- 
 
   # Vector of X predictors
   x_predictors <- 

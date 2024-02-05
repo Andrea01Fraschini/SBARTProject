@@ -105,4 +105,4 @@ for (date in unique_dates) {
 final_result <- do.call(rbind, results_list)
 
 # Write the result to a CSV file
-write.csv(final_result, "data/AgrImOnIA/processed/df.csv", row.names = FALSE)
+write.csv(final_result, "data/df.csv", row.names = FALSE)
