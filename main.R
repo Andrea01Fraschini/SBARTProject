@@ -4,6 +4,8 @@ source("R/SBART/sbart.R") # import the SBART functions
 source("data/get_data.R") # import the sample data
 source("R/common/check_data.R") # import the data checking functions
 source("config.R") # import the configuration
+source("R/common/tree_utilities.R") # import the plot_trees function
+source("R/SBART/plot_trees.R") # import the SBART functions
 
 # Load the data
 data <- get_data()
@@ -27,3 +29,8 @@ model <- sbart(
 )
 
 save(model, file = paste0("output/", model_filename, ".Rdata"))
+
+if (file.exists(paste0("output/", model_filename, ".Rdata"))) {
+    load(paste0("output/", model_filename, ".Rdata"))
+    plot_decision_trees(dt_list, ncol = 5)
+}
