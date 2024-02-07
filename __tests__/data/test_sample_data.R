@@ -14,12 +14,12 @@ describe("Test sample data function",{
         expect_is(results, "list")
     })
 
-    it("should return a list with 5 elements",{
-        expect_equal(length(results), 5)
+    it("should return a list with 6 elements",{
+        expect_equal(length(results), 6)
     })
 
     it("should return a list with the correct names",{
-        expect_equal(names(results), c("y", "x_predictors", "missing_indexes", "ws", "wind_matrix"))
+        expect_equal(names(results), c("y", "x_predictors", "missing_indexes", "ws", "wind_matrix", "y_actual"))
     })
 
     it("Should return a list with the correct class",{
