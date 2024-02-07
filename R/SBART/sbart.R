@@ -331,12 +331,12 @@ sbart <- function(
         # Update progress bar
         pb$tick()
 
-        if (!is.null(progress)) {
-            progress(
-                iteration = j,
-                dt_list = dt_list
-            )
-        }
+        # if (!is.null(progress)) {
+        #     progress(
+        #         iteration = j,
+        #         dt_list = dt_list
+        #     )
+        # }
     }
 
     results <- list(
@@ -347,7 +347,8 @@ sbart <- function(
         w_selection_chain = w_sel_samples,
         dt_history = tree_structures_history,
         y_predictions = y,
-        y_predictions_history = y_history
+        y_predictions_history = y_history,
+        posterior_inclusion_probabilities = posterior_dirichlet_alpha
     )
 
     return(results)

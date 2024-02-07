@@ -5,7 +5,7 @@ library("lubridate")
 source("data/AgrImOnIA/libraries.R")
 source("data/AgrImOnIA/transformations/clean_data.R")
 source("data/AgrImOnIA/transformations/create_square.R")
-source("data/AgrImOnIA/transformations/data_matching.R")
+source("data/AgrImOnIA/transformations/join_data.R")
 source("config.R")
 
 # Read data
@@ -94,7 +94,7 @@ for (t in 1:length(unique_dates)) {
     
     # Loop through each covariate and calculate the weighted sum
     for (covariate in covariate_names) {
-      weighted_sum <- sum(covariate_data$area * covariate_data[, covariate]) / sum(covariate_data$area)
+      weighted_sum <- sum(covariate_data$area * covariate_data[, covariate], na.rm = TRUE) / sum(covariate_data$area, na.rm = TRUE)
       
       # Assign the result to the corresponding cell in the result_df
       result_df[result_df$NOME_COM == municipality, covariate] <- weighted_sum
@@ -113,8 +113,10 @@ final_result <- do.call(rbind, results_list)
 write.csv(final_result, "data/AgrImOnIA/processed/df.csv", row.names = FALSE)
 
 # Merge covariates and responses
-columns_to_remove <- c("WE_mode_wind_direction_10m", "WE_mode_wind_direction_100m", "Altitude", "AQ_pm10")
-merged_data <- merge_interpolated_with_responses(shp_data, final_result, date_begin, date_end, c())
-write.csv(merged_data, "data/input_data.csv")
+# columns_to_remove <- c("WE_mode_wind_direction_10m", "WE_mode_wind_direction_100m", "Altitude", "AQ_pm10")
+# merged_data <- merge_interpolated_with_responses(shp_data, final_result, date_begin, date_end, c())
+
+merged_data <- join_data(response_variable = response_variable)
+save(merged_data, file = "data/input_data.RData")
 
 print("----> Finished processing")

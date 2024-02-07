@@ -1,9 +1,11 @@
 clean_data <- function(df, columns_to_remove) {
   # Remove rows with NA values
-  df_cleaned <- na.omit(df)
+  # df_cleaned <- na.omit(df)
 
   # Remove all NAs that are strings
-  df_cleaned <- df_cleaned[!apply(df_cleaned, 1, function(row) any(grepl("(?i).*NA.*", row))), , drop = FALSE]
+  # df_cleaned <- df_cleaned[!apply(df_cleaned, 1, function(row) any(grepl("(?i).*NA.*", row))), , drop = FALSE]
+
+  df_cleaned <- df
 
   # Convert Time column to Date type
   if ("Time" %in% colnames(df_cleaned)) {
@@ -21,7 +23,7 @@ clean_data <- function(df, columns_to_remove) {
   }
 
   # Remove rows with NA values after conversion to numeric
-  df_cleaned <- na.omit(df_cleaned)
+  # df_cleaned <- na.omit(df_cleaned)
   
   return(df_cleaned)
 }
