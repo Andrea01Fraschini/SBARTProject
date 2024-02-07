@@ -17,13 +17,19 @@ get_data <- function() {
   data <- read.csv(paste0("data/", data_filename, ".csv"), header = TRUE, row.names = 1)
 
   # Response variable
-  y <- 
+  y <- data[, "AQ_pm25"]
+  colnames(y) <- NULL
+  y <- c(y)
 
   # Vector of X predictors
-  x_predictors <- 
-  
+  x_predictors <- data[, 4:10]
+  colnames(x_predictors) <- NULL
+  x_predictors <- as.matrix(x_predictors)
+
   # Define spatial connections (see kim (2020+) for more details)
-  wind_matrix <- read.csv("python/adjacency_files/<PUT THE FILENAME HERE>", header = FALSE)
+  wind_matrix <- read.csv("python/adjacency_files/wind_adjacency_matrix_10m_30.csv", header = FALSE)
+  colnames(wind_matrix) <- NULL
+  wind_matrix <- as.matrix(wind_matrix) 
 
   # DON'T CHANGE ANYTHING BELOW THIS LINE
 
@@ -36,6 +42,18 @@ get_data <- function() {
   w3 <- read.csv("python/cost_matrices/cost_matrix_2.csv", header = FALSE)
   w4 <- read.csv("python/cost_matrices/cost_matrix_3.csv", header = FALSE)
   w5 <- read.csv("python/cost_matrices/cost_matrix_4.csv", header = FALSE)
+
+  colnames(w1) <- NULL
+  colnames(w2) <- NULL
+  colnames(w3) <- NULL
+  colnames(w4) <- NULL
+  colnames(w5) <- NULL
+
+  w1 <- as.matrix(w1)
+  w2 <- as.matrix(w2)
+  w3 <- as.matrix(w3)
+  w4 <- as.matrix(w4)
+  w5 <- as.matrix(w5)
 
   ws <- list(w1, w2, w3, w4, w5)
 
