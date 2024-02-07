@@ -1,7 +1,11 @@
 # Load libraries and functions
+library(sf)
+library(dplyr)
+library("lubridate")
 source("data/AgrImOnIA/libraries.R")
 source("data/AgrImOnIA/transformations/clean_data.R")
 source("data/AgrImOnIA/transformations/create_square.R")
+source("data/AgrImOnIA/transformations/data_matching.R")
 source("config.R")
 
 # Read data
@@ -25,7 +29,8 @@ unique_dates <- unique(df_subset$Time)
 results_list <- list()
 
 # Loop through each unique date
-for (date in unique_dates) {
+for (t in 1:length(unique_dates)) {
+  date <- unique_dates[t]
   # Extract the grid for the current day
   dfcov_data <- data.frame(df_subset[df_subset$Time == date, ])
   
@@ -104,5 +109,12 @@ for (date in unique_dates) {
 # Combine the results for all dates into a single dataframe
 final_result <- do.call(rbind, results_list)
 
-# Write the result to a CSV file
-write.csv(final_result, "data/df.csv", row.names = FALSE)
+# Write the interpolated result to a CSV file
+write.csv(final_result, "data/AgrImOnIA/processed/df.csv", row.names = FALSE)
+
+# Merge covariates and responses
+columns_to_remove <- c("WE_mode_wind_direction_10m", "WE_mode_wind_direction_100m", "Altitude", "AQ_pm10")
+merged_data <- merge_interpolated_with_responses(shp_data, final_result, date_begin, date_end, c())
+write.csv(merged_data, "data/input_data.csv")
+
+print("----> Finished processing")
