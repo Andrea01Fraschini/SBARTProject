@@ -26,9 +26,6 @@ create_grid <- function (df, side_length) {
 
   # Set CRS
   st_crs(squares_with_covariates) <- st_crs("EPSG:4326")
-  
-  # Transform squares_data to match the CRS of shp_data
-  squares_with_covariates <- st_transform(squares_with_covariates, crs = st_crs(shp_data))
 
   # Return the result
   return(squares_with_covariates)

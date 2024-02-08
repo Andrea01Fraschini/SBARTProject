@@ -3,7 +3,7 @@ compute_weighted_sum <- function(df_intersected, covariates_of_interest) {
   covariate_indices <- match(covariates_of_interest, colnames(df_intersected))
 
   # Convert the indices to column names
-  covariate_names <- colnames(df_intersections)[covariate_indices]
+  covariate_names <- colnames(df_intersected)[covariate_indices]
 
   # Create a new data frame to store the results
   df_result <- data.frame(NOME_COM = unique(df_intersected$NOME_COM))
@@ -14,7 +14,7 @@ compute_weighted_sum <- function(df_intersected, covariates_of_interest) {
   }
   
   for (municipality in df_result$NOME_COM) {
-    # Subset the df_intersections data for the current municipality
+    # Subset the df_intersected data for the current municipality
     municipality_data <- df_intersected[df_intersected$NOME_COM == municipality, ]
     
     # Extract non-geographic data (assuming covariates are after geometry column)

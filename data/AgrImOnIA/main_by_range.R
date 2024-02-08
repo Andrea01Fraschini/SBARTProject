@@ -29,6 +29,9 @@ generate_data <- function(date_begin, date_end, response_variable, covariates_of
 
     # Create grid
     df_grid <- create_grid(df_mean, 0.1)
+    
+    # Transform df_grid to match the CRS of shp_data
+    df_grid <- st_transform(df_grid, crs = st_crs(shp_data))
 
     # Intersect grid with shapefile
     df_intersections <- get_intersection(df_grid, shp_data)

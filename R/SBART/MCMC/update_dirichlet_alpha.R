@@ -73,8 +73,7 @@ update_dirichlet_alpha <- function(
         list(
             cov_sel_prob = cov_sel_prob, 
             rules_count = rules_count, 
-            dirichlet_alpha = dirichlet_alpha, 
-            posterior_dirichlet_alpha = posterior_dirichlet_alpha
+            dirichlet_alpha = dirichlet_alpha
         )
     )
 }

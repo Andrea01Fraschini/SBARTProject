@@ -117,13 +117,6 @@ sbart <- function(
     missing_indexes <- vars$missing_indexes
     y_da <- vars$y_da
 
-    # Initialize tree structures history
-    tree_structures_history <- list()
-    tree_structures_history[[1]] <- dt_list
-
-    # Initialize y predictions history
-    y_history <- list()
-
     # Run MCMC
     #
     # --------------------------
@@ -304,8 +297,6 @@ sbart <- function(
         cov_sel_prob <- result_dirichlet$cov_sel_prob
         rules_count <- result_dirichlet$rules_count
         dirichlet_alpha <- result_dirichlet$dirichlet_alpha
-        posterior_dirichlet_alpha <- result_dirichlet$posterior_dirichlet_alpha
-
 
         trees_pred <- matrix(unlist(sapply(1:n_trees, function(x) mean_predict(dt_list[[x]], x_list, x_mult, x_unique, params$n_locations_all))), nrow = params$n_locations_all, ncol = n_trees) # nolint: line_length_linter.
 
@@ -322,21 +313,8 @@ sbart <- function(
             print(which(is.na(y[missing_indexes])))
         }
 
-        # save current tree structure
-        tree_structures_history[[j]] <- dt_list
-
-        # save current y predictions
-        y_history[[j]] <- y
-
         # Update progress bar
         pb$tick()
-
-        # if (!is.null(progress)) {
-        #     progress(
-        #         iteration = j,
-        #         dt_list = dt_list
-        #     )
-        # }
     }
 
     results <- list(
@@ -345,10 +323,7 @@ sbart <- function(
         sigma2_chain = sigma2_samples,
         trees_chain = trees_pred,
         w_selection_chain = w_sel_samples,
-        dt_history = tree_structures_history,
-        y_predictions = y,
-        y_predictions_history = y_history,
-        posterior_inclusion_probabilities = posterior_dirichlet_alpha
+        y_predictions = y
     )
 
     return(results)
