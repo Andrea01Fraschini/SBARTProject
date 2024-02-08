@@ -17,7 +17,7 @@ date_begin <- as.Date(date_begin)
 date_end <- as.Date(date_end)
 
 # Clean data
-columns_to_remove <- c("WE_mode_wind_direction_10m", "WE_mode_wind_direction_100m")
+columns_to_remove <- c("WE_mode_wind_direction_10m", "WE_mode_wind_direction_100m", "WE_precipitation_t")
 df_cleaned <- clean_data(df, columns_to_remove)
 
 # Subset data
@@ -72,8 +72,8 @@ for (t in 1:length(unique_dates)) {
   # Convert the "area" column to numeric for the entire dataset
   intersections$area <- as.numeric(intersections$area)
   
-  # Specify the column indices for the covariates (26 to 52)
-  covariate_indices <- 26:52
+  # Specify the column indices for the covariates (26 to 51)
+  covariate_indices <- 26:51
   # Convert the indices to column names
   covariate_names <- colnames(intersections)[covariate_indices]
   
