@@ -14,20 +14,18 @@
 get_data <- function() {
   # Load the data
   source("config.R")
-  data <- read.csv(paste0("data/", data_filename, ".csv"), header = TRUE, row.names = 1)
+  # data <- read.csv(paste0("data/", data_filename, ".csv"), header = TRUE, row.names = 1)
+  load("data/input_data.RData")
+  data <- merged_data
 
   # Response variable
-  y <- data[, "AQ_pm25"]
-  colnames(y) <- NULL
-  y <- c(y)
+  y <- data$Y
 
   # Vector of X predictors
-  x_predictors <- data[, 4:10]
-  colnames(x_predictors) <- NULL
-  x_predictors <- as.matrix(x_predictors)
+  x_predictors <- data$X
 
   # Define spatial connections (see kim (2020+) for more details)
-  wind_matrix <- read.csv("python/adjacency_files/wind_adjacency_matrix_10m_30.csv", header = FALSE)
+  wind_matrix <- read.csv("python/adjacency_files/wind_adjacency_matrix_10m_30.csv", header = FALSE, skip = 1)
   colnames(wind_matrix) <- NULL
   wind_matrix <- as.matrix(wind_matrix) 
 
@@ -37,11 +35,11 @@ get_data <- function() {
   missing_indexes <- which(is.na(y) == TRUE)
 
   # Weight matrix
-  w1 <- read.csv("python/cost_matrices/cost_matrix_0.csv", header = FALSE)
-  w2 <- read.csv("python/cost_matrices/cost_matrix_1.csv", header = FALSE)
-  w3 <- read.csv("python/cost_matrices/cost_matrix_2.csv", header = FALSE)
-  w4 <- read.csv("python/cost_matrices/cost_matrix_3.csv", header = FALSE)
-  w5 <- read.csv("python/cost_matrices/cost_matrix_4.csv", header = FALSE)
+  w1 <- read.csv("python/cost_matrices/cost_matrix_0.csv", header = FALSE, skip = 1)
+  w2 <- read.csv("python/cost_matrices/cost_matrix_1.csv", header = FALSE, skip = 1)
+  w3 <- read.csv("python/cost_matrices/cost_matrix_2.csv", header = FALSE, skip = 1)
+  w4 <- read.csv("python/cost_matrices/cost_matrix_3.csv", header = FALSE, skip = 1)
+  w5 <- read.csv("python/cost_matrices/cost_matrix_4.csv", header = FALSE, skip = 1)
 
   colnames(w1) <- NULL
   colnames(w2) <- NULL

@@ -18,19 +18,24 @@ data <- get_data()
 # }
 
 # Train the model
-model <- sbart(
-    x = data$x_predictors,
-    y = data$y,
-    ws = data$ws,
-    siam = data$wind_matrix,
-    missing_indexes = data$missing_indexes,
-    n_trees = n_trees,
-    n_iterations = n_iterations,
-    warmup = warmup
-)
+for (i in 1:100) {
+    set.seed(i)
 
-save(model, file = paste0("output/", model_filename, ".Rdata"))
-print("-----> FINISHED 🎉✨🥇")
+    tryCatch({
+        model <- sbart(
+            x = data$x_predictors,
+            y = data$y,
+            ws = data$ws,
+            siam = data$wind_matrix,
+            missing_indexes = data$missing_indexes,
+            n_trees = n_trees,
+            n_iterations = n_iterations,
+            warmup = warmup
+        )
+        save(model, file = paste0("output/", model_filename, i, ".Rdata"))
+        print("-----> FINISHED 🎉✨🥇")
+    }, error = function(e) {})
+}
 
 # if (file.exists(paste0("output/", model_filename, ".Rdata"))) {
 #     load(paste0("output/", model_filename, ".Rdata"))
