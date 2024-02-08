@@ -30,7 +30,7 @@ You can either run the console version by executing "main.R" file or Run the mor
 
 #### Datasets
 
-Remenber to put the datasets `AGC_Dataset_v_3_0_0.csv` and `Agrimonia_Dataset_v_3_0_0.csv` in the folder `data/AgrImOnIA/raw`.
+Remember to put the datasets `AGC_Dataset_v_3_0_0.csv` and `Agrimonia_Dataset_v_3_0_0.csv` in the folder `data/AgrImOnIA/raw`.
 
 ## Tune it up
 
