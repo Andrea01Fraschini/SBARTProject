@@ -330,13 +330,6 @@ sbart <- function(
 
         # Update progress bar
         pb$tick()
-
-        # if (!is.null(progress)) {
-        #     progress(
-        #         iteration = j,
-        #         dt_list = dt_list
-        #     )
-        # }
     }
 
     results <- list(
