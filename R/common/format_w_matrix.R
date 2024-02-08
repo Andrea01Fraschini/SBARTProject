@@ -32,7 +32,7 @@ format_w_matrix <- function(W) {
     if(min(W) < 0) stop("W has negative elements.", call.=FALSE)
     if(sum(W != t(W)) > 0) stop("W is not symmetric.", call.=FALSE)
 
-    temp <- suppressWarnings(melt(t(W)))
+    temp <- reshape::melt(t(W))
     temp <- temp[, c(2, 1, 3)]
     # remove all zeros 
     W.triplet <- subset(temp, value > 0) 
