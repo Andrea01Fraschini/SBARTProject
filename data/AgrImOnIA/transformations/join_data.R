@@ -1,9 +1,5 @@
 
-# rm(list=ls())
-library("sf")
-library("dplyr")
-
-join_data <- function(response_variable) {
+join_data <- function(response_variable, covariates_of_interest) {
     shp_data <- st_read("data/AgrImOnIa/raw/Comuni_correnti_poligonali.shp")
 
     municipalities <- read.csv("data/MunicipalitiesCentroids.csv")
@@ -12,8 +8,6 @@ join_data <- function(response_variable) {
 
     covariates_dataset <- read.csv("data/AgrImOnIA/processed/df.csv")
     selected_covariate_indexes <- match(covariates_of_interest, colnames(covariates_dataset))
-     
-    # browser()
 
     covariates <- covariates_dataset[, selected_covariate_indexes]
     covariates["NOME_COM"] <- covariates_dataset$NOME_COM

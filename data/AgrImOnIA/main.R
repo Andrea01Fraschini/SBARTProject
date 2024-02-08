@@ -1,7 +1,3 @@
-# Load libraries and functions
-library(sf)
-library(dplyr)
-library("lubridate")
 source("data/AgrImOnIA/libraries.R")
 source("data/AgrImOnIA/transformations/clean_data.R")
 source("data/AgrImOnIA/transformations/create_square.R")
@@ -108,6 +104,9 @@ for (t in 1:length(unique_dates)) {
 
 # Combine the results for all dates into a single dataframe
 final_result <- do.call(rbind, results_list)
+
+#  Avergae the results for each municipality
+# final_result <- final_result %>% group_by(NOME_COM) %>% summarise(across(everything(), mean, na.rm = TRUE))
 
 # Write the interpolated result to a CSV file
 write.csv(final_result, "data/AgrImOnIA/processed/df.csv", row.names = FALSE)

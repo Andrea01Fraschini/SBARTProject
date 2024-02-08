@@ -8,9 +8,7 @@ clean_data <- function(df, columns_to_remove) {
   df_cleaned <- df
 
   # Convert Time column to Date type
-  if ("Time" %in% colnames(df_cleaned)) {
-    df_cleaned$Time <- as.Date(df_cleaned$Time)
-  }
+  df_cleaned$Time <- as.Date(df_cleaned$Time)
   
   # Exclude specified columns
   if (length(columns_to_remove) > 0) {
