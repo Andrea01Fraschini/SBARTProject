@@ -10,7 +10,6 @@ generate_data <- function(date_begin, date_end, response_variable, covariates_of
 
     # Read data
     df_cov <- read.csv("data/AgrImOnIA/raw/AGC_Dataset_v_3_0_0.csv", header=T)
-    df_y <- read.csv("data/AgrImOnIA/raw/Agrimonia_Dataset_v_3_0_0.csv", header=T)
     shp_data <- st_read("data/AgrImOnIA/raw/Comuni_correnti_poligonali.shp")
 
     # Define date range
@@ -39,7 +38,7 @@ generate_data <- function(date_begin, date_end, response_variable, covariates_of
     # Compute weighted sum per municipality
     df_result <- compute_weighted_sum(df_intersections, covariates_of_interest)
 
-    # write.csv(df_result, "data/AgrImOnIA/processed/df.csv", row.names = FALSE)
+    write.csv(df_result, "data/AgrImOnIA/processed/df.csv", row.names = FALSE)
 
     merged_data <- join_data(
                         response_variable = response_variable, 
