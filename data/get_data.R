@@ -12,8 +12,10 @@
 #' @export
 #'
 get_data <- function() {
-  # Load the data
   source("config.R")
+  source("data/AgrImOnIA/main_by_range.R")
+  # Load the data
+  generate_data(date_begin, date_end, response_variable, covariates_of_interest)
   # data <- read.csv(paste0("data/", data_filename, ".csv"), header = TRUE, row.names = 1)
   load("data/input_data.RData")
   data <- merged_data

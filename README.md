@@ -28,12 +28,6 @@ You can either run the console version by executing "main.R" file or Run the mor
  renv::run("main.R") 
 ```
 
-#### UI version
-
-```
- shiny::runApp()
-```
-
 ## Tune it up
 
 ### Model parameters
@@ -44,27 +38,12 @@ You can tune the model by changing the parameters in the config.R file. The para
 - `n_trees`: number of trees in the BART model.
 - `warmup`: number of warmup iterations for the MCMC algorithm (See Kim article for more information).
 
-> **Note:** Through the UI version you can change the parameters in the form.
-
-### Data
-
-Your data must be in a .csv file inside the `data` folder. The name of the file can be changed in the config.R file.
-
-Further tweaks can be done in the `get_data.R` file, situated in the `data` folder.
-
-> **Note:** Before the model is run a check is done to see if the data is in the correct format. The error message will be shown in the console.
-
-#### get_data.R
-
-Here you can change the data to be used in the model. Here you must explicitly define the following variables:
-    - `y`: the response variable.
-    - `x_predictors`: the covariates.
-    - `wind_matrix`: the wind matrix (For more information see Andrea `README.md` documentation in `python` folder).
-
-#### processed AgrImOnIA dataset
-
-The result of the process using the grid is stored in the folder `data/AgrImOnIA/processed` with the name of `df.csv`.
-To run the script and obtain the data follow the readme contained in `data/AgrImOnIA` folder.
+Additionally, you can change other parameters like:
+- `model_filename`: name of the file where the results will be saved.
+- `date_begin`: starting date to cut the dataset.
+- `date_end`: ending date to cut the dataset.
+- `response_variable`: name of the response variable in the dataset.
+- `covariates_of_interest`: names of the covariates in the dataset.
 
 ### Results
 
