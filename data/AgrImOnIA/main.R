@@ -1,7 +1,7 @@
-# Load libraries and functions
 source("data/AgrImOnIA/libraries.R")
 source("data/AgrImOnIA/transformations/clean_data.R")
 source("data/AgrImOnIA/transformations/create_square.R")
+source("data/AgrImOnIA/transformations/join_data.R")
 source("config.R")
 
 # Read data
@@ -13,7 +13,7 @@ date_begin <- as.Date(date_begin)
 date_end <- as.Date(date_end)
 
 # Clean data
-columns_to_remove <- c("WE_mode_wind_direction_10m", "WE_mode_wind_direction_100m")
+columns_to_remove <- c("WE_mode_wind_direction_10m", "WE_mode_wind_direction_100m", "WE_precipitation_t")
 df_cleaned <- clean_data(df, columns_to_remove)
 
 # Subset data
@@ -25,7 +25,8 @@ unique_dates <- unique(df_subset$Time)
 results_list <- list()
 
 # Loop through each unique date
-for (date in unique_dates) {
+for (t in 1:length(unique_dates)) {
+  date <- unique_dates[t]
   # Extract the grid for the current day
   dfcov_data <- data.frame(df_subset[df_subset$Time == date, ])
   
@@ -67,8 +68,8 @@ for (date in unique_dates) {
   # Convert the "area" column to numeric for the entire dataset
   intersections$area <- as.numeric(intersections$area)
   
-  # Specify the column indices for the covariates (26 to 52)
-  covariate_indices <- 26:52
+  # Specify the column indices for the covariates (26 to 51)
+  covariate_indices <- 26:51
   # Convert the indices to column names
   covariate_names <- colnames(intersections)[covariate_indices]
   
@@ -89,7 +90,7 @@ for (date in unique_dates) {
     
     # Loop through each covariate and calculate the weighted sum
     for (covariate in covariate_names) {
-      weighted_sum <- sum(covariate_data$area * covariate_data[, covariate]) / sum(covariate_data$area)
+      weighted_sum <- sum(covariate_data$area * covariate_data[, covariate], na.rm = TRUE) / sum(covariate_data$area, na.rm = TRUE)
       
       # Assign the result to the corresponding cell in the result_df
       result_df[result_df$NOME_COM == municipality, covariate] <- weighted_sum
@@ -104,5 +105,17 @@ for (date in unique_dates) {
 # Combine the results for all dates into a single dataframe
 final_result <- do.call(rbind, results_list)
 
-# Write the result to a CSV file
-write.csv(final_result, "data/df.csv", row.names = FALSE)
+#  Avergae the results for each municipality
+# final_result <- final_result %>% group_by(NOME_COM) %>% summarise(across(everything(), mean, na.rm = TRUE))
+
+# Write the interpolated result to a CSV file
+write.csv(final_result, "data/AgrImOnIA/processed/df.csv", row.names = FALSE)
+
+# Merge covariates and responses
+# columns_to_remove <- c("WE_mode_wind_direction_10m", "WE_mode_wind_direction_100m", "Altitude", "AQ_pm10")
+# merged_data <- merge_interpolated_with_responses(shp_data, final_result, date_begin, date_end, c())
+
+merged_data <- join_data(response_variable = response_variable)
+save(merged_data, file = "data/input_data.RData")
+
+print("----> Finished processing")
