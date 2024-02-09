@@ -60,6 +60,9 @@ join_data <- function(response_variable, covariates_of_interest) {
 
     Y[is.nan(Y)] <- NA
 
+    # Remove NOME_COM from X
+    X <- X[, -which(colnames(X) == "NOME_COM")]
+
     return(list(
         Y = Y,
         X = X
