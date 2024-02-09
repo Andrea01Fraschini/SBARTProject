@@ -33,7 +33,6 @@ join_data <- function(response_variable, covariates_of_interest) {
         if (any(x)) polygons_sf$NOME_COM[which(x)] else NA
     })
 
-    dataset_municipalities <- gsub("`", "'", na.omit(unique(dataset$NOME_COM)))
     
     dataset_avg <- dataset %>% 
         group_by(NOME_COM) %>%
@@ -42,6 +41,7 @@ join_data <- function(response_variable, covariates_of_interest) {
             .fns = ~mean(., na.rm = TRUE)
         ))
     responses <- unlist(dataset_avg[response_variable], use.names = FALSE)
+    dataset_municipalities <- gsub("`", "'", na.omit(unique(dataset_avg$NOME_COM)))
 
     Y <- c(rep(NA, municipalities_count)) 
     X <- matrix(nrow = municipalities_count, ncol = length(selected_covariate_indexes) + 1)
