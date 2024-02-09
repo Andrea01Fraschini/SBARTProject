@@ -2,8 +2,6 @@ import geopandas as gpd
 import pandas as pd
 import numpy as np
 
-albaredo_arnaboldi_index = 1154
-
 def build(centroids, functions):
     N = len(centroids)
     
@@ -12,7 +10,6 @@ def build(centroids, functions):
     todo_total = float(N*(N-1)/2)
     progress_bar_length = 40 # in chars
     
-    number_of_functions = len(functions)
     cost_matrices = []
     for _ in functions:
         cost_matrices.append(np.zeros((N, N)))
@@ -20,15 +17,12 @@ def build(centroids, functions):
     # it does only the N(N-1)/2 necessary checks
     for i in range(N-1):
         for j in range(i + 1, N):
-            
-            if albaredo_arnaboldi_index in (i, j):
-                continue
 
             point1 = centroids.iloc[i]['geometry']
             point2 = centroids.iloc[j]['geometry']
 
             d = point1.distance(point2)
-
+            
             for f_i, f in enumerate(functions):
                 cost_matrices[f_i][i][j] = f(d)
                 cost_matrices[f_i][j][i] = f(d)
@@ -48,7 +42,7 @@ def build(centroids, functions):
 
 
 
-centroids_pdf = pd.read_csv("./data/MunicipalitiesCentroids.csv") # read CSV as pandas dataframe
+centroids_pdf = pd.read_csv("./AreasCentroids.csv") # read CSV as pandas dataframe
 
 # convert dataframe into GeoDataFrame
 centroids = gpd.GeoDataFrame(
@@ -70,4 +64,4 @@ functions = [
 matrices = build(centroids, functions)
 
 for i, m in enumerate(matrices):
-    pd.DataFrame(m).to_csv(f"./python/cost_matrices/cost_matrix_{i}.csv", index=False)
+    pd.DataFrame(m).to_csv(f"./cost_matrices/cost_matrix_{i}.csv", index=False)

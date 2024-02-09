@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-wind_data = pd.read_csv("./python/wind_stuff/Converted_AGC_Wind_Data.csv")
+wind_data = pd.read_csv("./python_scripts/wind_stuff/Converted_AGC_Wind_Data.csv")
 
 # DIRTY AND QUICK AGGREGATION
 # wind_data = wind_data.groupby(['Latitude', 'Longitude'], as_index=False).agg(
@@ -46,4 +46,4 @@ aggregated_data = pd.DataFrame(rows, columns=['Longitude', 'Latitude',
 
 print(aggregated_data.head())
 
-aggregated_data.to_csv("./python/wind_stuff/Aggregated_wind_data.csv", index=False)
+aggregated_data.to_csv("./python_scripts/wind_stuff/Aggregated_wind_data.csv", index=False)

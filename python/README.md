@@ -1,9 +1,10 @@
-# Welcome to *python land*!
+# Welcome to *python_scripts land*!
 
 Here you will find every python script used to compute everything related to the SIAM. Lemme explain how the folder is (badly) organized:
 
 ## Directories
-
+- ### _Ols (all municipalities)_
+    Contains old matrices and files used when we were considering all the municipalities.
 - ### _adjacency_files/_
    Contains the csv files that store adjacency data. More precisely it contains geographically adjacency data and wind adjacency data. If you don't know what that is then take a look under the '_wind_stuff_' folder.
 - ### _cost_matrices/_
@@ -14,12 +15,14 @@ Here you will find every python script used to compute everything related to the
   - cost_matrix_2.csv: $\quad\frac{1}{d^{1.5}}$
   - cost_matrix_3.csv: $\quad\frac{1}{d^2}$
   - cost_matrix_4.csv: $\quad e^{-d}$
-
+- ### _REGIONE_LOMBARDIA/_
+    It contains polygon data of the Lombardy region. More specifically, it contains the entire region polygon and all the municipalities polygons.
 - ### _wind_stuff/_
     It contains all the scripts used for doing things with wind and not just spatial data. More info are contained in its _README_ file.
 
 ## Scripts
-
+- ### _simplify_lombardy.py_
+    Messy collection of scripts used to transform the Lombardy region from having more than 1500 municipalities into just 427 _"areas"_. **Not meant to be run.**
 - ### _build_adjacency.py_
     Builds the adjacency matrix and its tuple representation and stores them in the _adjacency_files_ folder.
 

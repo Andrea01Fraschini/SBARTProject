@@ -9,8 +9,8 @@ if len(sys.argv) < 3:
 altitude = int(sys.argv[1])
 angle = int(sys.argv[2])
 
-wind_data = pd.read_csv("./python/wind_stuff/Aggregated_wind_data.csv")
-centroids_pdf = pd.read_csv("./MunicipalitiesCentroids.csv") # read CSV as pandas dataframe
+wind_data = pd.read_csv("./wind_stuff/Aggregated_wind_data.csv")
+centroids_pdf = pd.read_csv("./AreasCentroids.csv") # read CSV as pandas dataframe
 
 # convert dataframe into GeoDataFrame
 centroids = gpd.GeoDataFrame(
@@ -26,5 +26,5 @@ known_wind = wab.build_wind_dataframe(wind_data, altitude)
 
 matrix = wab.build_wind_adjacency_matrix(centroids_array, known_wind, angle)
 
-#pd.DataFrame(tuples).to_csv("./python/adjacency_files/wind_adjacency_tuples_60b.csv", index=False)
-pd.DataFrame(matrix).to_csv(f"./python/adjacency_files/wind_adjacency_matrix_{altitude}m_{angle}.csv", index=False)
+#pd.DataFrame(tuples).to_csv("./python_scripts/adjacency_files/wind_adjacency_tuples_60b.csv", index=False)
+pd.DataFrame(matrix).to_csv(f"./adjacency_files/wind_adjacency_matrix_{altitude}m_{angle}.csv", index=False)

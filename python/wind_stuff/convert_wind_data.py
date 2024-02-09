@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-wind_data = pd.read_csv("./python/wind_stuff/AGC_Wind_Data.csv")
+wind_data = pd.read_csv("./python_scripts/wind_stuff/AGC_Wind_Data.csv")
 
 cols_to_convert = ['WE_mode_wind_direction_100m','WE_mode_wind_direction_10m']
 
@@ -24,6 +24,6 @@ for c in cols_to_convert:
 # wind_data = wind_data.loc[(wind_data['Time'] >= '2016-06-01')
 #                      & (wind_data['Time'] < '2016-06-20')]
 
-wind_data.to_csv("./python/wind_stuff/Converted_AGC_Wind_Data.csv", index=False)
+wind_data.to_csv("./python_scripts/wind_stuff/Converted_AGC_Wind_Data.csv", index=False)
 
 print(wind_data.head())
