@@ -2,8 +2,21 @@
 
 Here you will find every python script used to compute everything related to the SIAM. Lemme explain how the folder is (badly) organized:
 
+## CSV Files
+
+Note that "**IN ORDER**" means always the same order.
+
+- ### _AreasCentroids.csv_
+    Contains list of the areas **IN ORDER** along with their names and centroids.
+  
+- ### _AreasGeometriesWithNames.csv_
+    Contains list of the areas **IN ORDER** along with their names and geometries.
+
+- ### _OrderedGrid.csv_
+    Contains the covariate grid of squares all enumerated with the same name used by their counterpart in the other files.
+
 ## Directories
-- ### _Ols (all municipalities)_
+- ### _Old (all municipalities)_
     Contains old matrices and files used when we were considering all the municipalities.
 - ### _adjacency_files/_
    Contains the csv files that store adjacency data. More precisely it contains geographically adjacency data and wind adjacency data. If you don't know what that is then take a look under the '_wind_stuff_' folder.
