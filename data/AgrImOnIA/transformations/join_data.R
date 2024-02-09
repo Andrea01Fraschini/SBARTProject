@@ -60,6 +60,9 @@ join_data <- function(response_variable, covariates_of_interest) {
 
     Y[is.nan(Y)] <- NA
 
+    # Remove last column of X, which is the NOME_COM
+    X <- X[, -length(selected_covariate_indexes) - 1]
+
     return(list(
         Y = Y,
         X = X
