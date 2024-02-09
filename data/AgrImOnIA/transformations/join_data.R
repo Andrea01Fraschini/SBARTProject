@@ -62,7 +62,6 @@ join_data <- function(response_variable, covariates_of_interest) {
 
     # Remove last column of X, which is the NOME_COM
     X <- X[, -length(selected_covariate_indexes) - 1]
-    View(X)
 
     return(list(
         Y = Y,
