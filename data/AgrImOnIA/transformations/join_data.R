@@ -1,8 +1,12 @@
 
 join_data <- function(response_variable, covariates_of_interest) {
-    shp_data <- st_read("data/AgrImOnIa/raw/Comuni_correnti_poligonali.shp")
+    shp_data <- st_read("data/AgrImOnIa/raw/AreasGeometriesWithNames.shp")
+    st_crs(shp_data) <- st_crs("EPSG:4326")
 
-    municipalities <- read.csv("data/MunicipalitiesCentroids.csv")
+    # Make shp_data valid   
+    shp_data <- st_make_valid(shp_data)
+
+    municipalities <- read.csv("python/AreasCentroids.csv")
     municipalities_names <- unique(municipalities$MUNICIPALITY_NAME)
     municipalities_count <- length(municipalities_names)
 
@@ -16,7 +20,7 @@ join_data <- function(response_variable, covariates_of_interest) {
     dataset <- read.csv("data/AgrImOnIA/raw/Agrimonia_Dataset_v_3_0_0.csv")
 
     # Convert points to sf object and project to EPSG:4326
-    points_sf <- st_as_sf(dataset, coords = c("Longitude", "Latitude"))
+    points_sf <- st_as_sf(dataset, coords = c("Longitude", "Latitude"), crs = st_crs("EPSG:4326"))
     points_sf <- st_set_crs(points_sf, st_crs("EPSG:4326"))
 
     # Convert polygons to sf object
@@ -30,9 +34,8 @@ join_data <- function(response_variable, covariates_of_interest) {
 
     # Associate points with polygons based on NOME_COM
     dataset$NOME_COM <- apply(intersected, 1, function(x) {
-        if (any(x)) polygons_sf$NOME_COM[which(x)] else NA
+        if (any(x)) polygons_sf$MUNICIPALI[which(x)] else NA
     })
-
     
     dataset_avg <- dataset %>% 
         group_by(NOME_COM) %>%
@@ -40,6 +43,7 @@ join_data <- function(response_variable, covariates_of_interest) {
             .cols = all_of(response_variable),
             .fns = ~mean(., na.rm = TRUE)
         ))
+        
     responses <- unlist(dataset_avg[response_variable], use.names = FALSE)
     dataset_municipalities <- gsub("`", "'", na.omit(unique(dataset_avg$NOME_COM)))
 

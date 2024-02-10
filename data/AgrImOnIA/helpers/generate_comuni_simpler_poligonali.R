@@ -14,7 +14,7 @@ areas_geometries$geometry <- st_as_text(st_as_sfc(areas_geometries$geometry))
 areas_geometries_sf <- st_as_sf(areas_geometries, wkt = "geometry")
 
 # Make the geometries valid
-areas_geometries_sf <- st_make_valid(areas_geometries_sf)
+areas_geometries_sf <- st_make_valid(areas_geometries_sf, reason = TRUE)
 
 # Set the CRS
 st_crs(areas_geometries_sf) <- 4326
@@ -26,7 +26,4 @@ areas_geometries_sf <- st_transform(areas_geometries_sf, 4326)
 plot(areas_geometries_sf)
 
 # Save the sf object as a shapefile
-st_write(areas_geometries_sf, "data/AgrImOnIA/raw/comuni_simpler_poligonali.shp", append = FALSE)
-
-
-
+st_write(areas_geometries_sf, "data/AgrImOnIA/raw/comuni_simpler_poligonali.shp", append = FALSE, drive)

@@ -1,11 +1,10 @@
-
 source("config.R")
 
 # load input data
 load("data/input_data.RData")
 # load model output
 
-centroid_data <- read.csv("data/MunicipalitiesCentroids.csv")
+centroid_data <- read.csv("python/AreasCentroids.csv")
 
 y_original <- merged_data$Y
 x <- merged_data$X

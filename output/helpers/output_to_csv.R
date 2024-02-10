@@ -7,7 +7,7 @@ load("data/input_data.RData")
 # load model output
 load(paste0("output/", model_filename, ".RData"))
 
-centroid_data <- read.csv("data/MunicipalitiesCentroids.csv")
+centroid_data <- read.csv("data/AreasCentroids.csv")
 
 y_original <- merged_data$Y
 y_complete <- model$y_predictions

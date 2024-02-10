@@ -57,16 +57,6 @@ get_data <- function() {
 
   ws <- list(w1, w2, w3, w4, w5)
 
-  # to compensate for the suppression of Albaredo Arnaboldi
-  CAMPOSPINOSO_index <- 655
-  ALBAREDO_index <- 1155
-  compensation <- function(w) {
-    w[ALBAREDO_index, ] <- w[CAMPOSPINOSO_index, ]
-    w[, ALBAREDO_index] <- w[, CAMPOSPINOSO_index]
-    return(w)
-  }
-  ws <- lapply(ws, compensation)
-
   result <- list(
     y = y,
     x_predictors = x_predictors,
