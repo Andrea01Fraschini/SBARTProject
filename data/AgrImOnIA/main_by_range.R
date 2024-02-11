@@ -13,8 +13,6 @@ generate_data <- function(date_begin, date_end, response_variable, covariates_of
     shp_data_simpler <- st_read("data/AgrImOnIA/raw/AreasGeometriesWithNames.shp")
     shp_data <- st_read("data/AgrImOnIA/raw/Comuni_correnti_poligonali.shp")
 
-    # plort SQ!$&
-
     # Define date range
     date_begin <- as.Date(date_begin)
     date_end <- as.Date(date_end)
