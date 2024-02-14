@@ -323,7 +323,8 @@ sbart <- function(
         sigma2_chain = sigma2_samples,
         trees_chain = trees_pred,
         w_selection_chain = w_sel_samples,
-        y_predictions = y
+        y_predictions = y,
+        y_prediction_history = y_da
     )
 
     return(results)
