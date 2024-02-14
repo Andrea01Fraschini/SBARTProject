@@ -27,6 +27,9 @@ model <- sbart(
     n_iterations = n_iterations,
     warmup = warmup
 )
+
+# Add to model the data
+model$data <- data
 save(model, file = paste0("output/", model_filename, ".RData"))
 
 
